@@ -7,13 +7,15 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 import ComposableArchitecture
 
 struct CardFormFeature: Reducer {
     
     struct State: Equatable {
-        var name: String = ""
-        var issuer: String = ""
+        let modelContext: ModelContext
+        var name: String?
+        var issuer: String?
         var brand: Card.Brand = .visa
         var color: Color = Color.white
         var number: [String] = ["", "", "", ""]
@@ -21,18 +23,20 @@ struct CardFormFeature: Reducer {
         var month: Int?
         var cvc: String?
         var memo: String?
+        var dismiss: Bool = false
     }
     
     enum Action: Equatable {
-        case nameChanged(text: String)
-        case issuerChanged(text: String)
+        case nameChanged(text: String?)
+        case issuerChanged(text: String?)
         case brandChanged(brand: Card.Brand)
         case colorChanged(color: Color)
         case numberChanged(index: Int, number: String)
         case yearChanged(year: Int?)
         case monthChanged(month: Int?)
-        case cvcChanged(cvc: String)
-        case memoChanged(memo: String)
+        case cvcChanged(cvc: String?)
+        case memoChanged(memo: String?)
+        case save
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -71,13 +75,58 @@ struct CardFormFeature: Reducer {
             return .none
             
         case let .cvcChanged(cvc):
-            state.cvc = cvc.isEmpty ? nil : cvc
+            if let cvc = cvc {
+                state.cvc = cvc.isEmpty ? nil : cvc
+            } else {
+                state.cvc = nil
+            }
+            
             return .none
             
         case let .memoChanged(memo):
             state.memo = memo
             return .none
             
+        case .save:
+            if let name = state.name, let issuer = state.issuer, let year = state.year, let month = state.month {
+                let card = Card(
+                    name: name,
+                    issuer: issuer,
+                    brand: state.brand,
+                    color: state.color.hex,
+                    number: state.number,
+                    year: year,
+                    month: month,
+                    cvc: state.cvc,
+                    memo: state.memo
+                )
+                
+                state.modelContext.insert(card)
+                
+                do {
+                    try state.modelContext.save()
+                    
+                    state.dismiss = true
+                } catch {
+                    print(#function, error)
+                }
+                
+                return .none
+                
+            } else {
+                return .none
+            }
+            
         }
     }
 }
+//var name: String
+//var issuer: String?
+//var brand: String
+//var color: String
+//var number: [String]
+//var year: Int
+//var month: Int
+//var cvc: String?
+//var memo: String?
+//var touch: Date

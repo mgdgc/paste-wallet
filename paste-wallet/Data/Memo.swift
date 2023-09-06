@@ -15,7 +15,7 @@ final class Memo: Identifiable {
     var value: String
     var isCredential: Bool
     
-    @Relationship(.encrypt, inverse: \MemoField.memo) var fields: [MemoField]?
+    @Relationship(inverse: \MemoField.memo) var fields: [MemoField]?
     
     init(id: UUID, title: String, value: String, isCredential: Bool) {
         self.id = id

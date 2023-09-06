@@ -6,36 +6,74 @@
 //
 
 import SwiftUI
+import SwiftData
 import ComposableArchitecture
 
 struct CardForm: View {
     let store: StoreOf<CardFormFeature>
     
+    private let brandOptions: [Card.Brand] = [.visa, .master, .amex, .klsc, .unionPay, .jcb, .discover, .europay, .local, .etc]
+    
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
                 Section("new_card_section_information") {
-                    TextField("new_card_name", text: viewStore.binding(get: \.name, send: CardFormFeature.Action.nameChanged))
+                    TextField("new_card_name", text: viewStore.binding(get: { state in
+                        state.name ?? ""
+                    }, send: { value in
+                        CardFormFeature.Action.nameChanged(text: value)
+                    }))
                     
-                    TextField("new_card_issuer", text: viewStore.binding(get: \.issuer, send: CardFormFeature.Action.issuerChanged))
+                    TextField("new_card_issuer", text: viewStore.binding(get: { state in
+                        state.issuer ?? ""
+                    }, send: { value in
+                        CardFormFeature.Action.issuerChanged(text: value)
+                    }))
+                    
+                    Picker("new_card_brand", selection: viewStore.binding(get: \.brand, send: CardFormFeature.Action.brandChanged)) {
+                        ForEach(brandOptions, id: \.self) { brand in
+                            Text("brand_\(brand.rawValue)".localized)
+                                .tag(brand)
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
                     
                     ColorPicker("new_card_color", selection: viewStore.binding(get: \.color, send: CardFormFeature.Action.colorChanged))
                 }
                 
                 Section("new_card_section_number") {
                     HStack(spacing: 4) {
-                        ForEach(0..<4) { i in
-                            TextField("*****", text: viewStore.binding(get: { state in
-                                return state.number[i]
-                            }, send: { value in
-                                return .numberChanged(index: i, number: value.filter { $0.isNumber })
-                            }))
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .multilineTextAlignment(.center)
-                            
-                            if i < 3 {
-                                Text("-")
+                        if viewStore.brand == .amex {
+                            ForEach(0..<3) { i in
+                                TextField("*****", text: viewStore.binding(get: { state in
+                                    return state.number[i]
+                                }, send: { value in
+                                    return .numberChanged(index: i, number: value.filter { $0.isNumber })
+                                }))
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .multilineTextAlignment(.center)
+                                
+                                if i < 2 {
+                                    Text("-")
+                                }
+                            }
+                        } else {
+                            ForEach(0..<4) { i in
+                                TextField("*****", text: viewStore.binding(get: { state in
+                                    return state.number[i]
+                                }, send: { value in
+                                    return .numberChanged(index: i, number: value.filter { $0.isNumber })
+                                }))
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .multilineTextAlignment(.center)
+                                
+                                if i < 3 {
+                                    Text("-")
+                                }
                             }
                         }
                     }
@@ -82,7 +120,50 @@ struct CardForm: View {
                 }
                 
                 Section("new_card_section_optional") {
-                    
+                    ZStack {
+                        TextEditor(text: viewStore.binding(get: { state in
+                            return state.memo ?? ""
+                        }, send: { value in
+                            return .memoChanged(memo: value.isEmpty ? nil : value)
+                        }))
+                        .frame(minHeight: 100)
+                        
+                        if viewStore.memo == nil || viewStore.memo!.isEmpty {
+                            VStack {
+                                HStack {
+                                    Text("new_card_memo_placeholder")
+                                        .foregroundStyle(Color(uiColor: .secondaryLabel))
+                                    Spacer()
+                                }
+                                .padding(8)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("title_card_form")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("add") {
+                        viewStore.send(.save)
+                    }
+                    .disabled(
+                        viewStore.name == nil ||
+                        viewStore.issuer == nil ||
+                        viewStore.year == nil ||
+                        viewStore.month == nil ||
+                        viewStore.cvc == nil
+                    )
+                    .onChange(of: viewStore.dismiss) {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("cancel") {
+                        dismiss()
+                    }
                 }
             }
         }
@@ -90,7 +171,16 @@ struct CardForm: View {
 }
 
 #Preview {
-    CardForm(store: Store(initialState: CardFormFeature.State(), reducer: {
-        CardFormFeature()
-    }))
+    let context = try! ModelContainer(for: Card.self, ModelConfiguration(inMemory: true)).mainContext
+    
+    context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
+    context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
+    context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
+    context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
+    
+    return NavigationStack {
+        CardForm(store: Store(initialState: CardFormFeature.State(modelContext: context), reducer: {
+            CardFormFeature()
+        }))
+    }
 }

@@ -17,7 +17,7 @@ final class Bank: Identifiable {
     var number: String
     var memo: String?
     
-    @Relationship([.encrypt], deleteRule: .cascade, inverse: \SecurityCard.bank) var securityCard: SecurityCard?
+    @Relationship(deleteRule: .cascade, inverse: \SecurityCard.bank) var securityCard: SecurityCard?
     
     init(id: UUID = UUID(), name: String, bank: String, color: String, number: String, memo: String? = nil) {
         self.id = id

@@ -17,9 +17,11 @@ struct WalletView: View {
             FavoriteView()
                 .tabItem { Label("tab_favorite", image: "dashboard") }
             
-            CardView(store: Store(initialState: CardFeature.State(modelContext: modelContext), reducer: {
-                CardFeature()
-            }))
+            NavigationStack {
+                CardView(store: Store(initialState: CardFeature.State(modelContext: modelContext), reducer: {
+                    CardFeature()
+                }))
+            }
             .tabItem { Label("tab_card", image: "card") }
             
             BankView()

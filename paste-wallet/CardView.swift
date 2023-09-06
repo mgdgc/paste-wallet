@@ -23,9 +23,9 @@ struct CardView: View {
                     }
                 })
                 .padding()
-            }
-            .onAppear {
-                viewStore.send(.fetchAll)
+                .onAppear {
+                    viewStore.send(.fetchAll)
+                }
             }
             .navigationTitle("tab_card")
             .toolbar {
@@ -36,9 +36,15 @@ struct CardView: View {
                         Image(systemName: "plus")
                     }
                     .sheet(isPresented: viewStore.binding(get: \.showAddView, send: CardFeature.Action.showAddView)) {
-                        CardForm(store: Store(initialState: CardFormFeature.State(), reducer: {
-                            CardFormFeature()
-                        }))
+                        NavigationStack {
+                            CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext), reducer: {
+                                CardFormFeature()
+                            }))
+                        }
+                        .interactiveDismissDisabled(true)
+                        .onDisappear {
+                            viewStore.send(.fetchAll)
+                        }
                     }
                 }
             }
