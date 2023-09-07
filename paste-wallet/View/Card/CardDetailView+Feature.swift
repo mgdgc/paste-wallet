@@ -7,12 +7,14 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 import ComposableArchitecture
 
 struct CardDetailFeature: Reducer {
     
     struct State: Equatable {
-        
+        let modelContext: ModelContext
+        let card: Card
     }
     
     enum Action: Equatable {
