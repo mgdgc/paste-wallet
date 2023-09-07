@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 import ComposableArchitecture
 
 struct CardFeature: Reducer {
@@ -25,6 +26,8 @@ struct CardFeature: Reducer {
     enum Action: Equatable {
         case fetchAll
         case showAddView(show: Bool)
+        case copy(card: Card, includeSeparator: Bool)
+        case delete(card: Card)
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -36,6 +39,15 @@ struct CardFeature: Reducer {
         case let .showAddView(show):
             state.showAddView = show
             return .none
+            
+        case let .copy(card, includeSeparator):
+            let number = includeSeparator ? card.wrappedNumberIncludeSeparator : card.wrappedNumberWithoutSeparator
+            UIPasteboard.general.setValue(number, forPasteboardType: UTType.plainText.identifier)
+            return .none
+            
+        case let .delete(card):
+            state.modelContext.delete(card)
+            return .send(.fetchAll)
         }
     }
     

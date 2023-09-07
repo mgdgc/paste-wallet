@@ -17,4 +17,8 @@ extension Color {
     var hex: String {
         return UIColor(self).hex
     }
+    
+    var isDark: Bool {
+        return UIColor(self).isDark
+    }
 }

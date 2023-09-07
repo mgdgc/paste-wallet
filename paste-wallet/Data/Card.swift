@@ -38,6 +38,25 @@ final class Card {
         return number
     }
     
+    var wrappedNumberIncludeSeparator: String {
+        var number = ""
+        for i in self.number.indices {
+            number.append("\(self.number[i])")
+            if i < self.number.count - 1 {
+                number.append("-")
+            }
+        }
+        return number
+    }
+    
+    var wrappedNumberWithoutSeparator: String {
+        var number = ""
+        for i in self.number.indices {
+            number.append("\(self.number[i])")
+        }
+        return number
+    }
+    
     // MARK: - Initializer
     init(id: UUID = UUID(), name: String, issuer: String? = nil, brand: Brand, color: String, number: [String], year: Int, month: Int, cvc: String? = nil, memo: String? = nil) {
         self.id = id

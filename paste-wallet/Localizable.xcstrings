@@ -4,15 +4,6 @@
     "-" : {
 
     },
-    "***" : {
-
-    },
-    "*****" : {
-
-    },
-    "/" : {
-
-    },
     "add" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -29,9 +20,6 @@
           }
         }
       }
-    },
-    "Add Item" : {
-
     },
     "brand_amex" : {
       "extractionState" : "manual",
@@ -220,6 +208,57 @@
         }
       }
     },
+    "card_context_copy_all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 번호 복사"
+          }
+        }
+      }
+    },
+    "card_context_copy_numbers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy (only numbers)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 번호만 복사"
+          }
+        }
+      }
+    },
+    "card_context_delete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 삭제"
+          }
+        }
+      }
+    },
     "confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -265,7 +304,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "월"
           }
         }
@@ -287,12 +326,6 @@
           }
         }
       }
-    },
-    "Hello, World!" : {
-
-    },
-    "Item at %@" : {
-
     },
     "new_card_brand" : {
       "extractionState" : "manual",
@@ -531,9 +564,6 @@
           }
         }
       }
-    },
-    "Select an item" : {
-
     },
     "tab_bank" : {
       "extractionState" : "manual",

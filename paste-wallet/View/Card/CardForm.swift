@@ -47,7 +47,7 @@ struct CardForm: View {
                     HStack(spacing: 4) {
                         if viewStore.brand == .amex {
                             ForEach(0..<3) { i in
-                                TextField("*****", text: viewStore.binding(get: { state in
+                                TextField(String("*****"), text: viewStore.binding(get: { state in
                                     return state.number[i]
                                 }, send: { value in
                                     return .numberChanged(index: i, number: value.filter { $0.isNumber })
@@ -62,7 +62,7 @@ struct CardForm: View {
                             }
                         } else {
                             ForEach(0..<4) { i in
-                                TextField("*****", text: viewStore.binding(get: { state in
+                                TextField(String("****"), text: viewStore.binding(get: { state in
                                     return state.number[i]
                                 }, send: { value in
                                     return .numberChanged(index: i, number: value.filter { $0.isNumber })
@@ -92,7 +92,7 @@ struct CardForm: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 36)
                         
-                        Text("/")
+                        Text(String("/"))
                         
                         TextField("expire_year", text: viewStore.binding(get: { state in
                             return state.year == nil ? "" : String(format: "%02d", state.year!)
@@ -109,7 +109,7 @@ struct CardForm: View {
                         
                         Spacer()
                         
-                        TextField("***", text: viewStore.binding(get: { state in
+                        TextField(String("***"), text: viewStore.binding(get: { state in
                             return state.cvc ?? ""
                         }, send: { value in
                             return .cvcChanged(cvc: value.filter { $0.isNumber })
@@ -171,7 +171,7 @@ struct CardForm: View {
 }
 
 #Preview {
-    let context = try! ModelContainer(for: Card.self, ModelConfiguration(inMemory: true)).mainContext
+    let context = try! ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)).mainContext
     
     context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
     context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
