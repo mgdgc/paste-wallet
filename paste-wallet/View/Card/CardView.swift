@@ -20,12 +20,24 @@ struct CardView: View {
                     
                     LazyVGrid(columns: columns, spacing: 20, content: {
                         ForEach(viewStore.cards) { card in
-                            cardView(card: card)
-                                .contextMenu {
-                                    contextMenu(viewStore, for: card)
-                                } preview: {
-                                    contextPreview(for: card, frame: proxy.size)
+                            Button {
+                                viewStore.send(.showCardView(card: card))
+                            } label: {
+                                cardView(card: card)
+                                    .contextMenu {
+                                        contextMenu(viewStore, for: card)
+                                    } preview: {
+                                        contextPreview(for: card, frame: proxy.size)
+                                    }
+                            }
+                            .fullScreenCover(item: viewStore.binding(get: \.showCardView, send: CardFeature.Action.showCardView)) { card in
+                                NavigationStack {
+                                    CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: viewStore.modelContext, card: card), reducer: {
+                                        CardDetailFeature()
+                                    }))
                                 }
+                            }
+
                         }
                     })
                     .padding()
@@ -39,7 +51,8 @@ struct CardView: View {
                         Button {
                             viewStore.send(.showAddView(show: true))
                         } label: {
-                            Image(systemName: "plus")
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(Colors.textPrimary.color)
                         }
                         .sheet(isPresented: viewStore.binding(get: \.showAddView, send: CardFeature.Action.showAddView)) {
                             NavigationStack {
@@ -55,6 +68,9 @@ struct CardView: View {
                     }
                 }
             }
+        }
+        .background {
+            Colors.backgroundSecondary.color.ignoresSafeArea()
         }
     }
     

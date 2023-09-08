@@ -21,6 +21,8 @@ struct CardFeature: Reducer {
         
         // 카드 Drag and drop
         var draggingItem: Card?
+        
+        var showCardView: Card?
     }
     
     enum Action: Equatable {
@@ -28,6 +30,7 @@ struct CardFeature: Reducer {
         case showAddView(show: Bool)
         case copy(card: Card, includeSeparator: Bool)
         case delete(card: Card)
+        case showCardView(card: Card?)
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -48,6 +51,10 @@ struct CardFeature: Reducer {
         case let .delete(card):
             state.modelContext.delete(card)
             return .send(.fetchAll)
+            
+        case let .showCardView(card):
+            state.showCardView = card
+            return .none
         }
     }
     

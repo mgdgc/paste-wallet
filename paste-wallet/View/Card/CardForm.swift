@@ -148,13 +148,8 @@ struct CardForm: View {
                     Button("add") {
                         viewStore.send(.save)
                     }
-                    .disabled(
-                        viewStore.name == nil ||
-                        viewStore.issuer == nil ||
-                        viewStore.year == nil ||
-                        viewStore.month == nil ||
-                        viewStore.cvc == nil
-                    )
+                    .foregroundStyle(viewStore.confirmButtonDisabled ? Colors.textTertiary.color : Colors.textPrimary.color)
+                    .disabled(viewStore.confirmButtonDisabled)
                     .onChange(of: viewStore.dismiss) {
                         dismiss()
                     }
@@ -164,6 +159,7 @@ struct CardForm: View {
                     Button("cancel") {
                         dismiss()
                     }
+                    .foregroundStyle(Colors.textPrimary.color)
                 }
             }
         }

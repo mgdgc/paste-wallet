@@ -9,15 +9,120 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 
+fileprivate struct SecretField: View {
+    var title: LocalizedStringKey
+    var content: String
+    var isLongText: Bool = false
+    var isCredential: Bool = false
+    
+    @State private var reveal: Bool = false
+    
+    var body: some View {
+        Button {
+            reveal.toggle()
+        } label: {
+            if isLongText {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text(title)
+                            .font(.caption)
+                            .foregroundStyle(Colors.textPrimary.color)
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        if reveal {
+                            Text("card_info_lock")
+                        } else {
+                            Text("card_info_lock")
+                        }
+                        Spacer()
+                    }
+                }
+            } else {
+                HStack {
+                    Text(title)
+                        .foregroundStyle(Colors.textPrimary.color)
+                    Spacer()
+                    
+                    if reveal {
+                        Text(String(content))
+                            .foregroundStyle(Colors.textSecondary.color)
+                    } else {
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(Colors.textSecondary.color)
+                        Text("card_info_lock")
+                            .foregroundStyle(Colors.textSecondary.color)
+                    }
+                }
+            }
+        }
+    }
+}
+
+fileprivate struct CardDetailSection<Content>: View where Content: View {
+    var sectionTitle: LocalizedStringKey? = nil
+    @ViewBuilder var content: () -> Content
+    
+    var body: some View {
+        VStack {
+            content()
+                .padding()
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Colors.backgroundPrimary.color)
+        }
+    }
+}
+
 struct CardDetailView: View {
     let store: StoreOf<CardDetailFeature>
     
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            ScrollView {
+            VStack(spacing: 0) {
                 cardView(viewStore: viewStore)
+                    .padding([.top, .horizontal])
+                    .offset(viewStore.draggedOffset)
+                    .gesture(dragGesture(viewStore: viewStore))
+                    .zIndex(1)
+                
+                ScrollView {
+                    Spacer().frame(height: 20)
+                    
+                    CardDetailSection {
+                        SecretField(title: "card_cvc", content: viewStore.card.cvc ?? "", isCredential: true)
+                    }
                     .padding()
+                }
+                .scrollContentBackground(.hidden)
+                .offset(y: -16)
             }
+            .onChange(of: viewStore.dismiss) { oldValue, newValue in
+                dismiss()
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("done") {
+                        viewStore.send(.dismiss)
+                    }
+                    .foregroundStyle(Colors.textPrimary.color)
+                }
+
+                ToolbarItem {
+                    Button("edit") {
+                        viewStore.send(.dismiss)
+                    }
+                    .foregroundStyle(Colors.textPrimary.color)
+                }
+            }
+        }
+        .background {
+            Colors.backgroundSecondary.color.ignoresSafeArea()
         }
     }
     
@@ -44,13 +149,23 @@ struct CardDetailView: View {
             }
         }
         .padding(20)
-        .aspectRatio(1.58, contentMode: .fill)
+        .aspectRatio(1.58, contentMode: .fit)
         .foregroundStyle(UIColor(hexCode: viewStore.card.color).isDark ? Color.white : Color.black)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(UIColor(hexCode: viewStore.card.color)))
                 .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
         )
+    }
+    
+    private func dragGesture(viewStore: ViewStore<CardDetailFeature.State, CardDetailFeature.Action>) -> some Gesture {
+        DragGesture()
+            .onChanged { value in
+                viewStore.send(.dragChanged(value))
+            }
+            .onEnded { value in
+                viewStore.send(.dragEnded(value))
+            }
     }
 }
 

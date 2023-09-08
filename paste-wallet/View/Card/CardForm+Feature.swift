@@ -24,6 +24,14 @@ struct CardFormFeature: Reducer {
         var cvc: String?
         var memo: String?
         var dismiss: Bool = false
+        
+        var confirmButtonDisabled: Bool {
+            name == nil ||
+            issuer == nil ||
+            year == nil ||
+            month == nil ||
+            cvc == nil
+        }
     }
     
     enum Action: Equatable {

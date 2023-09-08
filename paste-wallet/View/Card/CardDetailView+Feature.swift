@@ -15,15 +15,35 @@ struct CardDetailFeature: Reducer {
     struct State: Equatable {
         let modelContext: ModelContext
         let card: Card
+        
+        var draggedOffset: CGSize = .zero
+        
+        var dismiss: Bool = false
     }
     
     enum Action: Equatable {
-        
+        case dragChanged(DragGesture.Value)
+        case dragEnded(DragGesture.Value)
+        case dismiss
     }
     
     func reduce(into state: inout State, action: Action) -> ComposableArchitecture.Effect<Action> {
         switch action {
+        case let .dragChanged(value):
+            state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
+            return .none
             
+        case let .dragEnded(value):
+            if value.translation.height > 100 {
+                state.draggedOffset = .zero
+                return .send(.dismiss)
+            } else {
+                return .none
+            }
+            
+        case .dismiss:
+            state.dismiss.toggle()
+            return .none
         }
     }
     
