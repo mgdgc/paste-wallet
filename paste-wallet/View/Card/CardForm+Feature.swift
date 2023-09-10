@@ -14,6 +14,8 @@ struct CardFormFeature: Reducer {
     
     struct State: Equatable {
         let modelContext: ModelContext
+        let key: String
+        
         var name: String?
         var issuer: String?
         var brand: Card.Brand = .visa
@@ -102,7 +104,7 @@ struct CardFormFeature: Reducer {
                     issuer: issuer,
                     brand: state.brand,
                     color: state.color.hex,
-                    number: state.number,
+                    number: Card.encryptNumber(state.key, state.number),
                     year: year,
                     month: month,
                     cvc: state.cvc,
@@ -128,13 +130,3 @@ struct CardFormFeature: Reducer {
         }
     }
 }
-//var name: String
-//var issuer: String?
-//var brand: String
-//var color: String
-//var number: [String]
-//var year: Int
-//var month: Int
-//var cvc: String?
-//var memo: String?
-//var touch: Date

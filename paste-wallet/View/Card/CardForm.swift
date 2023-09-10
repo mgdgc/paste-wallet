@@ -168,7 +168,7 @@ struct CardForm: View {
     context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
     
     return NavigationStack {
-        CardForm(store: Store(initialState: CardFormFeature.State(modelContext: context), reducer: {
+        CardForm(store: Store(initialState: CardFormFeature.State(modelContext: context, key: "1234"), reducer: {
             CardFormFeature()
         }))
     }

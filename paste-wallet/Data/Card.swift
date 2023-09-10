@@ -27,36 +27,6 @@ final class Card {
         Brand(rawValue: brand) ?? .etc
     }
     
-    var wrappedNumber: String {
-        var number = ""
-        for i in self.number.indices {
-            number.append("\(self.number[i])")
-            if i < self.number.count - 1 {
-                number.append(" ")
-            }
-        }
-        return number
-    }
-    
-    var wrappedNumberIncludeSeparator: String {
-        var number = ""
-        for i in self.number.indices {
-            number.append("\(self.number[i])")
-            if i < self.number.count - 1 {
-                number.append("-")
-            }
-        }
-        return number
-    }
-    
-    var wrappedNumberWithoutSeparator: String {
-        var number = ""
-        for i in self.number.indices {
-            number.append("\(self.number[i])")
-        }
-        return number
-    }
-    
     var wrappedExpirationDate: String {
         return "\(String(format: "%02d", month)) / \(String(format: "%02d", month))"
     }
@@ -86,6 +56,56 @@ final class Card {
             return []
         }
     }
+    
+    // MARK: - Util
+    static func encryptNumber(_ key: String, _ number: [String]) -> [String] {
+        var encrypted: [String] = []
+        for n in number {
+            encrypted.append(CryptoHelper.encrypt(n, key: key))
+        }
+        
+        return encrypted
+    }
+    
+    // MARK: - Getter
+    func decryptNumber(key: String) -> [String] {
+        var numbers: [String] = []
+        for n in self.number {
+            if let decrypted = CryptoHelper.decrypt(n, key: key) {
+                numbers.append(decrypted)
+            } else {
+                print(#function, "decrypting failed")
+            }
+        }
+        
+        return numbers
+    }
+    
+    func getWrappedNumber(_ key: String, _ separator: SeparatorStyle) -> String {
+        var number = ""
+        for i in decryptNumber(key: key).indices {
+            number.append("\(self.number[i])")
+            if i < self.number.count - 1 {
+                switch separator {
+                case .none:
+                    break
+                case .dash:
+                    number.append("-")
+                    break
+                case .space:
+                    number.append(" ")
+                }
+            }
+        }
+        return number
+    }
+    
+    enum SeparatorStyle: Equatable {
+        case none
+        case dash
+        case space
+    }
+    
 }
 
 extension Card {

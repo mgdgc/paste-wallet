@@ -137,7 +137,7 @@ struct CardDetailView: View {
             Spacer()
             
             HStack {
-                Text(viewStore.card.wrappedNumber)
+                Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
                     .font(.title2)
                     .underline()
                 Spacer()
@@ -177,7 +177,7 @@ struct CardDetailView: View {
     context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
     
     return NavigationStack {
-        CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: context, card: card), reducer: {
+        CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: context, key: "1234", card: card), reducer: {
             CardDetailFeature()
         }))
     }

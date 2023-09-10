@@ -14,6 +14,8 @@ struct CardDetailFeature: Reducer {
     
     struct State: Equatable {
         let modelContext: ModelContext
+        let key: String
+        
         let card: Card
         
         var draggedOffset: CGSize = .zero

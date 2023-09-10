@@ -32,7 +32,7 @@ struct CardView: View {
                             }
                             .fullScreenCover(item: viewStore.binding(get: \.showCardView, send: CardFeature.Action.showCardView)) { card in
                                 NavigationStack {
-                                    CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: viewStore.modelContext, card: card), reducer: {
+                                    CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: viewStore.modelContext, key: viewStore.key, card: card), reducer: {
                                         CardDetailFeature()
                                     }))
                                 }
@@ -69,7 +69,7 @@ struct CardView: View {
                     
                     ToolbarItem(placement: .primaryAction) {
                         NavigationLink {
-                            CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext), reducer: {
+                            CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext, key: viewStore.key), reducer: {
                                 CardFormFeature()
                             }))
                         } label: {
@@ -115,11 +115,11 @@ struct CardView: View {
     @ViewBuilder
     private func contextMenu(_ store: ViewStore<CardFeature.State, CardFeature.Action>, for card: Card) -> some View {
         Button("card_context_copy_all", systemImage: "doc.on.doc") {
-            store.send(.copy(card: card, includeSeparator: true))
+            store.send(.copy(card: card, separator: .dash))
         }
         
         Button("card_context_copy_numbers", systemImage: "textformat.123") {
-            store.send(.copy(card: card, includeSeparator: false))
+            store.send(.copy(card: card, separator: .none))
         }
         
         Button("card_context_delete", systemImage: "trash", role: .destructive) {
@@ -141,9 +141,11 @@ struct CardView: View {
             Spacer()
             
             HStack {
-                Text(card.wrappedNumber)
-                    .font(.title2)
-                    .underline()
+                if let number = card.decryptNumber(key: "1234").last {
+                    Text(number)
+                        .font(.title2)
+                        .underline()
+                }
                 Spacer()
                 Text("brand_\(card.brand)".localized)
                     .font(.body.bold())
@@ -169,7 +171,7 @@ struct CardView: View {
     context.insert(Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["2838", "3532", "4521", "2342"], year: 28, month: 05, cvc: "435"))
     
     return NavigationStack {
-        CardView(store: Store(initialState: CardFeature.State(modelContext: context), reducer: {
+        CardView(store: Store(initialState: CardFeature.State(modelContext: context, key: "1234"), reducer: {
             CardFeature()
         }))
     }

@@ -18,7 +18,7 @@ struct WalletView: View {
                 .tabItem { Label("tab_favorite", image: "dashboard") }
             
             NavigationStack {
-                CardView(store: Store(initialState: CardFeature.State(modelContext: modelContext), reducer: {
+                CardView(store: Store(initialState: CardFeature.State(modelContext: modelContext, key: ""), reducer: {
                     CardFeature()
                 }))
             }

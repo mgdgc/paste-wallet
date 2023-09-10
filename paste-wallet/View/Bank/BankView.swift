@@ -20,7 +20,7 @@ struct BankView: View {
 #Preview {
     let context = try! ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)).mainContext
     
-    BankView(store: Store(initialState: BankFeature.State(modelContext: context), reducer: {
+    return BankView(store: Store(initialState: BankFeature.State(modelContext: context), reducer: {
         BankFeature()
     }))
 }

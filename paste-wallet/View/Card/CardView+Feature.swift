@@ -13,7 +13,9 @@ import ComposableArchitecture
 struct CardFeature: Reducer {
     
     struct State: Equatable {
-        var modelContext: ModelContext
+        let modelContext: ModelContext
+        let key: String
+        
         var cards: [Card] = []
         
         // 새로운 카드 추가 View
@@ -28,7 +30,7 @@ struct CardFeature: Reducer {
     enum Action: Equatable {
         case fetchAll
         case showAddView(show: Bool)
-        case copy(card: Card, includeSeparator: Bool)
+        case copy(card: Card, separator: Card.SeparatorStyle)
         case delete(card: Card)
         case showCardView(card: Card?)
     }
@@ -43,8 +45,8 @@ struct CardFeature: Reducer {
             state.showAddView = show
             return .none
             
-        case let .copy(card, includeSeparator):
-            let number = includeSeparator ? card.wrappedNumberIncludeSeparator : card.wrappedNumberWithoutSeparator
+        case let .copy(card, separator):
+            let number = card.getWrappedNumber(state.key, separator)
             UIPasteboard.general.setValue(number, forPasteboardType: UTType.plainText.identifier)
             return .none
             

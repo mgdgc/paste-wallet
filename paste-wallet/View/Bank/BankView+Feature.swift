@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 import ComposableArchitecture
 
 struct BankFeature: Reducer {
