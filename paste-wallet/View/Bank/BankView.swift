@@ -6,13 +6,21 @@
 //
 
 import SwiftUI
+import SwiftData
+import ComposableArchitecture
 
 struct BankView: View {
+    let store: StoreOf<BankFeature>
+    
     var body: some View {
         Text(String("Hello, World!"))
     }
 }
 
 #Preview {
-    BankView()
+    let context = try! ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)).mainContext
+    
+    BankView(store: Store(initialState: BankFeature.State(modelContext: context), reducer: {
+        BankFeature()
+    }))
 }

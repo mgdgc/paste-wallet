@@ -24,8 +24,12 @@ struct WalletView: View {
             }
             .tabItem { Label("tab_card", image: "card") }
             
-            BankView()
-                .tabItem { Label("tab_bank", image: "bank") }
+            NavigationStack {
+                BankView(store: Store(initialState: BankFeature.State(modelContext: modelContext), reducer: {
+                    BankFeature()
+                }))
+            }
+            .tabItem { Label("tab_bank", image: "bank") }
             
             MemoView()
                 .tabItem { Label("tab_memo", image: "note") }
