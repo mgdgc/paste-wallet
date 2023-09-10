@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  paste-wallet
+
+  Created by 최명근 on 9/10/23.
+  
+*/
+
+CFBundleName = "페이스트 월렛";

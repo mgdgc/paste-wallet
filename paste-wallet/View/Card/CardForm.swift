@@ -154,13 +154,6 @@ struct CardForm: View {
                         dismiss()
                     }
                 }
-                
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
-                        dismiss()
-                    }
-                    .foregroundStyle(Colors.textPrimary.color)
-                }
             }
         }
     }

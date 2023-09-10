@@ -47,23 +47,34 @@ struct CardView: View {
                 }
                 .navigationTitle("tab_card")
                 .toolbar {
+//                    ToolbarItem(placement: .primaryAction) {
+//                        Button {
+//                            viewStore.send(.showAddView(show: true))
+//                        } label: {
+//                            Image(systemName: "plus.circle.fill")
+//                                .foregroundStyle(Colors.textPrimary.color)
+//                        }
+//                        .sheet(isPresented: viewStore.binding(get: \.showAddView, send: CardFeature.Action.showAddView)) {
+//                            NavigationStack {
+//                                CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext), reducer: {
+//                                    CardFormFeature()
+//                                }))
+//                            }
+//                            .interactiveDismissDisabled(true)
+//                            .onDisappear {
+//                                viewStore.send(.fetchAll)
+//                            }
+//                        }
+//                    }
+                    
                     ToolbarItem(placement: .primaryAction) {
-                        Button {
-                            viewStore.send(.showAddView(show: true))
+                        NavigationLink {
+                            CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext), reducer: {
+                                CardFormFeature()
+                            }))
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .foregroundStyle(Colors.textPrimary.color)
-                        }
-                        .sheet(isPresented: viewStore.binding(get: \.showAddView, send: CardFeature.Action.showAddView)) {
-                            NavigationStack {
-                                CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext), reducer: {
-                                    CardFormFeature()
-                                }))
-                            }
-                            .interactiveDismissDisabled(true)
-                            .onDisappear {
-                                viewStore.send(.fetchAll)
-                            }
                         }
                     }
                 }

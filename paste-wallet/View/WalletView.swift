@@ -30,6 +30,7 @@ struct WalletView: View {
             MemoView()
                 .tabItem { Label("tab_memo", image: "note") }
         }
+        .tint(Colors.textPrimary.color)
     }
 }
 
