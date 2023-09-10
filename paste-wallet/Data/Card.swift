@@ -57,6 +57,10 @@ final class Card {
         return number
     }
     
+    var wrappedExpirationDate: String {
+        return "\(String(format: "%02d", month)) / \(String(format: "%02d", month))"
+    }
+    
     // MARK: - Initializer
     init(id: UUID = UUID(), name: String, issuer: String? = nil, brand: Brand, color: String, number: [String], year: Int, month: Int, cvc: String? = nil, memo: String? = nil) {
         self.id = id

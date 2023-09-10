@@ -35,9 +35,9 @@ struct CardDetailFeature: Reducer {
             
         case let .dragEnded(value):
             if value.translation.height > 100 {
-                state.draggedOffset = .zero
                 return .send(.dismiss)
             } else {
+                state.draggedOffset = .zero
                 return .none
             }
             
