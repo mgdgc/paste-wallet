@@ -23,11 +23,11 @@ struct CardView: View {
                             Button {
                                 viewStore.send(.showCardView(card: card))
                             } label: {
-                                cardView(card: card)
+                                cardView(card: card, viewStore: viewStore)
                                     .contextMenu {
                                         contextMenu(viewStore, for: card)
                                     } preview: {
-                                        contextPreview(for: card, frame: proxy.size)
+                                        contextPreview(for: card, frame: proxy.size, viewStore: viewStore)
                                     }
                             }
                             .fullScreenCover(item: viewStore.binding(get: \.showCardView, send: CardFeature.Action.showCardView)) { card in
@@ -87,7 +87,7 @@ struct CardView: View {
     
     // MARK: CardView
     @ViewBuilder
-    private func cardView(card: Card) -> some View {
+    private func cardView(card: Card, viewStore: ViewStore<CardFeature.State, CardFeature.Action>) -> some View {
         VStack {
             HStack {
                 Text(card.name)
@@ -95,8 +95,11 @@ struct CardView: View {
             }
             Spacer()
             HStack {
-                Text(card.number.last!)
-                    .underline()
+                if let number = card.decryptNumber(key: viewStore.key).last {
+                    Text(number)
+                        .font(.title2)
+                        .underline()
+                }
                 Spacer()
                 Text(card.issuer ?? "")
                     .font(.caption2)
@@ -128,7 +131,7 @@ struct CardView: View {
     }
     
     @ViewBuilder
-    private func contextPreview(for card: Card, frame: CGSize) -> some View {
+    private func contextPreview(for card: Card, frame: CGSize, viewStore: ViewStore<CardFeature.State, CardFeature.Action>) -> some View {
         VStack {
             HStack {
                 Text(card.name)
@@ -141,7 +144,7 @@ struct CardView: View {
             Spacer()
             
             HStack {
-                if let number = card.decryptNumber(key: "1234").last {
+                if let number = card.decryptNumber(key: viewStore.key).last {
                     Text(number)
                         .font(.title2)
                         .underline()

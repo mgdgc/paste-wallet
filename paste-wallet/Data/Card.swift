@@ -83,9 +83,9 @@ final class Card {
     
     func getWrappedNumber(_ key: String, _ separator: SeparatorStyle) -> String {
         var number = ""
-        for i in decryptNumber(key: key).indices {
-            number.append("\(self.number[i])")
-            if i < self.number.count - 1 {
+        for (index, value) in decryptNumber(key: key).enumerated() {
+            number.append(value)
+            if index < self.number.count - 1 {
                 switch separator {
                 case .none:
                     break

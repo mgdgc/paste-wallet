@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    " " : {
+
+    },
     "-" : {
       "localizations" : {
         "ko" : {
@@ -10,6 +13,9 @@
           }
         }
       }
+    },
+    "%lld" : {
+
     },
     "add" : {
       "extractionState" : "manual",
