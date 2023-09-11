@@ -811,7 +811,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "새 비밀번호를 설정하세요"
+            "value" : "앱에서 사용할 새 비밀번호를 설정하세요"
           }
         }
       }
