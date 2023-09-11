@@ -24,7 +24,7 @@ struct PasswordView: View {
     
     let password: String? = {
         let keychain = KeychainWrapper(serviceName: AppInfo.serviceName, accessGroup: AppInfo.keychainSharing)
-        return keychain.string(forKey: KeychainWrapper.Key.password.rawValue)
+        return keychain[.password]
     }()
     
     var body: some View {
@@ -65,6 +65,8 @@ struct PasswordView: View {
         .onAppear {
             if password == nil {
                 message = "password_init".localized
+            } else {
+                message = "password_type".localized
             }
         }
     }
@@ -185,7 +187,7 @@ struct PasswordView: View {
     
     private func save() {
         let keychain = KeychainWrapper(serviceName: AppInfo.serviceName, accessGroup: AppInfo.keychainSharing)
-        keychain.set(convert(array: typed), forKey: KeychainWrapper.Key.password.rawValue)
+        keychain[.password] = convert(array: typed)
     }
     
     private func checkBiometric() {

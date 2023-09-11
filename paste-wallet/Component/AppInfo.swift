@@ -10,5 +10,6 @@ import Foundation
 class AppInfo {
     static let serviceName = "paste-wallet"
     static let appGroup = "group.com.mgchoi.paste-wallet"
-    static let keychainSharing = "com.mgchoi.paste-wallet"
+    static let keychainSharing = "\(AppInfo.appIdentifierPrefix)com.mgchoi.paste-wallet"
+    static let appIdentifierPrefix = Bundle.main.infoDictionary!["AppIdentifierPrefix"] as! String
 }
