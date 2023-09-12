@@ -7,3 +7,4 @@
 */
 
 CFBundleName = "페이스트 월렛";
+NSFaceIDUsageDescription = "데이터를 잠금 해제합니다.";

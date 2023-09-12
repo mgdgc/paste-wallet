@@ -23,14 +23,19 @@ struct PasswordView: View {
     let laContext: LAContext = LAContext()
     
     let password: String? = {
-        let keychain = KeychainWrapper(serviceName: AppInfo.serviceName, accessGroup: AppInfo.keychainSharing)
-        return keychain[.password]
+        let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.alreadyInstalled)
+        if freshInstall {
+            KeychainWrapper.standard.removeAllKeys()
+            UserDefaults.standard.set(true, forKey: UserDefaultsKey.alreadyInstalled)
+        }
+        return KeychainWrapper.standard[.password]
     }()
     
     var body: some View {
         VStack {
             Spacer()
             Text(message)
+                .multilineTextAlignment(.center)
             Spacer()
             HStack {
                 ForEach(0..<6) { i in
@@ -61,12 +66,15 @@ struct PasswordView: View {
                     }
                 }
             }
+            .padding(.bottom, 20)
         }
         .onAppear {
             if password == nil {
                 message = "password_init".localized
             } else {
                 message = "password_type".localized
+                
+                checkBiometric()
             }
         }
     }
@@ -186,7 +194,7 @@ struct PasswordView: View {
     }
     
     private func save() {
-        let keychain = KeychainWrapper(serviceName: AppInfo.serviceName, accessGroup: AppInfo.keychainSharing)
+        let keychain = KeychainWrapper.standard
         keychain[.password] = convert(array: typed)
     }
     
@@ -194,7 +202,7 @@ struct PasswordView: View {
         var error: NSError?
         // 생체인증 가능여부 확인
         if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "".localized
+            let reason = "biometric_reason".localized
             // 생체인증 요청
             laContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { authenticated, error in
                 // 생체인증 결과
@@ -204,12 +212,9 @@ struct PasswordView: View {
                     
                 } else {
                     // 인증 실패
-                    self.message = "password_biometric_failed".localized
+                    self.message = "password_biometric_fail".localized
                 }
             }
-        } else {
-            // 생체인증 불가
-            self.message = "password_biometric_not_supported".localized
         }
     }
 }

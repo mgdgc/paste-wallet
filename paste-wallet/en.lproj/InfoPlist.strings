@@ -7,3 +7,4 @@
 */
 
 CFBundleName = "Paste Wallet";
+NSFaceIDUsageDescription = "Unlock the data";
