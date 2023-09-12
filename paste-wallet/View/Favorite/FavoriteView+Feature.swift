@@ -17,11 +17,14 @@ struct FavoriteFeature: Reducer {
         var tab: WalletView.Tab
         
         var cards: [Card] = []
+        
+        var showCard: Card?
     }
     
     enum Action: Equatable {
         case fetchCard
         case setTab(WalletView.Tab)
+        case showCardDetail(Card?)
     }
     
     var body: some Reducer<State, Action> {
@@ -33,6 +36,10 @@ struct FavoriteFeature: Reducer {
                 
             case let .setTab(tab):
                 state.tab = tab
+                return .none
+                
+            case let .showCardDetail(card):
+                state.showCard = card
                 return .none
             }
         }

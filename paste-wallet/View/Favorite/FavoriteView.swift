@@ -24,13 +24,23 @@ struct FavoriteView: View {
                                 if let key = viewStore.key {
                                     SmallCardCell(card: card, key: key)
                                         .onTapGesture {
-                                            viewStore.send(.setTab(.card))
+                                            viewStore.send(.showCardDetail(card))
+                                        }
+                                        .fullScreenCover(item: viewStore.binding(get: \.showCard, send: FavoriteFeature.Action.showCardDetail)) { card in
+                                            NavigationStack {
+                                                CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: viewStore.modelContext, key: key, card: card), reducer: {
+                                                    CardDetailFeature()
+                                                }))
+                                            }
+                                        }
+                                        .onDisappear {
+                                            viewStore.send(.fetchCard)
                                         }
                                 }
                             }
                         }
                     } label: {
-                        sectionHeader(title: "favorite_section_card")
+                        sectionHeader(title: "favorite_section_card", systemImage: "creditcard")
                     }
                     .onAppear {
                         viewStore.send(.fetchCard)
@@ -43,8 +53,11 @@ struct FavoriteView: View {
     }
     
     @ViewBuilder
-    private func sectionHeader(title: LocalizedStringKey) -> some View {
+    private func sectionHeader(title: LocalizedStringKey, systemImage: String? = nil) -> some View {
         HStack {
+            if let systemImage = systemImage {
+                Image(systemName: systemImage)
+            }
             Text(title)
                 .font(.title.bold())
             Spacer()
