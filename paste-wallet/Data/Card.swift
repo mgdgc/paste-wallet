@@ -21,6 +21,7 @@ final class Card {
     var cvc: String?
     var memo: String?
     var touch: Date
+    var favorite: Bool
     
     // MARK: - Wrapped Values
     var wrappedBrand: Brand {
@@ -44,11 +45,23 @@ final class Card {
         self.cvc = cvc
         self.memo = memo
         self.touch = Date()
+        self.favorite = false
     }
     
     // MARK: - SwiftData CRUD
     static func fetchAll(modelContext: ModelContext) -> [Card] {
         let descriptor = FetchDescriptor<Card>(sortBy: [SortDescriptor(\.touch, order: .forward)])
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print(#function, error)
+            return []
+        }
+    }
+    
+    static func fetchFavorite(modelContext: ModelContext) -> [Card] {
+        let predicate = #Predicate<Card> { $0.favorite == true }
+        let descriptor = FetchDescriptor<Card>(predicate: predicate, sortBy: [SortDescriptor(\.touch, order: .forward)])
         do {
             return try modelContext.fetch(descriptor)
         } catch {

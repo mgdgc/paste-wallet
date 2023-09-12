@@ -26,6 +26,8 @@ struct CardDetailFeature: Reducer {
     enum Action: Equatable {
         case dragChanged(DragGesture.Value)
         case dragEnded(DragGesture.Value)
+        case setFavorite
+        case delete
         case dismiss
     }
     
@@ -42,6 +44,18 @@ struct CardDetailFeature: Reducer {
                 state.draggedOffset = .zero
                 return .none
             }
+            
+        case .setFavorite:
+            state.card.favorite.toggle()
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, error)
+            }
+            return .none
+            
+        case .delete:
+            return .send(.dismiss)
             
         case .dismiss:
             state.dismiss.toggle()

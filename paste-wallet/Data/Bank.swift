@@ -16,6 +16,7 @@ final class Bank: Identifiable {
     var color: String
     var number: String
     var memo: String?
+    var favorite: Bool
     
     @Relationship(deleteRule: .cascade, inverse: \SecurityCard.bank) var securityCard: SecurityCard?
     
@@ -26,5 +27,6 @@ final class Bank: Identifiable {
         self.color = color
         self.number = number
         self.memo = memo
+        self.favorite = false
     }
 }
