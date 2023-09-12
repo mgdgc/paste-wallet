@@ -33,7 +33,7 @@ final class Card {
     }
     
     // MARK: - Initializer
-    init(id: UUID = UUID(), name: String, issuer: String? = nil, brand: Brand, color: String, number: [String], year: Int, month: Int, cvc: String? = nil, memo: String? = nil) {
+    init(id: UUID = UUID(), name: String, issuer: String? = nil, brand: Brand, color: String, number: [String], year: Int, month: Int, cvc: String? = nil, memo: String? = nil, favorite: Bool = false) {
         self.id = id
         self.name = name
         self.issuer = issuer
@@ -45,7 +45,7 @@ final class Card {
         self.cvc = cvc
         self.memo = memo
         self.touch = Date()
-        self.favorite = false
+        self.favorite = favorite
     }
     
     // MARK: - SwiftData CRUD

@@ -7,14 +7,17 @@
 
 import SwiftUI
 import SwiftData
+import ComposableArchitecture
 
 @main
 struct PasteWalletApp: App {
 
     var body: some Scene {
         WindowGroup {
-            WalletView()
+            WalletView(store: Store(initialState: WalletFeature.State(), reducer: {
+                WalletFeature()
+            }))
+//            .modelContainer(for: [Card.self, Bank.self, SecurityCard.self, Memo.self])
         }
-        .modelContainer(for: [Card.self, Bank.self, SecurityCard.self, Memo.self])
     }
 }

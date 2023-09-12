@@ -23,11 +23,11 @@ struct CardView: View {
                             Button {
                                 viewStore.send(.showCardView(card: card))
                             } label: {
-                                cardView(card: card, viewStore: viewStore)
+                                SmallCardCell(card: card, key: viewStore.key)
                                     .contextMenu {
                                         contextMenu(viewStore, for: card)
                                     } preview: {
-                                        contextPreview(for: card, frame: proxy.size, viewStore: viewStore)
+                                        CardPreview(card: card, key: viewStore.key, size: proxy.size)
                                     }
                             }
                             .fullScreenCover(item: viewStore.binding(get: \.showCardView, send: CardFeature.Action.showCardView)) { card in
@@ -85,36 +85,6 @@ struct CardView: View {
         }
     }
     
-    // MARK: CardView
-    @ViewBuilder
-    private func cardView(card: Card, viewStore: ViewStore<CardFeature.State, CardFeature.Action>) -> some View {
-        VStack {
-            HStack {
-                Text(card.name)
-                Spacer()
-            }
-            Spacer()
-            HStack {
-                if let number = card.decryptNumber(key: viewStore.key).last {
-                    Text(number)
-                        .font(.title2)
-                        .underline()
-                }
-                Spacer()
-                Text(card.issuer ?? "")
-                    .font(.caption2)
-            }
-        }
-        .padding()
-        .aspectRatio(1.58, contentMode: .fill)
-        .foregroundStyle(UIColor(hexCode: card.color).isDark ? Color.white : Color.black)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(UIColor(hexCode: card.color)))
-                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
-        )
-    }
-    
     @ViewBuilder
     private func contextMenu(_ store: ViewStore<CardFeature.State, CardFeature.Action>, for card: Card) -> some View {
         Button("card_context_copy_all", systemImage: "doc.on.doc") {
@@ -128,40 +98,6 @@ struct CardView: View {
         Button("card_context_delete", systemImage: "trash", role: .destructive) {
             store.send(.delete(card: card))
         }
-    }
-    
-    @ViewBuilder
-    private func contextPreview(for card: Card, frame: CGSize, viewStore: ViewStore<CardFeature.State, CardFeature.Action>) -> some View {
-        VStack {
-            HStack {
-                Text(card.name)
-                    .font(.title2)
-                Spacer()
-                Text(card.issuer ?? "")
-                    .font(.title3)
-            }
-            
-            Spacer()
-            
-            HStack {
-                if let number = card.decryptNumber(key: viewStore.key).last {
-                    Text(number)
-                        .font(.title2)
-                        .underline()
-                }
-                Spacer()
-                Text("brand_\(card.brand)".localized)
-                    .font(.body.bold())
-            }
-        }
-        .padding(20)
-        .foregroundStyle(UIColor(hexCode: card.color).isDark ? Color.white : Color.black)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(UIColor(hexCode: card.color)))
-                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
-        )
-        .frame(idealWidth: frame.width, idealHeight: frame.width * 100 / 158)
     }
 }
 

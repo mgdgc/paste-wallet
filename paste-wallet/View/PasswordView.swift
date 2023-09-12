@@ -68,6 +68,7 @@ struct PasswordView: View {
             }
             .padding(.bottom, 20)
         }
+        .background(Colors.backgroundSecondary.color.ignoresSafeArea())
         .onAppear {
             if password == nil {
                 message = "password_init".localized
