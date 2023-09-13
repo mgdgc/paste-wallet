@@ -81,7 +81,7 @@ struct CardDetailView: View {
                 List {
                     Section("card_section_info") {
                         SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate, isCredential: false)
-                        SecretField(title: "card_cvc", content: viewStore.card.cvc ?? "", isCredential: true)
+                        SecretField(title: "card_cvc", content: viewStore.card.getWrappedCVC(viewStore.key) ?? "", isCredential: true)
                     }
                     
                     if let memo = viewStore.card.memo {
@@ -181,13 +181,11 @@ struct CardDetailView: View {
 #Preview {
     let context = try! ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)).mainContext
     
-    let card = Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "435")
+    let card = Card.previewItems().first!
     
-    context.insert(card)
-    
-    context.insert(Card(name: "ZERO Edition 2 2", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "435"))
-    context.insert(Card(name: "ZERO Edition 2 3", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "435"))
-    context.insert(Card(name: "ZERO Edition 2 4", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "435"))
+    for c in Card.previewItems() {
+        context.insert(c)
+    }
     
     return NavigationStack {
         CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: context, key: "000000", card: card), reducer: {

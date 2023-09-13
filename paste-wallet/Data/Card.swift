@@ -70,7 +70,7 @@ final class Card {
         }
     }
     
-    // MARK: - Util
+    // MARK: - Number encryption
     static func encryptNumber(_ key: String, _ number: [String]) -> [String] {
         var encrypted: [String] = []
         for n in number {
@@ -80,7 +80,7 @@ final class Card {
         return encrypted
     }
     
-    // MARK: - Getter
+    // MARK: - Number decryption
     func decryptNumber(key: String) -> [String] {
         var numbers: [String] = []
         for n in self.number {
@@ -111,6 +111,31 @@ final class Card {
             }
         }
         return number
+    }
+    
+    // MARK: - CVC encryption
+    static func encryptCVC(_ key: String, _ cvc: String) -> String {
+        return CryptoHelper.encrypt(cvc, key: key)
+    }
+    
+    // MARK: - CVC decryption
+    func getWrappedCVC(_ key: String) -> String? {
+        print(cvc)
+        if let cvc = cvc {
+            return CryptoHelper.decrypt(cvc, key: key)
+        } else {
+            return nil
+        }
+    }
+    
+    // MARK: - PreviewItem
+    static func previewItems() -> [Card] {
+        return [
+            Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
+            Card(name: "ZERO Edition 2 2", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
+            Card(name: "ZERO Edition 2 3", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
+            Card(name: "ZERO Edition 2 4", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q==")
+        ]
     }
     
     enum SeparatorStyle: Equatable {

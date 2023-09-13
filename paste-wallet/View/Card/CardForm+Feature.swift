@@ -107,7 +107,7 @@ struct CardFormFeature: Reducer {
                     number: Card.encryptNumber(state.key, state.number),
                     year: year,
                     month: month,
-                    cvc: state.cvc,
+                    cvc: state.cvc == nil ? nil : Card.encryptCVC(state.key, state.cvc!),
                     memo: state.memo
                 )
                 
