@@ -68,6 +68,7 @@ struct CardDetailView: View {
     let store: StoreOf<CardDetailFeature>
     
     @Environment(\.dismiss) var dismiss
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
@@ -112,6 +113,20 @@ struct CardDetailView: View {
             }
             .onChange(of: viewStore.dismiss) { oldValue, newValue in
                 dismiss()
+            }
+            .onChange(of: scenePhase) { oldValue, newValue in
+                print("\(newValue)")
+                switch newValue {
+                case .background:
+                    viewStore.send(.launchActivity)
+                    break
+                case .inactive:
+                    break
+                case .active:
+                    break
+                @unknown default:
+                    break
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

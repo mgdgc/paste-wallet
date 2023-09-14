@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Card {
+final class Card: Identifiable {
     @Attribute(.unique) var id: UUID
     var name: String
     var issuer: String?
@@ -120,7 +120,6 @@ final class Card {
     
     // MARK: - CVC decryption
     func getWrappedCVC(_ key: String) -> String? {
-        print(cvc)
         if let cvc = cvc {
             return CryptoHelper.decrypt(cvc, key: key)
         } else {
@@ -147,7 +146,7 @@ final class Card {
 }
 
 extension Card {
-    enum Brand: String, Equatable {
+    enum Brand: String, Equatable, Codable, Hashable {
         case visa
         case master
         case amex

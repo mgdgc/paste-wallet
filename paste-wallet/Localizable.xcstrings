@@ -21,6 +21,9 @@
         }
       }
     },
+    "%@" : {
+
+    },
     "%lld" : {
       "localizations" : {
         "ko" : {
@@ -439,6 +442,9 @@
         }
       }
     },
+    "Configuration" : {
+
+    },
     "confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -557,6 +563,9 @@
           }
         }
       }
+    },
+    "Favorite Emoji" : {
+
     },
     "favorite_section_bank" : {
       "extractionState" : "manual",
@@ -1033,6 +1042,9 @@
           }
         }
       }
+    },
+    "This is an example widget." : {
+
     },
     "title_card_detail" : {
       "extractionState" : "manual",
