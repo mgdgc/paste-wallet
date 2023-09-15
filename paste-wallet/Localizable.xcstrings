@@ -323,6 +323,23 @@
         }
       }
     },
+    "card_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No cards to show.\nPress + to add a new card."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "카드가 없습니다.\n+ 를 눌러 새 카드를 추가해보세요."
+          }
+        }
+      }
+    },
     "card_expire" : {
       "extractionState" : "manual",
       "localizations" : {
