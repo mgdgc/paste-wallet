@@ -22,7 +22,14 @@
       }
     },
     "%@" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        }
+      }
     },
     "%lld" : {
       "localizations" : {
@@ -334,7 +341,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "카드가 없습니다.\n+ 를 눌러 새 카드를 추가해보세요."
           }
         }
@@ -479,6 +486,23 @@
         }
       }
     },
+    "copy_all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy All"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전체 복사"
+          }
+        }
+      }
+    },
     "delete" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -492,6 +516,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "삭제"
+          }
+        }
+      }
+    },
+    "di_card_leading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드"
           }
         }
       }

@@ -74,7 +74,7 @@ struct CardDetailFeature: Reducer {
                 number: state.card.decryptNumber(key: state.key),
                 year: state.card.year,
                 month: state.card.month,
-                cvc: state.card.cvc)
+                cvc: state.card.getWrappedCVC(state.key))
             let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
             
             do {
