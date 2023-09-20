@@ -10,7 +10,7 @@ import WidgetKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct PasteWalletWidgetAttributes: ActivityAttributes {
+struct CardWidgetAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         // Dynamic stateful properties about your activity go here!
         var id: UUID
@@ -28,9 +28,9 @@ struct PasteWalletWidgetAttributes: ActivityAttributes {
     var name: String
 }
 
-struct PasteWalletLiveActivity: Widget {
+struct CardLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: PasteWalletWidgetAttributes.self) { context in
+        ActivityConfiguration(for: CardWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
             HStack {
                 mediumCard(context)
@@ -138,7 +138,7 @@ struct PasteWalletLiveActivity: Widget {
     }
     
     @ViewBuilder
-    private func mediumCard(_ context: ActivityViewContext<PasteWalletWidgetAttributes>) -> some View {
+    private func mediumCard(_ context: ActivityViewContext<CardWidgetAttributes>) -> some View {
         VStack {
             HStack {
                 Text("\(context.state.name)")
@@ -184,7 +184,7 @@ struct PasteWalletLiveActivity: Widget {
     }
     
     @ViewBuilder
-    private func smallCard(_ context: ActivityViewContext<PasteWalletWidgetAttributes>) -> some View {
+    private func smallCard(_ context: ActivityViewContext<CardWidgetAttributes>) -> some View {
         VStack {
             HStack {
                 Text("\(context.state.name)")
@@ -231,20 +231,20 @@ struct PasteWalletLiveActivity: Widget {
     }
 }
 
-extension PasteWalletWidgetAttributes {
-    fileprivate static var preview: PasteWalletWidgetAttributes {
-        PasteWalletWidgetAttributes(name: "World")
+extension CardWidgetAttributes {
+    fileprivate static var preview: CardWidgetAttributes {
+        CardWidgetAttributes(name: "World")
     }
 }
 
-extension PasteWalletWidgetAttributes.ContentState {
-    fileprivate static var card: PasteWalletWidgetAttributes.ContentState {
-        PasteWalletWidgetAttributes.ContentState(id: UUID(), name: "Zero Edition 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["1234", "5678", "9012", "3456"], year: 25, month: 02, cvc: "555")
+extension CardWidgetAttributes.ContentState {
+    fileprivate static var card: CardWidgetAttributes.ContentState {
+        CardWidgetAttributes.ContentState(id: UUID(), name: "Zero Edition 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["1234", "5678", "9012", "3456"], year: 25, month: 02, cvc: "555")
      }
 }
 
-#Preview("Notification", as: .dynamicIsland(.expanded), using: PasteWalletWidgetAttributes.preview) {
-   PasteWalletLiveActivity()
+#Preview("Notification", as: .dynamicIsland(.expanded), using: CardWidgetAttributes.preview) {
+   CardLiveActivity()
 } contentStates: {
-    PasteWalletWidgetAttributes.ContentState.card
+    CardWidgetAttributes.ContentState.card
 }

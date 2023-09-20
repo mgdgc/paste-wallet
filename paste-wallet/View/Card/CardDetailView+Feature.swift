@@ -64,8 +64,8 @@ struct CardDetailFeature: Reducer {
             return .none
             
         case .launchActivity:
-            let attributes = PasteWalletWidgetAttributes(name: "card")
-            let contentState = PasteWalletWidgetAttributes.ContentState(
+            let attributes = CardWidgetAttributes(name: "card")
+            let contentState = CardWidgetAttributes.ContentState(
                 id: state.card.id,
                 name: state.card.name,
                 issuer: state.card.issuer,
@@ -78,7 +78,7 @@ struct CardDetailFeature: Reducer {
             let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
             
             do {
-                let activity = try Activity<PasteWalletWidgetAttributes>.request(
+                let activity = try Activity<CardWidgetAttributes>.request(
                     attributes: attributes,
                     content: content)
                 print(activity)
