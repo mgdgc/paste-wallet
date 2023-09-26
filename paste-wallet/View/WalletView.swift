@@ -21,30 +21,33 @@ struct WalletView: View {
     }
     
     var body: some View {
-        if let key = viewStore.key {
+        if viewStore.key != nil {
             TabView(selection: viewStore.binding(get: \.selected, send: WalletFeature.Action.select)) {
                 
-                NavigationStack {
-                    FavoriteView(store: store.scope(state: \.favorite, action: WalletFeature.Action.favorite))
+                IfLetStore(store.scope(state: \.$favorite, action: WalletFeature.Action.favorite)) { store in
+                    NavigationStack {
+                        FavoriteView(store: store)
+                    }
+                    .tabItem { Label("tab_favorite", image: "dashboard") }
+                    .tag(Tab.favorite)
                 }
-                .tabItem { Label("tab_favorite", image: "dashboard") }
-                .tag(Tab.favorite)
                 
-                NavigationStack {
-                    CardView(store: Store(initialState: CardFeature.State(modelContext: viewStore.modelContext, key: key), reducer: {
-                        CardFeature()
-                    }))
-                }
-                .tabItem { Label("tab_card", image: "card") }
-                .tag(Tab.card)
                 
-                NavigationStack {
-                    BankView(store: Store(initialState: BankFeature.State(modelContext: viewStore.modelContext), reducer: {
-                        BankFeature()
-                    }))
+                IfLetStore(store.scope(state: \.$card, action: WalletFeature.Action.card)) { store in
+                    NavigationStack {
+                        CardView(store: store)
+                    }
+                    .tabItem { Label("tab_card", image: "card") }
+                    .tag(Tab.card)
                 }
-                .tabItem { Label("tab_bank", image: "bank") }
-                .tag(Tab.bank)
+                
+                IfLetStore(store.scope(state: \.$bank, action: WalletFeature.Action.bank)) { store in
+                    NavigationStack {
+                        BankView(store: store)
+                    }
+                    .tabItem { Label("tab_bank", image: "bank") }
+                    .tag(Tab.bank)
+                }
                 
                 MemoView()
                     .tabItem { Label("tab_memo", image: "note") }

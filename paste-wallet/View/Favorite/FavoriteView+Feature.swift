@@ -12,19 +12,21 @@ import ComposableArchitecture
 
 struct FavoriteFeature: Reducer {
     struct State: Equatable {
-        let modelContext: ModelContext
-        var key: String?
-        var tab: WalletView.Tab
+        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let key: String
+        var tab: WalletView.Tab = .favorite
         
         var cards: [Card] = []
         
-        var showCard: Card?
+        @PresentationState var cardDetail: CardDetailFeature.State?
     }
     
     enum Action: Equatable {
         case fetchCard
         case setTab(WalletView.Tab)
-        case showCardDetail(Card?)
+        case showCardDetail(Card)
+        
+        case cardDetail(PresentationAction<CardDetailFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -39,9 +41,15 @@ struct FavoriteFeature: Reducer {
                 return .none
                 
             case let .showCardDetail(card):
-                state.showCard = card
+                state.cardDetail = .init(key: state.key, card: card)
+                return .none
+                
+            case let .cardDetail(action):
                 return .none
             }
+        }
+        .ifLet(\.$cardDetail, action: /Action.cardDetail) {
+            CardDetailFeature()
         }
     }
 }

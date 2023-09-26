@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Card: Identifiable {
+final class Card: Identifiable, Equatable {
     @Attribute(.unique) var id: UUID
     var name: String
     var issuer: String?

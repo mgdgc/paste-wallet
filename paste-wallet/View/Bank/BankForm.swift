@@ -6,13 +6,23 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct BankForm: View {
+    let store: StoreOf<BankFormFeature>
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            
+        }
     }
 }
 
 #Preview {
-    BankForm()
+    
+    return NavigationStack {
+        BankForm(store: Store(initialState: BankFormFeature.State(), reducer: {
+            BankFormFeature()
+        }))
+    }
 }

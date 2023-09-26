@@ -21,30 +21,26 @@ struct FavoriteView: View {
                             
                             // MARK: - Cards
                             ForEach(viewStore.cards) { card in
-                                if let key = viewStore.key {
-                                    SmallCardCell(card: card, key: key)
-                                        .onTapGesture {
-                                            viewStore.send(.showCardDetail(card))
-                                        }
-                                        .fullScreenCover(item: viewStore.binding(get: \.showCard, send: FavoriteFeature.Action.showCardDetail)) { card in
-                                            NavigationStack {
-                                                CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: viewStore.modelContext, key: key, card: card), reducer: {
-                                                    CardDetailFeature()
-                                                }))
-                                            }
+                                SmallCardCell(card: card, key: viewStore.key)
+                                    .onTapGesture {
+                                        viewStore.send(.showCardDetail(card))
+                                    }
+                                    .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) { store in
+                                        NavigationStack {
+                                            CardDetailView(store: store)
                                         }
                                         .onDisappear {
                                             viewStore.send(.fetchCard)
                                         }
-                                }
+                                    }
                             }
                         }
                     } label: {
                         sectionHeader(title: "favorite_section_card", systemImage: "creditcard")
                     }
-                    .onAppear {
-                        viewStore.send(.fetchCard)
-                    }
+                }
+                .onAppear {
+                    viewStore.send(.fetchCard)
                 }
             }
             .background(Colors.backgroundSecondary.color.ignoresSafeArea())
@@ -74,7 +70,7 @@ struct FavoriteView: View {
     }
     
     return NavigationStack {
-        FavoriteView(store: Store(initialState: FavoriteFeature.State(modelContext: context, key: "000000", tab: .favorite), reducer: {
+        FavoriteView(store: Store(initialState: FavoriteFeature.State(key: "000000"), reducer: {
             FavoriteFeature()
         }))
     }

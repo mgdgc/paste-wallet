@@ -25,7 +25,7 @@ struct CardView: View {
                         LazyVGrid(columns: columns, spacing: 20, content: {
                             ForEach(viewStore.cards) { card in
                                 Button {
-                                    viewStore.send(.showCardView(card: card))
+                                    viewStore.send(.showCardDetail(card: card))
                                 } label: {
                                     SmallCardCell(card: card, key: viewStore.key)
                                         .contextMenu {
@@ -34,11 +34,9 @@ struct CardView: View {
                                             CardPreview(card: card, key: viewStore.key, size: proxy.size)
                                         }
                                 }
-                                .fullScreenCover(item: viewStore.binding(get: \.showCardView, send: CardFeature.Action.showCardView)) { card in
+                                .fullScreenCover(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) { store in
                                     NavigationStack {
-                                        CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: viewStore.modelContext, key: viewStore.key, card: card), reducer: {
-                                            CardDetailFeature()
-                                        }))
+                                        CardDetailView(store: store)
                                     }
                                 }
                             }
@@ -52,35 +50,22 @@ struct CardView: View {
             }
             .navigationTitle("tab_card")
             .toolbar {
-                //                    ToolbarItem(placement: .primaryAction) {
-                //                        Button {
-                //                            viewStore.send(.showAddView(show: true))
-                //                        } label: {
-                //                            Image(systemName: "plus.circle.fill")
-                //                                .foregroundStyle(Colors.textPrimary.color)
-                //                        }
-                //                        .sheet(isPresented: viewStore.binding(get: \.showAddView, send: CardFeature.Action.showAddView)) {
-                //                            NavigationStack {
-                //                                CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext), reducer: {
-                //                                    CardFormFeature()
-                //                                }))
-                //                            }
-                //                            .interactiveDismissDisabled(true)
-                //                            .onDisappear {
-                //                                viewStore.send(.fetchAll)
-                //                            }
-                //                        }
-                //                    }
-                
                 ToolbarItem(placement: .primaryAction) {
-                    NavigationLink {
-                        CardForm(store: Store(initialState: CardFormFeature.State(modelContext: viewStore.modelContext, key: viewStore.key), reducer: {
-                            CardFormFeature()
-                        }))
+                    Button {
+                        viewStore.send(.showCardForm)
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
                     }
+                    .sheet(store: store.scope(state: \.$cardForm, action: CardFeature.Action.cardForm), content: { store in
+                        NavigationStack {
+                            CardForm(store: store)
+                        }
+                        .interactiveDismissDisabled()
+                        .onDisappear {
+                            viewStore.send(.fetchAll)
+                        }
+                    })
                 }
             }
         }
@@ -126,7 +111,7 @@ struct CardView: View {
 //    }
     
     return NavigationStack {
-        CardView(store: Store(initialState: CardFeature.State(modelContext: context, key: "000000"), reducer: {
+        CardView(store: Store(initialState: CardFeature.State(key: "000000"), reducer: {
             CardFeature()
         }))
     }

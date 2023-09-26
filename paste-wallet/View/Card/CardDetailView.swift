@@ -191,7 +191,7 @@ struct CardDetailView: View {
     }
     
     return NavigationStack {
-        CardDetailView(store: Store(initialState: CardDetailFeature.State(modelContext: context, key: "000000", card: card), reducer: {
+        CardDetailView(store: Store(initialState: CardDetailFeature.State(key: "000000", card: card), reducer: {
             CardDetailFeature()
         }))
     }

@@ -11,13 +11,27 @@ import ComposableArchitecture
 
 @main
 struct PasteWalletApp: App {
-
+    static var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            Card.self,
+            Bank.self,
+            SecurityCard.self,
+            Memo.self
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
     var body: some Scene {
         WindowGroup {
             WalletView(store: Store(initialState: WalletFeature.State(), reducer: {
                 WalletFeature()
             }))
-//            .modelContainer(for: [Card.self, Bank.self, SecurityCard.self, Memo.self])
         }
     }
 }

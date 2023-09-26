@@ -160,14 +160,8 @@ struct CardForm: View {
 }
 
 #Preview {
-    let context = try! ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)).mainContext
-    
-    for c in Card.previewItems() {
-        context.insert(c)
-    }
-    
     return NavigationStack {
-        CardForm(store: Store(initialState: CardFormFeature.State(modelContext: context, key: "000000"), reducer: {
+        CardForm(store: Store(initialState: CardFormFeature.State(key: "000000"), reducer: {
             CardFormFeature()
         }))
     }
