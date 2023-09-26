@@ -25,7 +25,9 @@ struct FavoriteView: View {
                                     .onTapGesture {
                                         viewStore.send(.showCardDetail(card))
                                     }
-                                    .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) { store in
+                                    .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) {
+                                        viewStore.send(.stopLiveActivity)
+                                    } content: { store in
                                         NavigationStack {
                                             CardDetailView(store: store)
                                         }

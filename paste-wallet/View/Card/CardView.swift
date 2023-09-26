@@ -34,11 +34,14 @@ struct CardView: View {
                                             CardPreview(card: card, key: viewStore.key, size: proxy.size)
                                         }
                                 }
-                                .fullScreenCover(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) { store in
+                                .fullScreenCover(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) {
+                                    viewStore.send(.stopLiveActivity)
+                                } content: { store in
                                     NavigationStack {
                                         CardDetailView(store: store)
                                     }
                                 }
+
                             }
                         })
                         .padding()

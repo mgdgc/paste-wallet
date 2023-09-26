@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import ActivityKit
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
@@ -33,6 +34,7 @@ struct CardFeature: Reducer {
         case delete(card: Card)
         case showCardForm
         case showCardDetail(card: Card)
+        case stopLiveActivity
         
         case cardForm(PresentationAction<CardFormFeature.Action>)
         case cardDetail(PresentationAction<CardDetailFeature.Action>)
@@ -62,6 +64,13 @@ struct CardFeature: Reducer {
             case let .showCardDetail(card):
                 state.cardDetail = .init(key: state.key, card: card)
                 return .none
+                
+            case .stopLiveActivity:
+                return .run { send in
+                    for activity in Activity<CardWidgetAttributes>.activities {
+                        await activity.end(nil, dismissalPolicy: .immediate)
+                    }
+                }
                 
             case let .cardForm(action):
                 return .none

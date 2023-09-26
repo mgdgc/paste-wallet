@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import ActivityKit
 import ComposableArchitecture
 
 struct FavoriteFeature: Reducer {
@@ -25,6 +26,7 @@ struct FavoriteFeature: Reducer {
         case fetchCard
         case setTab(WalletView.Tab)
         case showCardDetail(Card)
+        case stopLiveActivity
         
         case cardDetail(PresentationAction<CardDetailFeature.Action>)
     }
@@ -43,6 +45,13 @@ struct FavoriteFeature: Reducer {
             case let .showCardDetail(card):
                 state.cardDetail = .init(key: state.key, card: card)
                 return .none
+                
+            case .stopLiveActivity:
+                return .run { send in
+                    for activity in Activity<CardWidgetAttributes>.activities {
+                        await activity.end(nil, dismissalPolicy: .immediate)
+                    }
+                }
                 
             case let .cardDetail(action):
                 return .none
