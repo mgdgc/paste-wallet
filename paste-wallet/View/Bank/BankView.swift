@@ -15,7 +15,7 @@ struct BankView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             ScrollView {
-                LazyVStack {
+                LazyVStack(spacing: 16) {
                     ForEach(viewStore.banks, id: \.id) { bank in
                         HStack {
                             VStack {
@@ -26,11 +26,11 @@ struct BankView: View {
                                 }
                                 HStack {
                                     Text(bank.name)
-                                        .font(.title.bold())
+                                        .font(.title2.bold())
                                     Spacer()
                                 }
                                 HStack {
-                                    Text(bank.number)
+                                    Text(bank.decryptNumber(viewStore.key))
                                         .underline()
                                     Spacer()
                                 }
@@ -42,13 +42,17 @@ struct BankView: View {
                         }
                         .padding()
                         .background {
-                            RoundedRectangle(cornerRadius: 8)
+                            RoundedRectangle(cornerRadius: 16)
                                 .fill(Color(hexCode: bank.color))
+                                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
                         }
                         .foregroundStyle(Color(hexCode: bank.color).isDark ? Color.white : Color.black)
                     }
                 }
                 .padding()
+            }
+            .onAppear {
+                viewStore.send(.fetchAll)
             }
             .navigationTitle("tab_card")
             .toolbar {
@@ -59,12 +63,19 @@ struct BankView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
                     }
-                    .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) { store in
-                        BankForm(store: store)
-                            .interactiveDismissDisabled()
+                    .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) {
+                        viewStore.send(.fetchAll)
+                    } content: { store in
+                        NavigationStack {
+                            BankForm(store: store)
+                        }
+                        .interactiveDismissDisabled()
                     }
                 }
             }
+        }
+        .background {
+            Colors.backgroundSecondary.color.ignoresSafeArea()
         }
     }
 }

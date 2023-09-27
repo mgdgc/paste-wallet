@@ -14,14 +14,7 @@ struct BankFeature: Reducer {
         let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
         let key: String
         
-        var banks: [Bank] = {
-            let context = ModelContext(try! ModelContainer(for: Bank.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)))
-            
-            let bank = Bank(name: "주계좌", bank: "토스뱅크", color: "#ef2a34", number: "1234-567-12323-32", memo: nil)
-            context.insert(bank)
-            
-            return [bank]
-        }()
+        var banks: [Bank] = []
         
         @PresentationState var bankForm: BankFormFeature.State?
     }
@@ -44,7 +37,7 @@ struct BankFeature: Reducer {
                 state.bankForm = .init(key: state.key)
                 return .none
                 
-            case let .bankForm(action):
+            case .bankForm(_):
                 return .none
             }
         }

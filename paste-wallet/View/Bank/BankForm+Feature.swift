@@ -59,6 +59,8 @@ struct BankFormFeature: Reducer {
             return .none
             
         case .save:
+            let bank = Bank(name: state.name, bank: state.bankName, color: state.color.hex, number: Bank.encryptNumber(state.key, state.accountNumber), memo: state.memo)
+            state.modelContext.insert(bank)
             return .none
         }
     }
