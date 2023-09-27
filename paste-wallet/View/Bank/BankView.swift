@@ -56,7 +56,7 @@ struct BankView: View {
                     Button {
                         viewStore.send(.showBankForm)
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
                     }
                     .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) { store in
