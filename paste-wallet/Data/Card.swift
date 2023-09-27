@@ -23,15 +23,6 @@ final class Card: Identifiable, Equatable {
     var touch: Date
     var favorite: Bool
     
-    // MARK: - Wrapped Values
-    var wrappedBrand: Brand {
-        Brand(rawValue: brand) ?? .etc
-    }
-    
-    var wrappedExpirationDate: String {
-        return "\(String(format: "%02d", month)) / \(String(format: "%02d", month))"
-    }
-    
     // MARK: - Initializer
     init(id: UUID = UUID(), name: String, issuer: String? = nil, brand: Brand, color: String, number: [String], year: Int, month: Int, cvc: String? = nil, memo: String? = nil, favorite: Bool = false) {
         self.id = id
@@ -48,7 +39,54 @@ final class Card: Identifiable, Equatable {
         self.favorite = favorite
     }
     
-    // MARK: - SwiftData CRUD
+    // MARK: - Wrapped Values
+    var wrappedBrand: Brand {
+        Brand(rawValue: brand) ?? .etc
+    }
+    
+    var wrappedExpirationDate: String {
+        return "\(String(format: "%02d", month)) / \(String(format: "%02d", month))"
+    }
+    
+    func getWrappedNumber(_ key: String, _ separator: SeparatorStyle) -> String {
+        var number = ""
+        for (index, value) in decryptNumber(key: key).enumerated() {
+            number.append(value)
+            if index < self.number.count - 1 {
+                switch separator {
+                case .none:
+                    break
+                case .dash:
+                    number.append("-")
+                    break
+                case .space:
+                    number.append(" ")
+                }
+            }
+        }
+        return number
+    }
+    
+    // MARK: - PreviewItem
+    static func previewItems() -> [Card] {
+        return [
+            Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
+            Card(name: "ZERO Edition 2 2", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
+            Card(name: "ZERO Edition 2 3", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
+            Card(name: "ZERO Edition 2 4", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q==")
+        ]
+    }
+    
+    enum SeparatorStyle: Equatable {
+        case none
+        case dash
+        case space
+    }
+    
+}
+
+// MARK: - SwiftData CRUD
+extension Card {
     static func fetchAll(modelContext: ModelContext) -> [Card] {
         let descriptor = FetchDescriptor<Card>(sortBy: [SortDescriptor(\.touch, order: .forward)])
         do {
@@ -60,7 +98,7 @@ final class Card: Identifiable, Equatable {
     }
     
     static func fetchFavorite(modelContext: ModelContext) -> [Card] {
-        let predicate = #Predicate<Card> { $0.favorite == true }
+        let predicate = #Predicate<Card> { $0.favorite }
         let descriptor = FetchDescriptor<Card>(predicate: predicate, sortBy: [SortDescriptor(\.touch, order: .forward)])
         do {
             return try modelContext.fetch(descriptor)
@@ -69,7 +107,10 @@ final class Card: Identifiable, Equatable {
             return []
         }
     }
-    
+}
+
+// MARK: - Encrypt / Decrypt
+extension Card {
     // MARK: - Number encryption
     static func encryptNumber(_ key: String, _ number: [String]) -> [String] {
         var encrypted: [String] = []
@@ -94,25 +135,6 @@ final class Card: Identifiable, Equatable {
         return numbers
     }
     
-    func getWrappedNumber(_ key: String, _ separator: SeparatorStyle) -> String {
-        var number = ""
-        for (index, value) in decryptNumber(key: key).enumerated() {
-            number.append(value)
-            if index < self.number.count - 1 {
-                switch separator {
-                case .none:
-                    break
-                case .dash:
-                    number.append("-")
-                    break
-                case .space:
-                    number.append(" ")
-                }
-            }
-        }
-        return number
-    }
-    
     // MARK: - CVC encryption
     static func encryptCVC(_ key: String, _ cvc: String) -> String {
         return CryptoHelper.encrypt(cvc, key: key)
@@ -126,23 +148,6 @@ final class Card: Identifiable, Equatable {
             return nil
         }
     }
-    
-    // MARK: - PreviewItem
-    static func previewItems() -> [Card] {
-        return [
-            Card(name: "ZERO Edition 2 1", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
-            Card(name: "ZERO Edition 2 2", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
-            Card(name: "ZERO Edition 2 3", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q=="),
-            Card(name: "ZERO Edition 2 4", issuer: "현대카드", brand: .visa, color: "#ffffff", number: ["fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA==", "fRA2PFBGYONOw8ZV73gujA=="], year: 28, month: 05, cvc: "x9PiMe/aOJ8Zilssnp5i9Q==")
-        ]
-    }
-    
-    enum SeparatorStyle: Equatable {
-        case none
-        case dash
-        case space
-    }
-    
 }
 
 extension Card {

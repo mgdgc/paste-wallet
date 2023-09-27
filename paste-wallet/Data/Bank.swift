@@ -16,6 +16,7 @@ final class Bank: Identifiable {
     var color: String
     var number: String
     var memo: String?
+    var touch: Date
     var favorite: Bool
     
     @Relationship(deleteRule: .cascade, inverse: \SecurityCard.bank) var securityCard: SecurityCard?
@@ -27,6 +28,47 @@ final class Bank: Identifiable {
         self.color = color
         self.number = number
         self.memo = memo
+        self.touch = Date()
         self.favorite = false
+    }
+}
+
+// MARK: - SwiftData CRUD
+extension Bank {
+    static func fetchAll(modelContext: ModelContext) -> [Bank] {
+        let descriptor = FetchDescriptor<Bank>(sortBy: [SortDescriptor(\.touch, order: .forward)])
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print(#function, error)
+            return []
+        }
+    }
+    
+    static func fetchFavorite(modelContext: ModelContext) -> [Bank] {
+        let predicate = #Predicate<Bank> { $0.favorite }
+        let descriptor = FetchDescriptor<Bank>(predicate: predicate, sortBy: [SortDescriptor(\.touch, order: .forward)])
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print(#function, error)
+            return []
+        }
+    }
+}
+
+// MARK: - Encrypt / Decrypt
+extension Bank {
+    static func encryptNumber(_ key: String, _ number: String) -> String {
+        return CryptoHelper.encrypt(number, key: key)
+    }
+    
+    func decryptNumber(_ key: String) -> String {
+        if let decrypted = CryptoHelper.decrypt(self.number, key: key) {
+            return decrypted
+        } else {
+            print(#function, "decrypting failed")
+            return ""
+        }
     }
 }
