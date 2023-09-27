@@ -45,7 +45,6 @@ struct CardFeature: Reducer {
             switch action {
             case .fetchAll:
                 state.cards = Card.fetchAll(modelContext: state.modelContext)
-                print("cards \(state.cards.count)")
                 return .none
                 
             case .showCardForm:
