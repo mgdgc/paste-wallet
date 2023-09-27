@@ -676,6 +676,40 @@
         }
       }
     },
+    "new card" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Card"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 카드"
+          }
+        }
+      }
+    },
+    "new_bank" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Bank Account"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 은행 계좌"
+          }
+        }
+      }
+    },
     "new_card_brand" : {
       "extractionState" : "manual",
       "localizations" : {

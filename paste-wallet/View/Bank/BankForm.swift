@@ -13,7 +13,10 @@ struct BankForm: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            
+            Form {
+                
+            }
+            .navigationTitle("new_bank")
         }
     }
 }
