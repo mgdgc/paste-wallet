@@ -17,7 +17,7 @@ struct BankFeature: Reducer {
         var banks: [Bank] = {
             let context = ModelContext(try! ModelContainer(for: Bank.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)))
             
-            let bank = Bank(name: "주계좌", bank: "토스뱅크", color: "#ef2a34", number: "1234-567-12323-32", securityCardNumber: nil, securityCardSerial: nil, memo: nil)
+            let bank = Bank(name: "주계좌", bank: "토스뱅크", color: "#ef2a34", number: "1234-567-12323-32", memo: nil)
             context.insert(bank)
             
             return [bank]

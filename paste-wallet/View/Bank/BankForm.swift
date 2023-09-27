@@ -39,15 +39,6 @@ struct BankForm: View {
                     .submitLabel(.done)
                 }
                 
-                Section("new_bank_section_security_card") {
-                    Button("new_bank_security_card") {
-                        viewStore.send(.showSecurityCardForm)
-                    }
-                    .navigationDestination(store: store.scope(state: \.$securityCardForm, action: BankFormFeature.Action.securityCardForm)) { store in
-                        SecurityCardForm(store: store)
-                    }
-                }
-                
                 Section("new_bank_section_memo") {
                     TextEditor(text: viewStore.binding(get: \.memo, send: BankFormFeature.Action.setMemo))
                         .frame(minHeight: 100)
