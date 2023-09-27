@@ -15,7 +15,6 @@ struct PasteWalletApp: App {
         let schema = Schema([
             Card.self,
             Bank.self,
-            SecurityCard.self,
             Memo.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
