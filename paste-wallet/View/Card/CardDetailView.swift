@@ -86,8 +86,9 @@ struct CardDetailView: View {
                     
                     if let memo = viewStore.card.memo {
                         Section("card_section_memo") {
-                            TextEditor(text: .constant(memo))
-                                .scrollDisabled(true)
+                            HStack {
+                                ImmutableTextView(text: .constant(memo))
+                            }
                         }
                     }
                     
