@@ -13,7 +13,8 @@ import ComposableArchitecture
 struct BankFormFeature: Reducer {
     
     struct State: Equatable {
-        
+        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let key: String
     }
     
     enum Action: Equatable {

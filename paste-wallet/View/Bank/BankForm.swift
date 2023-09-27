@@ -21,7 +21,7 @@ struct BankForm: View {
 #Preview {
     
     return NavigationStack {
-        BankForm(store: Store(initialState: BankFormFeature.State(), reducer: {
+        BankForm(store: Store(initialState: BankFormFeature.State(key: "000000"), reducer: {
             BankFormFeature()
         }))
     }

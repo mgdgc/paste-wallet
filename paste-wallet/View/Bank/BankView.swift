@@ -13,14 +13,66 @@ struct BankView: View {
     let store: StoreOf<BankFeature>
     
     var body: some View {
-        Text(String("Hello, World!"))
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            ScrollView {
+                LazyVStack {
+                    ForEach(viewStore.banks, id: \.id) { bank in
+                        HStack {
+                            VStack {
+                                HStack {
+                                    Text(bank.bank)
+                                        .font(.headline)
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text(bank.name)
+                                        .font(.title.bold())
+                                    Spacer()
+                                }
+                                HStack {
+                                    Text(bank.number)
+                                        .underline()
+                                    Spacer()
+                                }
+                            }
+                            Spacer()
+                            HStack {
+                                Image(systemName: "chevron.forward")
+                            }
+                        }
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(hexCode: bank.color))
+                        }
+                        .foregroundStyle(Color(hexCode: bank.color).isDark ? Color.white : Color.black)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("tab_card")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        viewStore.send(.showBankForm)
+                    } label: {
+                        Image(systemName: "plus")
+                            .foregroundStyle(Colors.textPrimary.color)
+                    }
+                    .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) { store in
+                        BankForm(store: store)
+                            .interactiveDismissDisabled()
+                    }
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    let context = try! ModelContainer(for: Card.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)).mainContext
-    
-    return BankView(store: Store(initialState: BankFeature.State(key: "000000"), reducer: {
-        BankFeature()
-    }))
+    return NavigationStack {
+        BankView(store: Store(initialState: BankFeature.State(key: "000000"), reducer: {
+            BankFeature()
+        }))
+    }
 }
