@@ -15,20 +15,16 @@ final class Bank: Identifiable {
     var bank: String
     var color: String
     var number: String
-    var securityCardNumber: [String]?
-    var securityCardSerial: String?
     var memo: String?
     var touch: Date
     var favorite: Bool
     
-    init(id: UUID = UUID(), name: String, bank: String, color: String, number: String, securityCardNumber: [String]? = nil, securityCardSerial: String? = nil, memo: String? = nil) {
+    init(id: UUID = UUID(), name: String, bank: String, color: String, number: String, memo: String? = nil) {
         self.id = id
         self.name = name
         self.bank = bank
         self.color = color
         self.number = number
-        self.securityCardNumber = securityCardNumber
-        self.securityCardSerial = securityCardSerial
         self.memo = memo
         self.touch = Date()
         self.favorite = false
@@ -71,45 +67,6 @@ extension Bank {
         } else {
             print(#function, "decrypting failed")
             return ""
-        }
-    }
-    
-    static func encryptSecurityCardNumber(_ key: String, _ numbers: [String]) -> [String] {
-        var encrypted: [String] = []
-        for number in numbers {
-            encrypted.append(CryptoHelper.encrypt(number, key: key))
-        }
-        return encrypted
-    }
-    
-    func decryptSecurityCardNumber(_ key: String) -> [String]? {
-        if let securityCardNumber = self.securityCardNumber {
-            var decrypted: [String] = []
-            for number in securityCardNumber {
-                if let d = CryptoHelper.decrypt(number, key: key) {
-                    decrypted.append(d)
-                } else {
-                    decrypted.append("")
-                    print(#function, "decrypting failed (number: \(number), key: \(key))")
-                }
-            }
-            return decrypted
-        } else {
-            print(#function, "nil data")
-            return nil
-        }
-    }
-    
-    static func encryptSecurityCardSerial(_ key: String, _ serial: String) -> String {
-        return CryptoHelper.encrypt(serial, key: key)
-    }
-    
-    func decryptSecurityCardSerial(_ key: String) -> String? {
-        if let serial = self.securityCardSerial {
-            return CryptoHelper.decrypt(serial, key: key)
-        } else {
-            print(#function, "nil data")
-            return nil
         }
     }
 }
