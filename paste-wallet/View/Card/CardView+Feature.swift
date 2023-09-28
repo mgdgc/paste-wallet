@@ -14,7 +14,7 @@ import ComposableArchitecture
 struct CardFeature: Reducer {
     
     struct State: Equatable {
-        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         
         // Fetch Data

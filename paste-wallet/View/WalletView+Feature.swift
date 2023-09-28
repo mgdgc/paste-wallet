@@ -12,7 +12,7 @@ import ComposableArchitecture
 
 struct WalletFeature: Reducer {
     struct State: Equatable {
-        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         var key: String? = nil
         var selected: WalletView.Tab = .favorite
         

@@ -13,7 +13,7 @@ import ComposableArchitecture
 
 struct BankFeature: Reducer {
     struct State: Equatable {
-        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         
         var banks: [Bank] = []
@@ -50,6 +50,12 @@ struct BankFeature: Reducer {
                 
             case let .deleteBank(bank):
                 state.modelContext.delete(bank)
+                do {
+                    try state.modelContext.save()
+                } catch {
+                    print(#function, "save error")
+                    print(error)
+                }
                 return .send(.fetchAll)
                 
             case let .copy(bank, numbersOnly):

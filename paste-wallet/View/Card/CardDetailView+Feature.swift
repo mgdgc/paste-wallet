@@ -14,7 +14,7 @@ import ComposableArchitecture
 struct CardDetailFeature: Reducer {
     
     struct State: Equatable {
-        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         
         let card: Card
@@ -52,11 +52,19 @@ struct CardDetailFeature: Reducer {
             do {
                 try state.modelContext.save()
             } catch {
-                print(#function, error)
+                print(#function, "save error")
+                print(error)
             }
             return .none
             
         case .delete:
+            state.modelContext.delete(state.card)
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, "save error")
+                print(error)
+            }
             return .send(.dismiss)
             
         case .dismiss:

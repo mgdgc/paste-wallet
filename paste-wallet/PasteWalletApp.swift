@@ -15,7 +15,8 @@ struct PasteWalletApp: App {
         let schema = Schema([
             Card.self,
             Bank.self,
-            Memo.self
+            Memo.self,
+            MemoField.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         
@@ -25,6 +26,7 @@ struct PasteWalletApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    static var sharedModelContext: ModelContext = ModelContext(sharedModelContainer)
     
     var body: some Scene {
         WindowGroup {

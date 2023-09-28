@@ -13,7 +13,7 @@ import ComposableArchitecture
 struct BankDetailFeature: Reducer {
     
     struct State: Equatable {
-        var modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        var modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         let bank: Bank
         var dismiss: Bool = false
@@ -49,10 +49,22 @@ struct BankDetailFeature: Reducer {
             
         case .setFavorite:
             state.bank.favorite.toggle()
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, "save error")
+                print(error)
+            }
             return .none
             
         case .delete:
             state.modelContext.delete(state.bank)
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, "save error")
+                print(error)
+            }
             return .send(.dismiss)
         }
     }

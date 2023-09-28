@@ -13,7 +13,7 @@ import ComposableArchitecture
 struct BankFormFeature: Reducer {
     
     struct State: Equatable {
-        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         
         var bankName: String = ""
@@ -61,6 +61,12 @@ struct BankFormFeature: Reducer {
         case .save:
             let bank = Bank(name: state.name, bank: state.bankName, color: state.color.hex, number: Bank.encryptNumber(state.key, state.accountNumber), memo: state.memo)
             state.modelContext.insert(bank)
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, "save error")
+                print(error)
+            }
             return .none
         }
     }

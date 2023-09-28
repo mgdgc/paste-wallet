@@ -13,7 +13,7 @@ import ComposableArchitecture
 struct CardFormFeature: Reducer {
     
     struct State: Equatable {
-        let modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
+        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         
         var name: String?
