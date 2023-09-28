@@ -19,6 +19,7 @@ struct WalletFeature: Reducer {
         @PresentationState var favorite: FavoriteFeature.State?
         @PresentationState var card: CardFeature.State?
         @PresentationState var bank: BankFeature.State?
+        @PresentationState var memo: MemoFeature.State?
     }
     
     enum Action: Equatable {
@@ -30,6 +31,7 @@ struct WalletFeature: Reducer {
         case favorite(PresentationAction<FavoriteFeature.Action>)
         case card(PresentationAction<CardFeature.Action>)
         case bank(PresentationAction<BankFeature.Action>)
+        case memo(PresentationAction<MemoFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -68,6 +70,9 @@ struct WalletFeature: Reducer {
                 
             case let .bank(action):
                 return .none
+                
+            case let .memo(action):
+                return .none
             }
         }
         .ifLet(\.$favorite, action: /Action.favorite) {
@@ -78,6 +83,9 @@ struct WalletFeature: Reducer {
         }
         .ifLet(\.$bank, action: /Action.bank) {
             BankFeature()
+        }
+        .ifLet(\.$memo, action: /Action.memo) {
+            MemoFeature()
         }
     }
 }

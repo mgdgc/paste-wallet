@@ -13,14 +13,24 @@ final class MemoField: Identifiable {
     @Attribute(.unique) var id: UUID
     var title: String
     var value: String
-    var isCredential: Bool
+    var touch: Date
     
     var memo: Memo?
     
-    init(id: UUID, title: String, value: String, isCredential: Bool) {
+    init(id: UUID = UUID(), title: String, value: String) {
         self.id = id
         self.title = title
         self.value = value
-        self.isCredential = isCredential
+        self.touch = Date()
+    }
+}
+
+extension MemoField {
+    static func encrypt(_ value: String, _ key: String) -> String {
+        return CryptoHelper.encrypt(value, key: key)
+    }
+    
+    func decrypt(_ key: String) -> String {
+        return CryptoHelper.decrypt(self.value, key: key) ?? ""
     }
 }

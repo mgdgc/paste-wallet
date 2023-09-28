@@ -49,9 +49,13 @@ struct WalletView: View {
                     .tag(Tab.bank)
                 }
                 
-                MemoView()
+                IfLetStore(store.scope(state: \.$memo, action: WalletFeature.Action.memo)) { store in
+                    NavigationStack {
+                        MemoView(store: store)
+                    }
                     .tabItem { Label("tab_memo", image: "note") }
                     .tag(Tab.memo)
+                }
             }
             .tint(Colors.textPrimary.color)
             

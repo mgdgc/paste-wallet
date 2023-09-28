@@ -12,15 +12,27 @@ import SwiftData
 final class Memo: Identifiable {
     @Attribute(.unique) var id: UUID
     var title: String
-    var value: String
-    var isCredential: Bool
+    var desc: String
+    var touch: Date
     
     @Relationship(inverse: \MemoField.memo) var fields: [MemoField]?
     
-    init(id: UUID, title: String, value: String, isCredential: Bool) {
+    init(id: UUID = UUID(), title: String, desc: String) {
         self.id = id
         self.title = title
-        self.value = value
-        self.isCredential = isCredential
+        self.desc = desc
+        self.touch = Date()
+    }
+}
+
+extension Memo {
+    static func fetchAll(_ modelContext: ModelContext) -> [Memo] {
+        let descriptor = FetchDescriptor<Memo>(sortBy: [SortDescriptor(\.touch, order: .forward)])
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print(#function, error)
+            return []
+        }
     }
 }
