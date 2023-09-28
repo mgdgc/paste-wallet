@@ -23,15 +23,18 @@ struct MemoView: View {
                         VStack {
                             HStack {
                                 Text(memo.title)
-                                    .font(.headline)
+                                    .font(.title2)
                                 Spacer()
                             }
-                            HStack {
-                                Text(memo.desc)
-                                    .font(.footnote)
-                                Spacer()
+                            if !memo.desc.isEmpty {
+                                HStack {
+                                    Text(memo.desc)
+                                        .font(.subheadline)
+                                    Spacer()
+                                }
                             }
                         }
+                        .padding()
                     }
                 }
             }
@@ -52,6 +55,9 @@ struct MemoView: View {
                             MemoForm(store: store)
                         }
                         .interactiveDismissDisabled()
+                        .onDisappear {
+                            viewStore.send(.fetchAll)
+                        }
                     }
                 }
             }

@@ -54,12 +54,14 @@ struct WalletFeature: Reducer {
                 state.favorite = .init(key: key)
                 state.card = .init(key: key)
                 state.bank = .init(key: key)
+                state.memo = .init(key: key)
                 return .none
                 
             case .deinitChildStates:
                 state.favorite = nil
                 state.card = nil
                 state.bank = nil
+                state.memo = nil
                 return .none
                 
             case let .favorite(action):

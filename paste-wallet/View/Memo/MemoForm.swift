@@ -62,6 +62,7 @@ struct MemoForm: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("save") {
                         viewStore.send(.save)
+                        dismiss()
                     }
                     .disabled(viewStore.confirmButtonDisabled)
                 }

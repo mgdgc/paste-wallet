@@ -44,5 +44,8 @@ struct MemoFeature: Reducer {
                 return .none
             }
         }
+        .ifLet(\.$memoForm, action: /Action.memoForm) {
+            MemoFormFeature()
+        }
     }
 }

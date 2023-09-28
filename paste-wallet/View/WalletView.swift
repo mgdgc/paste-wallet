@@ -85,5 +85,4 @@ struct WalletView: View {
     return WalletView(store: Store(initialState: WalletFeature.State(), reducer: {
         WalletFeature()
     }))
-    .modelContainer(for: [Card.self, Bank.self, Memo.self], inMemory: true)
 }

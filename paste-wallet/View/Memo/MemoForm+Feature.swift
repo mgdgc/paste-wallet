@@ -60,7 +60,7 @@ struct MemoFormFeature: Reducer {
             var memo = Memo(title: state.title, desc: state.desc)
             var fields: [MemoField] = []
             for f in state.fields {
-                fields.append(MemoField(title: f.fieldName, value: f.value))
+                fields.append(MemoField(title: f.fieldName, value: MemoField.encrypt(f.value, state.key)))
             }
             memo.fields = fields
             state.modelContext.insert(memo)
