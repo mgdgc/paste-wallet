@@ -37,8 +37,10 @@ struct BankView: View {
                                     }
                                 }
                         }
-                        .navigationDestination(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) { store in
-                            BankDetailView(store: store)
+                        .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) { store in
+                            NavigationStack {
+                                BankDetailView(store: store)
+                            }
                         }
                     }
                 }
@@ -47,7 +49,7 @@ struct BankView: View {
             .onAppear {
                 viewStore.send(.fetchAll)
             }
-            .navigationTitle("tab_card")
+            .navigationTitle("tab_bank")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {

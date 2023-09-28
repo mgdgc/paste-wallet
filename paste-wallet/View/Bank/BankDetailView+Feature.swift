@@ -16,13 +16,44 @@ struct BankDetailFeature: Reducer {
         var modelContext: ModelContext = ModelContext(PasteWalletApp.sharedModelContainer)
         let key: String
         let bank: Bank
+        var dismiss: Bool = false
+        
+        var draggedOffset: CGSize = .zero
     }
     
     enum Action: Equatable {
-        
+        case dragChanged(DragGesture.Value)
+        case dragEnded(DragGesture.Value)
+        case dismiss
+        case setFavorite
+        case delete
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
-        
+        switch action {
+        case let .dragChanged(value):
+            state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
+            return .none
+            
+        case let .dragEnded(value):
+            if value.translation.height > 100 {
+                return .send(.dismiss)
+            } else {
+                state.draggedOffset = .zero
+                return .none
+            }
+            
+        case .dismiss:
+            state.dismiss = true
+            return .none
+            
+        case .setFavorite:
+            state.bank.favorite.toggle()
+            return .none
+            
+        case .delete:
+            state.modelContext.delete(state.bank)
+            return .send(.dismiss)
+        }
     }
 }

@@ -96,7 +96,6 @@ struct CardDetailView: View {
                         Button("card_set_favorite", systemImage: viewStore.card.favorite ? "star.fill" : "star") {
                             viewStore.send(.setFavorite)
                         }
-                        .foregroundStyle(Colors.textPrimary.color)
                         
                         Button("delete", systemImage: "trash") {
                             viewStore.send(.delete)
