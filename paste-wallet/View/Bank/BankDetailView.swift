@@ -40,6 +40,12 @@ struct BankDetailView: View {
                         }
                     }
                     
+                    if let memo = viewStore.bank.memo, !memo.isEmpty {
+                        Section("bank_memo") {
+                            ImmutableTextView(text: .constant(memo))
+                        }
+                    }
+                    
                     Section {
                         Button("bank_set_favorite", systemImage: viewStore.bank.favorite ? "star.fill" : "star") {
                             viewStore.send(.setFavorite)

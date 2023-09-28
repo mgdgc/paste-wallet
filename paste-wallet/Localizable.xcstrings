@@ -109,6 +109,23 @@
         }
       }
     },
+    "bank_memo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메모"
+          }
+        }
+      }
+    },
     "bank_number" : {
       "extractionState" : "manual",
       "localizations" : {
