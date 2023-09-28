@@ -42,10 +42,16 @@ struct MemoView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        
+                        viewStore.send(.showMemoForm)
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
+                    }
+                    .sheet(store: store.scope(state: \.$memoForm, action: MemoFeature.Action.memoForm)) { store in
+                        NavigationStack {
+                            MemoForm(store: store)
+                        }
+                        .interactiveDismissDisabled()
                     }
                 }
             }

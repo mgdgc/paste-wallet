@@ -795,6 +795,23 @@
         }
       }
     },
+    "memo_form" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Memo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 메모"
+          }
+        }
+      }
+    },
     "new card" : {
       "extractionState" : "manual",
       "localizations" : {

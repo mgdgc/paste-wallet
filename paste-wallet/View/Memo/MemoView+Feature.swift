@@ -18,10 +18,15 @@ struct MemoFeature: Reducer {
         let key: String
         
         var memos: [Memo] = []
+        
+        @PresentationState var memoForm: MemoFormFeature.State?
     }
     
     enum Action: Equatable {
         case fetchAll
+        case showMemoForm
+        
+        case memoForm(PresentationAction<MemoFormFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -29,6 +34,13 @@ struct MemoFeature: Reducer {
             switch action {
             case .fetchAll:
                 state.memos = Memo.fetchAll(state.modelContext)
+                return .none
+                
+            case .showMemoForm:
+                state.memoForm = .init()
+                return .none
+                
+            case let .memoForm(action):
                 return .none
             }
         }
