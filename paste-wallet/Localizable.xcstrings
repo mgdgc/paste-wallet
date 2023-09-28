@@ -58,6 +58,57 @@
         }
       }
     },
+    "bank_context_copy_all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복사"
+          }
+        }
+      }
+    },
+    "bank_context_copy_numbers_only" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy (Only Numbers)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "번호만 복사"
+          }
+        }
+      }
+    },
+    "bank_context_delete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제"
+          }
+        }
+      }
+    },
     "biometric_reason" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -274,7 +325,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "카드 번호 복사"
+            "value" : "복사"
           }
         }
       }
@@ -864,7 +915,7 @@
       }
     },
     "new_card" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {

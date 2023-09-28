@@ -15,38 +15,31 @@ struct BankView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             ScrollView {
-                LazyVStack(spacing: 16) {
+                let columns = [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)]
+                
+                LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(viewStore.banks, id: \.id) { bank in
-                        HStack {
-                            VStack {
-                                HStack {
-                                    Text(bank.bank)
-                                        .font(.headline)
-                                    Spacer()
+                        Button {
+                            viewStore.send(.showBankDetail(bank))
+                        } label: {
+                            SmallBankView(bank: bank, key: viewStore.key)
+                                .contextMenu {
+                                    Button("bank_context_copy_all", systemImage: "doc.on.doc") {
+                                        store.send(.copy(bank, false))
+                                    }
+                                    
+                                    Button("bank_context_copy_numbers_only", systemImage: "textformat.123") {
+                                        store.send(.copy(bank, true))
+                                    }
+                                    
+                                    Button("delete", systemImage: "trash", role: .destructive) {
+                                        store.send(.deleteBank(bank))
+                                    }
                                 }
-                                HStack {
-                                    Text(bank.name)
-                                        .font(.title2.bold())
-                                    Spacer()
-                                }
-                                HStack {
-                                    Text(bank.decryptNumber(viewStore.key))
-                                        .underline()
-                                    Spacer()
-                                }
-                            }
-                            Spacer()
-                            HStack {
-                                Image(systemName: "chevron.forward")
-                            }
                         }
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color(hexCode: bank.color))
-                                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+                        .navigationDestination(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) { store in
+                            BankDetailView(store: store)
                         }
-                        .foregroundStyle(Color(hexCode: bank.color).isDark ? Color.white : Color.black)
                     }
                 }
                 .padding()

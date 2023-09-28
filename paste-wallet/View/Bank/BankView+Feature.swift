@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import UIKit
 import SwiftData
+import UniformTypeIdentifiers
 import ComposableArchitecture
 
 struct BankFeature: Reducer {
@@ -17,13 +19,18 @@ struct BankFeature: Reducer {
         var banks: [Bank] = []
         
         @PresentationState var bankForm: BankFormFeature.State?
+        @PresentationState var bankDetail: BankDetailFeature.State?
     }
     
     enum Action: Equatable {
         case fetchAll
         case showBankForm
+        case showBankDetail(Bank)
+        case deleteBank(Bank)
+        case copy(_ bank: Bank, _ numbersOnly: Bool)
         
         case bankForm(PresentationAction<BankFormFeature.Action>)
+        case bankDetail(PresentationAction<BankDetailFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -37,12 +44,40 @@ struct BankFeature: Reducer {
                 state.bankForm = .init(key: state.key)
                 return .none
                 
+            case let .showBankDetail(bank):
+                state.bankDetail = .init(key: state.key, bank: bank)
+                return .none
+                
+            case let .deleteBank(bank):
+                state.modelContext.delete(bank)
+                return .send(.fetchAll)
+                
+            case let .copy(bank, numbersOnly):
+                if numbersOnly {
+                    var copyText = ""
+                    for c in bank.decryptNumber(state.key) {
+                        if c.isNumber {
+                            copyText.append(c)
+                        }
+                    }
+                    UIPasteboard.general.setValue(copyText, forPasteboardType: UTType.plainText.identifier)
+                } else {
+                    UIPasteboard.general.setValue(bank.decryptNumber(state.key), forPasteboardType: UTType.plainText.identifier)
+                }
+                return .none
+                
             case .bankForm(_):
+                return .none
+                
+            case .bankDetail(_):
                 return .none
             }
         }
         .ifLet(\.$bankForm, action: /Action.bankForm) {
             BankFormFeature()
+        }
+        .ifLet(\.$bankDetail, action: /Action.bankDetail) {
+            BankDetailFeature()
         }
     }
 }
