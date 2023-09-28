@@ -12,29 +12,15 @@ import ComposableArchitecture
 fileprivate struct SecretField: View {
     var title: LocalizedStringKey
     var content: String
-    var isCredential: Bool = false
-    
-    @State private var reveal: Bool = false
     
     var body: some View {
-        Button {
-            reveal.toggle()
-        } label: {
-            HStack {
-                Text(title)
-                    .foregroundStyle(Colors.textPrimary.color)
-                Spacer()
-                
-                if reveal || !isCredential {
-                    Text(String(content))
-                        .foregroundStyle(Colors.textSecondary.color)
-                } else {
-                    Image(systemName: "lock.fill")
-                        .foregroundStyle(Colors.textSecondary.color)
-                    Text("card_info_lock")
-                        .foregroundStyle(Colors.textSecondary.color)
-                }
-            }
+        HStack {
+            Text(title)
+                .foregroundStyle(Colors.textPrimary.color)
+            Spacer()
+            Text(String(content))
+                .textSelection(.enabled)
+                .foregroundStyle(Colors.textSecondary.color)
         }
     }
 }
@@ -80,8 +66,8 @@ struct CardDetailView: View {
                 
                 List {
                     Section("card_section_info") {
-                        SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate, isCredential: false)
-                        SecretField(title: "card_cvc", content: viewStore.card.getWrappedCVC(viewStore.key) ?? "", isCredential: true)
+                        SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate)
+                        SecretField(title: "card_cvc", content: viewStore.card.getWrappedCVC(viewStore.key) ?? "")
                     }
                     
                     if let memo = viewStore.card.memo {
