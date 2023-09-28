@@ -13,10 +13,11 @@ struct ImmutableTextView: UIViewRepresentable {
     @Binding var text: String
     
     func makeUIView(context: Context) -> UITextView {
-        var textView = UITextView()
+        let textView = UITextView()
         textView.isScrollEnabled = false
         textView.isEditable = false
         textView.font = UIFont.systemFont(ofSize: 17)
+        textView.backgroundColor = .clear
         return textView
     }
     
