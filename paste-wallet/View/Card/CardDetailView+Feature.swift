@@ -77,7 +77,7 @@ struct CardDetailFeature: Reducer {
             return .none
             
         case .launchActivity:
-            let attributes = CardWidgetAttributes(name: "card")
+            let attributes = CardWidgetAttributes(id: state.card.id)
             let contentState = CardWidgetAttributes.ContentState(
                 id: state.card.id,
                 name: state.card.name,

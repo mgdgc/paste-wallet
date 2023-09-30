@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import ActivityKit
 import ComposableArchitecture
 
 struct BankDetailFeature: Reducer {
@@ -29,6 +30,7 @@ struct BankDetailFeature: Reducer {
         case setFavorite
         case showDeleteConfirmation(Bool)
         case delete
+        case launchActivity
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -72,6 +74,25 @@ struct BankDetailFeature: Reducer {
                 print(error)
             }
             return .send(.dismiss)
+            
+        case .launchActivity:
+            let attribute = BankWidgetAttributes(id: state.bank.id)
+            let contentState = BankWidgetAttributes.ContentState(
+                name: state.bank.name,
+                bank: state.bank.bank, 
+                color: state.bank.color,
+                number: state.bank.decryptNumber(state.key))
+            let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
+            
+            do {
+                let activity = try Activity<BankWidgetAttributes>.request(
+                    attributes: attribute,
+                    content: content)
+                print(activity)
+            } catch {
+                print(#function, error)
+            }
+            return .none
         }
     }
 }

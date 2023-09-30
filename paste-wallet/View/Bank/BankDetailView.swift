@@ -76,6 +76,9 @@ struct BankDetailView: View {
                 .offset(y: -8)
                 .ignoresSafeArea()
             }
+            .onAppear {
+                viewStore.send(.launchActivity)
+            }
             .onChange(of: viewStore.dismiss) { oldValue, newValue in
                 dismiss()
             }

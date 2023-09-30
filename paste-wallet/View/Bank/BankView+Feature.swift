@@ -10,6 +10,7 @@ import UIKit
 import SwiftData
 import UniformTypeIdentifiers
 import ComposableArchitecture
+import ActivityKit
 
 struct BankFeature: Reducer {
     struct State: Equatable {
@@ -28,6 +29,7 @@ struct BankFeature: Reducer {
         case showBankDetail(Bank)
         case deleteBank(Bank)
         case copy(_ bank: Bank, _ numbersOnly: Bool)
+        case stopLiveActivity
         
         case bankForm(PresentationAction<BankFormFeature.Action>)
         case bankDetail(PresentationAction<BankDetailFeature.Action>)
@@ -71,6 +73,13 @@ struct BankFeature: Reducer {
                     UIPasteboard.general.setValue(bank.decryptNumber(state.key), forPasteboardType: UTType.plainText.identifier)
                 }
                 return .none
+                
+            case .stopLiveActivity:
+                return .run { send in
+                    for activity in Activity<BankWidgetAttributes>.activities {
+                        await activity.end(nil, dismissalPolicy: .immediate)
+                    }
+                }
                 
             case .bankForm(_):
                 return .none

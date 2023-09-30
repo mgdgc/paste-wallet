@@ -8,7 +8,6 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct CardWidgetAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
@@ -25,7 +24,7 @@ struct CardWidgetAttributes: ActivityAttributes {
     }
 
     // Fixed non-changing properties about your activity go here!
-    var name: String
+    var id: UUID
 }
 
 struct CardLiveActivity: Widget {
@@ -69,9 +68,6 @@ struct CardLiveActivity: Widget {
                         Text("di_card_leading")
                     }
                 }
-                DynamicIslandExpandedRegion(.trailing) {
-                    
-                }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack {
                         HStack {
@@ -81,7 +77,7 @@ struct CardLiveActivity: Widget {
                                 HStack {
                                     ForEach(context.state.number.indices, id: \.self) { i in
                                         let n = context.state.number[i]
-                                        Text("\(n)")
+                                        Text(String("\(n)"))
                                             .padding(4)
                                             .background {
                                                 RoundedRectangle(cornerRadius: 8)
@@ -132,7 +128,6 @@ struct CardLiveActivity: Widget {
                     .aspectRatio(contentMode: .fit)
                     .tint(Color.white)
             }
-//            .widgetURL(URL(string: "http://www.apple.com"))
             .keylineTint(Color.red)
         }
     }
@@ -233,7 +228,7 @@ struct CardLiveActivity: Widget {
 
 extension CardWidgetAttributes {
     fileprivate static var preview: CardWidgetAttributes {
-        CardWidgetAttributes(name: "World")
+        CardWidgetAttributes(id: UUID())
     }
 }
 
@@ -243,7 +238,7 @@ extension CardWidgetAttributes.ContentState {
      }
 }
 
-#Preview("Notification", as: .dynamicIsland(.expanded), using: CardWidgetAttributes.preview) {
+#Preview("Notification", as: .dynamicIsland(.compact), using: CardWidgetAttributes.preview) {
    CardLiveActivity()
 } contentStates: {
     CardWidgetAttributes.ContentState.card

@@ -41,7 +41,9 @@ struct BankView: View {
                                             }
                                         }
                                 }
-                                .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) { store in
+                                .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) {
+                                    viewStore.send(.stopLiveActivity)
+                                } content: { store in
                                     NavigationStack {
                                         BankDetailView(store: store)
                                     }

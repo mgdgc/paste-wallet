@@ -13,5 +13,6 @@ struct PasteWalletWidgetBundle: WidgetBundle {
     var body: some Widget {
         PasteWalletWidget()
         CardLiveActivity()
+        BankLiveActivity()
     }
 }
