@@ -15,48 +15,87 @@ struct FavoriteView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             GeometryReader { proxy in
-                ScrollView {
-                    
-                    // MARK: - Cards
-                    GroupBox {
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
-                            ForEach(viewStore.cards) { card in
-                                SmallCardCell(card: card, key: viewStore.key)
-                                    .onTapGesture {
-                                        viewStore.send(.showCardDetail(card))
-                                    }
-                                    .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) {
-                                        viewStore.send(.stopLiveActivity)
-                                    } content: { store in
-                                        NavigationStack {
-                                            CardDetailView(store: store)
-                                        }
-                                        .onDisappear {
-                                            viewStore.send(.fetchCard)
-                                        }
-                                    }
+                if viewStore.cards.isEmpty && viewStore.banks.isEmpty {
+                    VStack(spacing: 16) {
+                        Spacer()
+                        Image("empty_favorite")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(maxWidth: 156, maxHeight: 156)
+                            .foregroundStyle(Colors.textPrimary.color)
+                        
+                        HStack {
+                            Spacer()
+                            Text("favorite_empty")
+                                .multilineTextAlignment(.center)
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Button {
+                                viewStore.send(.setTab(.card))
+                            } label: {
+                                Label("tab_card", systemImage: "creditcard")
+                            }
+                            
+                            Button {
+                                viewStore.send(.setTab(.bank))
+                            } label: {
+                                Label("tab_card", image: "bank")
                             }
                         }
-                    } label: {
-                        sectionHeader(title: "favorite_section_card", systemImage: "creditcard", tab: .card)
+                        .buttonStyle(.bordered)
+                        Spacer()
                     }
-                    .backgroundStyle(Color.clear)
-                    
-                    // MARK: - Banks
-                    GroupBox {
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
-                            ForEach(viewStore.banks) { bank in
-                                SmallBankView(bank: bank, key: viewStore.key)
+                } else {
+                    ScrollView {
+                        
+                        // MARK: - Cards
+                        if !viewStore.cards.isEmpty {
+                            GroupBox {
+                                LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
+                                    ForEach(viewStore.cards) { card in
+                                        SmallCardCell(card: card, key: viewStore.key)
+                                            .onTapGesture {
+                                                viewStore.send(.showCardDetail(card))
+                                            }
+                                            .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) {
+                                                viewStore.send(.stopLiveActivity)
+                                            } content: { store in
+                                                NavigationStack {
+                                                    CardDetailView(store: store)
+                                                }
+                                                .onDisappear {
+                                                    viewStore.send(.fetchCard)
+                                                }
+                                            }
+                                    }
+                                }
+                            } label: {
+                                sectionHeader(title: "favorite_section_card", systemImage: "creditcard", tab: .card)
                             }
+                            .backgroundStyle(Color.clear)
                         }
-                    } label: {
-                        sectionHeader(title: "favorite_section_bank", image: "bank", tab: .bank)
+                        
+                        // MARK: - Banks
+                        if !viewStore.banks.isEmpty {
+                            GroupBox {
+                                LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
+                                    ForEach(viewStore.banks) { bank in
+                                        SmallBankView(bank: bank, key: viewStore.key)
+                                    }
+                                }
+                            } label: {
+                                sectionHeader(title: "favorite_section_bank", image: "bank", tab: .bank)
+                            }
+                            .backgroundStyle(Color.clear)
+                        }
                     }
-                    .backgroundStyle(Color.clear)
                 }
-                .onAppear {
-                    viewStore.send(.fetchCard)
-                }
+            }
+            .onAppear {
+                viewStore.send(.fetchCard)
+                viewStore.send(.fetchBank)
             }
             .background(Colors.backgroundSecondary.color.ignoresSafeArea())
             .navigationTitle("tab_favorite")

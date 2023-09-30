@@ -829,6 +829,23 @@
     "Favorite Emoji" : {
 
     },
+    "favorite_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No favorite items to show."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기가 비었어요."
+          }
+        }
+      }
+    },
     "favorite_section_bank" : {
       "extractionState" : "manual",
       "localizations" : {
