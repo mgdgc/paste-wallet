@@ -21,6 +21,7 @@ struct FavoriteFeature: Reducer {
         var banks: [Bank] = []
         
         @PresentationState var cardDetail: CardDetailFeature.State?
+        @PresentationState var bankDetail: BankDetailFeature.State?
     }
     
     enum Action: Equatable {
@@ -28,9 +29,11 @@ struct FavoriteFeature: Reducer {
         case fetchBank
         case setTab(WalletView.Tab)
         case showCardDetail(Card)
+        case showBankDetail(Bank)
         case stopLiveActivity
         
         case cardDetail(PresentationAction<CardDetailFeature.Action>)
+        case bankDetail(PresentationAction<BankDetailFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -52,19 +55,32 @@ struct FavoriteFeature: Reducer {
                 state.cardDetail = .init(key: state.key, card: card)
                 return .none
                 
+            case let .showBankDetail(bank):
+                state.bankDetail = .init(key: state.key, bank: bank)
+                return .none
+                
             case .stopLiveActivity:
                 return .run { send in
                     for activity in Activity<CardWidgetAttributes>.activities {
+                        await activity.end(nil, dismissalPolicy: .immediate)
+                    }
+                    for activity in Activity<BankWidgetAttributes>.activities {
                         await activity.end(nil, dismissalPolicy: .immediate)
                     }
                 }
                 
             case let .cardDetail(action):
                 return .none
+                
+            case let .bankDetail(action):
+                return .none
             }
         }
         .ifLet(\.$cardDetail, action: /Action.cardDetail) {
             CardDetailFeature()
+        }
+        .ifLet(\.$bankDetail, action: /Action.bankDetail) {
+            BankDetailFeature()
         }
     }
 }

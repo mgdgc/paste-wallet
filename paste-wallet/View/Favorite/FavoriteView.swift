@@ -83,6 +83,20 @@ struct FavoriteView: View {
                                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
                                     ForEach(viewStore.banks) { bank in
                                         SmallBankView(bank: bank, key: viewStore.key)
+                                            .onTapGesture {
+                                                viewStore.send(.showBankDetail(bank))
+                                            }
+                                            .fullScreenCover(store: store.scope(state: \.$bankDetail, action: FavoriteFeature.Action.bankDetail)) {
+                                                viewStore.send(.stopLiveActivity)
+                                            } content: { store in
+                                                NavigationStack {
+                                                    BankDetailView(store: store)
+                                                }
+                                                .onDisappear {
+                                                    viewStore.send(.fetchCard)
+                                                }
+                                            }
+
                                     }
                                 }
                             } label: {
