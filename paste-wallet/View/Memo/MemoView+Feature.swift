@@ -44,7 +44,7 @@ struct MemoFeature: Reducer {
                 return .none
                 
             case let .showMemoDetail(memo):
-                state.memoDetail = .init(memo: memo)
+                state.memoDetail = .init(key: state.key, memo: memo)
                 return .none
                 
             case let .memoForm(action):

@@ -16,6 +16,7 @@ struct MemoDetailFeature: Reducer {
     
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
+        let key: String
         var memo: Memo
         
         var showDeleteConfirmation: Bool = false

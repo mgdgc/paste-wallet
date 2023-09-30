@@ -21,7 +21,7 @@ struct MemoDetailView: View {
                             HStack {
                                 Text(field.title)
                                 Spacer()
-                                Text(field.value)
+                                Text(field.decrypt(viewStore.key))
                             }
                         }
                     } else {
@@ -31,10 +31,6 @@ struct MemoDetailView: View {
                 }
                 
                 Section {
-//                    Button("memo_favorite", systemImage: viewStore.bank.favorite ? "star.fill" : "star") {
-//                        viewStore.send(.setFavorite)
-//                    }
-                    
                     Button(role: .destructive) {
                         viewStore.send(.showDeleteConfirmation(true))
                     } label: {
@@ -80,7 +76,7 @@ struct MemoDetailView: View {
     modelContext.insert(memo)
     
     return NavigationStack {
-        MemoDetailView(store: Store(initialState: MemoDetailFeature.State(modelContext: modelContext, memo: memo), reducer: {
+        MemoDetailView(store: Store(initialState: MemoDetailFeature.State(modelContext: modelContext, key: "000000", memo: memo), reducer: {
             MemoDetailFeature()
         }))
     }
