@@ -14,37 +14,43 @@ struct BankView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            ScrollView {
-                let columns = [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)]
-                
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(viewStore.banks, id: \.id) { bank in
-                        Button {
-                            viewStore.send(.showBankDetail(bank))
-                        } label: {
-                            SmallBankView(bank: bank, key: viewStore.key)
-                                .contextMenu {
-                                    Button("bank_context_copy_all", systemImage: "doc.on.doc") {
-                                        store.send(.copy(bank, false))
-                                    }
-                                    
-                                    Button("bank_context_copy_numbers_only", systemImage: "textformat.123") {
-                                        store.send(.copy(bank, true))
-                                    }
-                                    
-                                    Button("delete", systemImage: "trash", role: .destructive) {
-                                        store.send(.deleteBank(bank))
+            GeometryReader { _ in
+                if viewStore.banks.isEmpty {
+                    emptyView(viewStore)
+                } else {
+                    ScrollView {
+                        let columns = [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)]
+                        
+                        LazyVGrid(columns: columns, spacing: 20) {
+                            ForEach(viewStore.banks, id: \.id) { bank in
+                                Button {
+                                    viewStore.send(.showBankDetail(bank))
+                                } label: {
+                                    SmallBankView(bank: bank, key: viewStore.key)
+                                        .contextMenu {
+                                            Button("bank_context_copy_all", systemImage: "doc.on.doc") {
+                                                store.send(.copy(bank, false))
+                                            }
+                                            
+                                            Button("bank_context_copy_numbers_only", systemImage: "textformat.123") {
+                                                store.send(.copy(bank, true))
+                                            }
+                                            
+                                            Button("delete", systemImage: "trash", role: .destructive) {
+                                                store.send(.deleteBank(bank))
+                                            }
+                                        }
+                                }
+                                .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) { store in
+                                    NavigationStack {
+                                        BankDetailView(store: store)
                                     }
                                 }
-                        }
-                        .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) { store in
-                            NavigationStack {
-                                BankDetailView(store: store)
                             }
                         }
+                        .padding()
                     }
                 }
-                .padding()
             }
             .onAppear {
                 viewStore.send(.fetchAll)
@@ -72,6 +78,38 @@ struct BankView: View {
         .background {
             Colors.backgroundSecondary.color.ignoresSafeArea()
         }
+    }
+    
+    private func emptyView(_ viewStore: ViewStore<BankFeature.State, BankFeature.Action>) -> some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image("empty_card")
+                .renderingMode(.template)
+                .resizable()
+                .frame(maxWidth: 156, maxHeight: 156)
+                .foregroundStyle(Colors.textPrimary.color)
+            HStack {
+                Spacer()
+                Text("bank_empty")
+                    .multilineTextAlignment(.center)
+                Spacer()
+            }
+            Button("bank_empty_add", systemImage: "plus") {
+                viewStore.send(.showBankForm)
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) {
+                viewStore.send(.fetchAll)
+            } content: { store in
+                NavigationStack {
+                    BankForm(store: store)
+                }
+                .interactiveDismissDisabled()
+            }
+            Spacer()
+        }
+        .padding()
     }
 }
 

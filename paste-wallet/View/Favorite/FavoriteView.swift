@@ -16,10 +16,10 @@ struct FavoriteView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             GeometryReader { proxy in
                 ScrollView {
+                    
+                    // MARK: - Cards
                     GroupBox {
                         LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
-                            
-                            // MARK: - Cards
                             ForEach(viewStore.cards) { card in
                                 SmallCardCell(card: card, key: viewStore.key)
                                     .onTapGesture {
@@ -38,8 +38,21 @@ struct FavoriteView: View {
                             }
                         }
                     } label: {
-                        sectionHeader(title: "favorite_section_card", systemImage: "creditcard")
+                        sectionHeader(title: "favorite_section_card", systemImage: "creditcard", tab: .card)
                     }
+                    .backgroundStyle(Color.clear)
+                    
+                    // MARK: - Banks
+                    GroupBox {
+                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
+                            ForEach(viewStore.banks) { bank in
+                                SmallBankView(bank: bank, key: viewStore.key)
+                            }
+                        }
+                    } label: {
+                        sectionHeader(title: "favorite_section_bank", image: "bank", tab: .bank)
+                    }
+                    .backgroundStyle(Color.clear)
                 }
                 .onAppear {
                     viewStore.send(.fetchCard)
@@ -51,14 +64,25 @@ struct FavoriteView: View {
     }
     
     @ViewBuilder
-    private func sectionHeader(title: LocalizedStringKey, systemImage: String? = nil) -> some View {
-        HStack {
-            if let systemImage = systemImage {
-                Image(systemName: systemImage)
+    private func sectionHeader(title: LocalizedStringKey, systemImage: String? = nil, image: String? = nil, tab: WalletView.Tab? = nil) -> some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            HStack {
+                if let systemImage = systemImage {
+                    Image(systemName: systemImage)
+                } else if let image = image {
+                    Image(image)
+                }
+                Text(title)
+                    .font(.title.bold())
+                Spacer()
+                if let tab = tab {
+                    Button {
+                        viewStore.send(.setTab(tab))
+                    } label: {
+                        Image(systemName: "chevron.forward")
+                    }
+                }
             }
-            Text(title)
-                .font(.title.bold())
-            Spacer()
         }
     }
     

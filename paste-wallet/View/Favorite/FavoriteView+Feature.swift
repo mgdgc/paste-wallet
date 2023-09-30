@@ -18,12 +18,14 @@ struct FavoriteFeature: Reducer {
         var tab: WalletView.Tab = .favorite
         
         var cards: [Card] = []
+        var banks: [Bank] = []
         
         @PresentationState var cardDetail: CardDetailFeature.State?
     }
     
     enum Action: Equatable {
         case fetchCard
+        case fetchBank
         case setTab(WalletView.Tab)
         case showCardDetail(Card)
         case stopLiveActivity
@@ -36,6 +38,10 @@ struct FavoriteFeature: Reducer {
             switch action {
             case .fetchCard:
                 state.cards = Card.fetchFavorite(modelContext: state.modelContext)
+                return .none
+                
+            case .fetchBank:
+                state.banks = Bank.fetchFavorite(modelContext: state.modelContext)
                 return .none
                 
             case let .setTab(tab):

@@ -109,6 +109,40 @@
         }
       }
     },
+    "bank_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No bank accounts to show.\nPress + to add a new one."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "은행 계좌가 없습니다.\n+ 를 눌러 새로 추가해보세요."
+          }
+        }
+      }
+    },
+    "bank_empty_add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add First Bank Account"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "첫 계좌 추가하기"
+          }
+        }
+      }
+    },
     "bank_memo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -462,6 +496,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "카드가 없습니다.\n+ 를 눌러 새 카드를 추가해보세요."
+          }
+        }
+      }
+    },
+    "card_empty_add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add First Card"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "첫 카드 추가하기"
           }
         }
       }

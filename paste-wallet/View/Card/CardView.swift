@@ -16,7 +16,7 @@ struct CardView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             GeometryReader { proxy in
                 if viewStore.cards.isEmpty {
-                    emptyView
+                    emptyView(viewStore)
                     
                 } else {
                     ScrollView {
@@ -77,17 +77,37 @@ struct CardView: View {
         }
     }
     
-    private var emptyView: some View {
-        VStack {
+    private func emptyView(_ viewStore: ViewStore<CardFeature.State, CardFeature.Action>) -> some View {
+        VStack(spacing: 16) {
             Spacer()
+            Image("empty_card")
+                .renderingMode(.template)
+                .resizable()
+                .frame(maxWidth: 156, maxHeight: 156)
+                .foregroundStyle(Colors.textPrimary.color)
             HStack {
                 Spacer()
                 Text("card_empty")
                     .multilineTextAlignment(.center)
                 Spacer()
             }
+            Button("card_empty_add", systemImage: "plus") {
+                viewStore.send(.showCardForm)
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .sheet(store: store.scope(state: \.$cardForm, action: CardFeature.Action.cardForm), content: { store in
+                NavigationStack {
+                    CardForm(store: store)
+                }
+                .interactiveDismissDisabled()
+                .onDisappear {
+                    viewStore.send(.fetchAll)
+                }
+            })
             Spacer()
         }
+        .padding()
     }
     
     @ViewBuilder

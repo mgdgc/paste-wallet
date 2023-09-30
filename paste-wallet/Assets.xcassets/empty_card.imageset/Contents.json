@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "pw_empty_card~universal@1x.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x",
+      "filename" : "pw_empty_card~universal@2x.png"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "pw_empty_card~universal@3x.png",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

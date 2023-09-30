@@ -65,7 +65,7 @@ struct WalletFeature: Reducer {
                 return .none
                 
             case let .favorite(action):
-                return .none
+                return handleFavoriteAction(&state, action)
                 
             case let .card(action):
                 return .none
@@ -88,6 +88,17 @@ struct WalletFeature: Reducer {
         }
         .ifLet(\.$memo, action: /Action.memo) {
             MemoFeature()
+        }
+    }
+    
+    private func handleFavoriteAction(_ state: inout State, _ action: PresentationAction<FavoriteFeature.Action>) -> Effect<Action> {
+        switch action {
+        case .presented(.setTab(let tab)):
+            state.selected = tab
+            return .none
+            
+        default:
+            return .none
         }
     }
 }
