@@ -20,13 +20,16 @@ struct MemoFeature: Reducer {
         var memos: [Memo] = []
         
         @PresentationState var memoForm: MemoFormFeature.State?
+        @PresentationState var memoDetail: MemoDetailFeature.State?
     }
     
     enum Action: Equatable {
         case fetchAll
         case showMemoForm
+        case showMemoDetail(Memo)
         
         case memoForm(PresentationAction<MemoFormFeature.Action>)
+        case memoDetail(PresentationAction<MemoDetailFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -40,12 +43,22 @@ struct MemoFeature: Reducer {
                 state.memoForm = .init(key: state.key)
                 return .none
                 
+            case let .showMemoDetail(memo):
+                state.memoDetail = .init(memo: memo)
+                return .none
+                
             case let .memoForm(action):
+                return .none
+                
+            case let .memoDetail(action):
                 return .none
             }
         }
         .ifLet(\.$memoForm, action: /Action.memoForm) {
             MemoFormFeature()
+        }
+        .ifLet(\.$memoDetail, action: /Action.memoDetail) {
+            MemoDetailFeature()
         }
     }
 }

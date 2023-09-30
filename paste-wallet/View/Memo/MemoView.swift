@@ -15,28 +15,40 @@ struct MemoView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            List {
-                ForEach(viewStore.memos) { memo in
-                    NavigationLink {
-                        
-                    } label: {
-                        VStack {
-                            HStack {
-                                Text(memo.title)
-                                    .font(.title2)
-                                Spacer()
-                            }
-                            if !memo.desc.isEmpty {
+            ScrollView {
+                LazyVStack {
+                    ForEach(viewStore.memos) { memo in
+                        Button {
+                            viewStore.send(.showMemoDetail(memo))
+                        } label: {
+                            VStack {
                                 HStack {
-                                    Text(memo.desc)
-                                        .font(.subheadline)
+                                    Text(memo.title)
+                                        .font(.title2.bold())
                                     Spacer()
                                 }
+                                if !memo.desc.isEmpty {
+                                    HStack {
+                                        Text(memo.desc)
+                                            .font(.subheadline)
+                                        Spacer()
+                                    }
+                                }
                             }
+                            .padding()
+                            .background {
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Colors.backgroundPrimary.color)
+                                    .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+                            }
+                            .foregroundStyle(Colors.textPrimary.color)
                         }
-                        .padding(8)
+                        .navigationDestination(store: store.scope(state: \.$memoDetail, action: MemoFeature.Action.memoDetail)) { store in
+                            MemoDetailView(store: store)
+                        }
                     }
                 }
+                .padding()
             }
             .onAppear {
                 viewStore.send(.fetchAll)

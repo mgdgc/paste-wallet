@@ -795,6 +795,57 @@
         }
       }
     },
+    "memo_favorite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorite"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기"
+          }
+        }
+      }
+    },
+    "memo_fields" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fields"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "필드"
+          }
+        }
+      }
+    },
+    "memo_fields_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empty Memo Set"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장된 메모 뭉치 없음"
+          }
+        }
+      }
+    },
     "memo_form" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1226,13 +1277,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Description"
+            "value" : "Description (Optional)"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "설명"
+            "value" : "설명 (선택)"
           }
         }
       }
