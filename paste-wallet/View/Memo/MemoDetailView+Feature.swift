@@ -17,6 +17,8 @@ struct MemoDetailFeature: Reducer {
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         var memo: Memo
+        
+        var showDeleteConfirmation: Bool = false
     }
     
     enum Action: Equatable {
@@ -24,6 +26,7 @@ struct MemoDetailFeature: Reducer {
         case deleteField(_ index: Int)
         case setField(_ index: Int, _ keyPath: WritableKeyPath<MemoField, String>, _ value: String)
         case rearrange(_ from: Int, _ to: Int)
+        case showDeleteConfirmation(Bool)
         case delete
         case save
     }
@@ -48,6 +51,10 @@ struct MemoDetailFeature: Reducer {
         case let .rearrange(from, to):
             state.memo.fields?.move(fromOffsets: [from], toOffset: to)
             return .send(.save)
+            
+        case let .showDeleteConfirmation(show):
+            state.showDeleteConfirmation = show
+            return .none
             
         case .delete:
             state.modelContext.delete(state.memo)

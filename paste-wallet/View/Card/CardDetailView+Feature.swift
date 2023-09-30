@@ -16,10 +16,10 @@ struct CardDetailFeature: Reducer {
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
-        
         let card: Card
         
         var draggedOffset: CGSize = .zero
+        var showDeleteConfirmation: Bool = false
         
         var dismiss: Bool = false
     }
@@ -28,6 +28,7 @@ struct CardDetailFeature: Reducer {
         case dragChanged(DragGesture.Value)
         case dragEnded(DragGesture.Value)
         case setFavorite
+        case showDeleteConfirmation(Bool)
         case delete
         case launchActivity
         case dismiss
@@ -55,6 +56,10 @@ struct CardDetailFeature: Reducer {
                 print(#function, "save error")
                 print(error)
             }
+            return .none
+            
+        case let .showDeleteConfirmation(show):
+            state.showDeleteConfirmation = show
             return .none
             
         case .delete:

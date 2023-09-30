@@ -17,6 +17,7 @@ struct BankDetailFeature: Reducer {
         let key: String
         let bank: Bank
         var dismiss: Bool = false
+        var showDeleteConfirmation: Bool = false
         
         var draggedOffset: CGSize = .zero
     }
@@ -26,6 +27,7 @@ struct BankDetailFeature: Reducer {
         case dragEnded(DragGesture.Value)
         case dismiss
         case setFavorite
+        case showDeleteConfirmation(Bool)
         case delete
     }
     
@@ -55,6 +57,10 @@ struct BankDetailFeature: Reducer {
                 print(#function, "save error")
                 print(error)
             }
+            return .none
+            
+        case let .showDeleteConfirmation(show):
+            state.showDeleteConfirmation = show
             return .none
             
         case .delete:

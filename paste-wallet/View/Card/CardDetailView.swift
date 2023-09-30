@@ -83,10 +83,22 @@ struct CardDetailView: View {
                             viewStore.send(.setFavorite)
                         }
                         
-                        Button("delete", systemImage: "trash") {
-                            viewStore.send(.delete)
+                        Button(role: .destructive) {
+                            viewStore.send(.showDeleteConfirmation(true))
+                        } label: {
+                            Label("delete", systemImage: "trash")
+                                .foregroundStyle(Color.red)
                         }
-                        .foregroundStyle(Color.red)
+                        .alert("delete_confirmation_title", isPresented: viewStore.binding(get: \.showDeleteConfirmation, send: CardDetailFeature.Action.showDeleteConfirmation)) {
+                            Button("cancel", role: .cancel) {
+                                viewStore.send(.showDeleteConfirmation(false))
+                            }
+                            Button("delete", role: .destructive) {
+                                viewStore.send(.delete)
+                            }
+                        } message: {
+                            Text("delete_confirmation_message")
+                        }
                     }
                 }
                 .scrollContentBackground(.hidden)
