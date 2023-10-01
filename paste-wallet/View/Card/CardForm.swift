@@ -142,7 +142,7 @@ struct CardForm: View {
                     }
                 }
             }
-            .navigationTitle("title_card_form")
+            .navigationTitle(viewStore.card == nil ? "title_card_form" : "card_edit")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("save") {

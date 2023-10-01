@@ -109,6 +109,23 @@
         }
       }
     },
+    "bank_edit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Bank"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계좌 수정"
+          }
+        }
+      }
+    },
     "bank_empty" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -479,6 +496,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "CVC"
+          }
+        }
+      }
+    },
+    "card_edit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Card"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 수정"
           }
         }
       }

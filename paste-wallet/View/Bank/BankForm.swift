@@ -44,7 +44,7 @@ struct BankForm: View {
                         .frame(minHeight: 100)
                 }
             }
-            .navigationTitle("new_bank")
+            .navigationTitle(viewStore.bank == nil ? "new_bank" : "bank_edit")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("save") {
@@ -55,9 +55,11 @@ struct BankForm: View {
                     .opacity(viewStore.confirmButtonDisabled ? 0.7 : 1)
                 }
                 
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
-                        dismiss()
+                if viewStore.bank == nil {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("cancel") {
+                            dismiss()
+                        }
                     }
                 }
             }

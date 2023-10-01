@@ -13,8 +13,9 @@ import ComposableArchitecture
 struct BankFormFeature: Reducer {
     
     struct State: Equatable {
-        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
+        var modelContext: ModelContext
         let key: String
+        let bank: Bank?
         
         var bankName: String = ""
         var name: String = ""
@@ -25,6 +26,19 @@ struct BankFormFeature: Reducer {
         var confirmButtonDisabled: Bool {
             bankName.isEmpty || name.isEmpty || accountNumber.isEmpty
         }
+        
+        init(modelContext: ModelContext = PasteWalletApp.sharedModelContext, key: String, bank: Bank? = nil) {
+            self.modelContext = modelContext
+            self.key = key
+            self.bank = bank
+            if let bank = bank {
+                self.bankName = bank.bank
+                self.name = bank.name
+                self.color = Color(hexCode: bank.color)
+                self.accountNumber = bank.decryptNumber(key)
+                self.memo = bank.memo ?? ""
+            }
+        }
     }
     
     enum Action: Equatable {
@@ -34,6 +48,7 @@ struct BankFormFeature: Reducer {
         case setAccountNumber(String)
         case setMemo(String)
         case save
+        case saveContext
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -59,8 +74,20 @@ struct BankFormFeature: Reducer {
             return .none
             
         case .save:
-            let bank = Bank(name: state.name, bank: state.bankName, color: state.color.hex, number: Bank.encryptNumber(state.key, state.accountNumber), memo: state.memo)
-            state.modelContext.insert(bank)
+            if state.bank != nil {
+                state.bank?.bank = state.bankName
+                state.bank?.name = state.name
+                state.bank?.number = Bank.encryptNumber(state.key, state.accountNumber)
+                state.bank?.color = state.color.hex
+                state.bank?.memo = state.memo
+                
+            } else {
+                let bank = Bank(name: state.name, bank: state.bankName, color: state.color.hex, number: Bank.encryptNumber(state.key, state.accountNumber), memo: state.memo)
+                state.modelContext.insert(bank)
+            }
+            return .send(.saveContext)
+            
+        case .saveContext:
             do {
                 try state.modelContext.save()
             } catch {

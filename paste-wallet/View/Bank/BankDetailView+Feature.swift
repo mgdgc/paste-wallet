@@ -21,6 +21,8 @@ struct BankDetailFeature: Reducer {
         var showDeleteConfirmation: Bool = false
         
         var draggedOffset: CGSize = .zero
+        
+        @PresentationState var bankForm: BankFormFeature.State?
     }
     
     enum Action: Equatable {
@@ -29,70 +31,85 @@ struct BankDetailFeature: Reducer {
         case dismiss
         case setFavorite
         case showDeleteConfirmation(Bool)
+        case showBankForm
         case delete
         case launchActivity
+        
+        case bankForm(PresentationAction<BankFormFeature.Action>)
     }
     
-    func reduce(into state: inout State, action: Action) -> Effect<Action> {
-        switch action {
-        case let .dragChanged(value):
-            state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
-            return .none
-            
-        case let .dragEnded(value):
-            if value.translation.height > 100 {
+    var body: some Reducer<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case let .dragChanged(value):
+                state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
+                return .none
+                
+            case let .dragEnded(value):
+                if value.translation.height > 100 {
+                    return .send(.dismiss)
+                } else {
+                    state.draggedOffset = .zero
+                    return .none
+                }
+                
+            case .dismiss:
+                state.dismiss = true
+                return .none
+                
+            case .setFavorite:
+                state.bank.favorite.toggle()
+                do {
+                    try state.modelContext.save()
+                } catch {
+                    print(#function, "save error")
+                    print(error)
+                }
+                return .none
+                
+            case let .showDeleteConfirmation(show):
+                state.showDeleteConfirmation = show
+                return .none
+                
+            case .showBankForm:
+                state.bankForm = .init(key: state.key, bank: state.bank)
+                return .none
+                
+            case .delete:
+                state.modelContext.delete(state.bank)
+                do {
+                    try state.modelContext.save()
+                } catch {
+                    print(#function, "save error")
+                    print(error)
+                }
                 return .send(.dismiss)
-            } else {
-                state.draggedOffset = .zero
+                
+            case .launchActivity:
+                let attribute = BankWidgetAttributes(id: state.bank.id)
+                let contentState = BankWidgetAttributes.ContentState(
+                    name: state.bank.name,
+                    bank: state.bank.bank,
+                    color: state.bank.color,
+                    number: state.bank.decryptNumber(state.key))
+                let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
+                
+                do {
+                    let activity = try Activity<BankWidgetAttributes>.request(
+                        attributes: attribute,
+                        content: content)
+                    print(activity)
+                } catch {
+                    print(#function, error)
+                }
+                return .none
+                
+            case let .bankForm(action):
                 return .none
             }
-            
-        case .dismiss:
-            state.dismiss = true
-            return .none
-            
-        case .setFavorite:
-            state.bank.favorite.toggle()
-            do {
-                try state.modelContext.save()
-            } catch {
-                print(#function, "save error")
-                print(error)
-            }
-            return .none
-            
-        case let .showDeleteConfirmation(show):
-            state.showDeleteConfirmation = show
-            return .none
-            
-        case .delete:
-            state.modelContext.delete(state.bank)
-            do {
-                try state.modelContext.save()
-            } catch {
-                print(#function, "save error")
-                print(error)
-            }
-            return .send(.dismiss)
-            
-        case .launchActivity:
-            let attribute = BankWidgetAttributes(id: state.bank.id)
-            let contentState = BankWidgetAttributes.ContentState(
-                name: state.bank.name,
-                bank: state.bank.bank, 
-                color: state.bank.color,
-                number: state.bank.decryptNumber(state.key))
-            let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
-            
-            do {
-                let activity = try Activity<BankWidgetAttributes>.request(
-                    attributes: attribute,
-                    content: content)
-                print(activity)
-            } catch {
-                print(#function, error)
-            }
-            return .none
+        }
+        .ifLet(\.$bankForm, action: /Action.bankForm) {
+            BankFormFeature()
         }
     }
 }

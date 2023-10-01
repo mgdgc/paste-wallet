@@ -93,9 +93,12 @@ struct BankDetailView: View {
 
                 ToolbarItem {
                     Button("edit") {
-                        viewStore.send(.dismiss)
+                        viewStore.send(.showBankForm)
                     }
                     .foregroundStyle(Colors.textPrimary.color)
+                    .navigationDestination(store: store.scope(state: \.$bankForm, action: BankDetailFeature.Action.bankForm)) { store in
+                        BankForm(store: store)
+                    }
                 }
             }
         }
