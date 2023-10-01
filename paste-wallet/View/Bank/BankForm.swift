@@ -29,11 +29,9 @@ struct BankForm: View {
                 
                 Section("new_bank_section_number") {
                     TextField("new_bank_number", text: viewStore.binding(get: \.accountNumber, send: { value in
-                        if let filtered = Int(value.filter { $0.isNumber || $0 == "-" }) {
-                            return .setAccountNumber(String(filtered))
-                        } else {
-                            return .setAccountNumber("")
-                        }
+                        var value = value
+                        value.removeAll(where: { !$0.isNumber && $0 != "-" })
+                        return .setAccountNumber(value)
                     }))
                     .keyboardType(.decimalPad)
                     .submitLabel(.done)
