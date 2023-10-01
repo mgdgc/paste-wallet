@@ -15,6 +15,7 @@ struct MemoFormFeature: Reducer {
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
+        let memo: Memo?
         
         var title: String = ""
         var desc: String = ""
@@ -22,6 +23,21 @@ struct MemoFormFeature: Reducer {
         
         var confirmButtonDisabled: Bool {
             title.isEmpty
+        }
+        
+        init(modelContext: ModelContext = PasteWalletApp.sharedModelContext, key: String, memo: Memo? = nil) {
+            self.modelContext = modelContext
+            self.key = key
+            self.memo = memo
+            if let memo = memo {
+                self.title = memo.title
+                self.desc = memo.desc
+                if let fields = memo.fields {
+                    for field in fields {
+                        self.fields.append(MemoFormField(fieldName: field.title, value: field.decrypt(key)))
+                    }
+                }
+            }
         }
     }
     
@@ -32,6 +48,7 @@ struct MemoFormFeature: Reducer {
         case setField(_ index: Int, _ keyPath: WritableKeyPath<MemoFormField, String>, _ value: String)
         case deleteField(_ index: Int)
         case save
+        case saveContext
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -57,13 +74,29 @@ struct MemoFormFeature: Reducer {
             return .none
             
         case .save:
-            var memo = Memo(title: state.title, desc: state.desc)
             var fields: [MemoField] = []
             for f in state.fields {
                 fields.append(MemoField(title: f.fieldName, value: MemoField.encrypt(f.value, state.key)))
             }
-            memo.fields = fields
-            state.modelContext.insert(memo)
+            
+            if state.memo != nil {
+                state.memo?.title = state.title
+                state.memo?.desc = state.desc
+                state.memo?.fields = fields
+                
+            } else {
+                let memo = Memo(title: state.title, desc: state.desc)
+                memo.fields = fields
+                state.modelContext.insert(memo)
+            }
+            return .send(.saveContext)
+            
+        case .saveContext:
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, error)
+            }
             return .none
         }
     }

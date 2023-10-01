@@ -51,11 +51,13 @@ struct MemoForm: View {
                     }
                 }
             }
-            .navigationTitle("memo_form")
+            .navigationTitle(viewStore.memo == nil ? "memo_form" : "memo_edit")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
-                        dismiss()
+                if viewStore.memo == nil {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("cancel") {
+                            dismiss()
+                        }
                     }
                 }
                 
