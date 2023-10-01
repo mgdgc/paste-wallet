@@ -13,7 +13,8 @@ import ComposableArchitecture
 struct CardFormFeature: Reducer {
     
     struct State: Equatable {
-        let modelContext: ModelContext = PasteWalletApp.sharedModelContext
+        let modelContext: ModelContext
+        var card: Card?
         let key: String
         
         var name: String?
@@ -34,6 +35,23 @@ struct CardFormFeature: Reducer {
             month == nil ||
             cvc == nil
         }
+        
+        init(modelContext: ModelContext = PasteWalletApp.sharedModelContext, key: String, card: Card? = nil) {
+            self.modelContext = modelContext
+            self.card = card
+            self.key = key
+            if let card = card {
+                self.name = card.name
+                self.issuer = card.issuer
+                self.brand = Card.Brand(rawValue: card.brand) ?? .etc
+                self.color = Color(hexCode: card.color)
+                self.number = card.decryptNumber(key: key)
+                self.year = card.year
+                self.month = card.month
+                self.cvc = card.getWrappedCVC(key)
+                self.memo = card.memo
+            }
+        }
     }
     
     enum Action: Equatable {
@@ -47,6 +65,7 @@ struct CardFormFeature: Reducer {
         case cvcChanged(cvc: String?)
         case memoChanged(memo: String?)
         case save
+        case saveContext
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -99,34 +118,46 @@ struct CardFormFeature: Reducer {
             
         case .save:
             if let name = state.name, let issuer = state.issuer, let year = state.year, let month = state.month {
-                let card = Card(
-                    name: name,
-                    issuer: issuer,
-                    brand: state.brand,
-                    color: state.color.hex,
-                    number: Card.encryptNumber(state.key, state.number),
-                    year: year,
-                    month: month,
-                    cvc: state.cvc == nil ? nil : Card.encryptCVC(state.key, state.cvc!),
-                    memo: state.memo
-                )
-                
-                state.modelContext.insert(card)
-                
-                do {
-                    try state.modelContext.save()
+                if state.card != nil {
+                    state.card?.name = name
+                    state.card?.issuer = issuer
+                    state.card?.brand = state.brand.rawValue
+                    state.card?.color = state.color.hex
+                    state.card?.number = Card.encryptNumber(state.key, state.number)
+                    state.card?.year = year
+                    state.card?.month = month
+                    state.card?.cvc = state.cvc == nil ? nil : Card.encryptCVC(state.key, state.cvc!)
+                    state.card?.memo = state.memo
                     
-                    state.dismiss = true
-                } catch {
-                    print(#function, error)
+                } else {
+                    let card = Card(
+                        name: name,
+                        issuer: issuer,
+                        brand: state.brand,
+                        color: state.color.hex,
+                        number: Card.encryptNumber(state.key, state.number),
+                        year: year,
+                        month: month,
+                        cvc: state.cvc == nil ? nil : Card.encryptCVC(state.key, state.cvc!),
+                        memo: state.memo
+                    )
+                    
+                    state.modelContext.insert(card)
                 }
                 
-                return .none
+                return .send(.saveContext)
                 
-            } else {
-                return .none
             }
             
+            return .none
+            
+        case .saveContext:
+            do {
+                try state.modelContext.save()
+            } catch {
+                print(#function, error)
+            }
+            return .none
         }
     }
 }

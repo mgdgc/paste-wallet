@@ -125,9 +125,12 @@ struct CardDetailView: View {
 
                 ToolbarItem {
                     Button("edit") {
-                        viewStore.send(.dismiss)
+                        viewStore.send(.showEdit)
                     }
                     .foregroundStyle(Colors.textPrimary.color)
+                    .navigationDestination(store: store.scope(state: \.$cardForm, action: CardDetailFeature.Action.cardForm)) { store in
+                        CardForm(store: store)
+                    }
                 }
             }
         }

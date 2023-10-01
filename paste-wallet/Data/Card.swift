@@ -45,7 +45,7 @@ final class Card: Identifiable, Equatable {
     }
     
     var wrappedExpirationDate: String {
-        return "\(String(format: "%02d", month)) / \(String(format: "%02d", month))"
+        return "\(String(format: "%02d", month)) / \(String(format: "%02d", year))"
     }
     
     func getWrappedNumber(_ key: String, _ separator: SeparatorStyle) -> String {

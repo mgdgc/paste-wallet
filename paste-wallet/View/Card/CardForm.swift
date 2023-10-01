@@ -145,8 +145,9 @@ struct CardForm: View {
             .navigationTitle("title_card_form")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("add") {
+                    Button("save") {
                         viewStore.send(.save)
+                        dismiss()
                     }
                     .foregroundStyle(viewStore.confirmButtonDisabled ? Colors.textTertiary.color : Colors.textPrimary.color)
                     .disabled(viewStore.confirmButtonDisabled)
@@ -155,11 +156,13 @@ struct CardForm: View {
                     }
                 }
                 
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
-                        dismiss()
+                if viewStore.card == nil {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("cancel") {
+                            dismiss()
+                        }
+                        .foregroundStyle(Colors.textPrimary.color)
                     }
-                    .foregroundStyle(Colors.textPrimary.color)
                 }
             }
         }
