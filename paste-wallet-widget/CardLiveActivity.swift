@@ -31,27 +31,8 @@ struct CardLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: CardWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
-            HStack {
-                mediumCard(context)
-                
-                Spacer()
-                
-                HStack {
-                    ForEach(context.state.number, id: \.self) { n in
-                        Text("\(n)")
-                    }
-                }
+            activityView(context)
                 .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Colors.backgroundSecondary.color)
-                }
-                
-                Spacer()
-            }
-            .padding()
-//            .activityBackgroundTint(Colors.backgroundSecondary.color)
-            .activitySystemActionForegroundColor(Color.black)
 
         } dynamicIsland: { context in
             DynamicIsland {
@@ -69,49 +50,8 @@ struct CardLiveActivity: Widget {
                     }
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack {
-                        HStack {
-                            smallCard(context)
-                            
-                            VStack {
-                                HStack {
-                                    ForEach(context.state.number.indices, id: \.self) { i in
-                                        let n = context.state.number[i]
-                                        Text(String("\(n)"))
-                                            .padding(4)
-                                            .background {
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(Colors.backgroundTertiary.color)
-                                            }
-                                        
-                                        if i < context.state.number.count - 1 {
-                                            Spacer()
-                                        }
-                                    }
-                                }
-                                
-                                HStack {
-                                    Text(String(format: "%02d / %02d", context.state.month, context.state.year))
-                                        .underline()
-                                    
-                                    Spacer()
-                                    
-                                    if let cvc = context.state.cvc {
-                                        Text(String("CVC"))
-                                        Text(String("\(cvc)"))
-                                            .padding(4)
-                                            .background {
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(Colors.backgroundTertiary.color)
-                                            }
-                                    }
-                                }
-                            }
-                            .padding(.leading)
-                        }
-                        
-                    }
-                    .padding(6)
+                    activityView(context)
+                        .padding(6)
                 }
             } compactLeading: {
                 Image("paste_wallet_di")
@@ -130,52 +70,6 @@ struct CardLiveActivity: Widget {
             }
             .keylineTint(Color.red)
         }
-    }
-    
-    @ViewBuilder
-    private func mediumCard(_ context: ActivityViewContext<CardWidgetAttributes>) -> some View {
-        VStack {
-            HStack {
-                Text("\(context.state.name)")
-                    .font(.system(size: 8))
-                Spacer()
-                if let issuer = context.state.issuer {
-                    Text("\(issuer)")
-                        .font(.system(size: 8))
-                }
-            }
-            
-            Spacer()
-            
-            HStack {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color(hexCode: context.state.color).isDark ? Color.white.opacity(0.2) : Color.black.opacity(0.1))
-                //                .stroke(Color(hexCode: context.state.color)
-                    .frame(width: 16, height: 12)
-                Spacer()
-            }
-            
-            Spacer()
-            
-            HStack(spacing: 2) {
-                ForEach(context.state.number, id: \.self) { n in
-                    Text("\(n)")
-                        .font(.system(size: 6))
-                }
-                Spacer()
-                Text("brand_\(context.state.brand.rawValue)".localized)
-                    .font(.system(size: 6))
-            }
-        }
-        .padding(8)
-        .aspectRatio(1.58, contentMode: .fit)
-        .foregroundStyle(Color(hexCode: context.state.color).isDark ? Color.white : Color.black)
-        .background {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(hexCode: context.state.color))
-                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 2)
-        }
-        .frame(maxHeight: 78)
     }
     
     @ViewBuilder
@@ -223,6 +117,51 @@ struct CardLiveActivity: Widget {
                 .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 2)
         }
         .frame(maxHeight: 48)
+    }
+    
+    private func activityView(_ context: ActivityViewContext<CardWidgetAttributes>) -> some View {
+        VStack {
+            HStack {
+                smallCard(context)
+                
+                VStack {
+                    HStack {
+                        ForEach(context.state.number.indices, id: \.self) { i in
+                            let n = context.state.number[i]
+                            Text(String("\(n)"))
+                                .padding(4)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Colors.backgroundTertiary.color)
+                                }
+                            
+                            if i < context.state.number.count - 1 {
+                                Spacer()
+                            }
+                        }
+                    }
+                    
+                    HStack {
+                        Text(String(format: "%02d / %02d", context.state.month, context.state.year))
+                            .underline()
+                        
+                        Spacer()
+                        
+                        if let cvc = context.state.cvc {
+                            Text(String("CVC"))
+                            Text(String("\(cvc)"))
+                                .padding(4)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Colors.backgroundTertiary.color)
+                                }
+                        }
+                    }
+                }
+                .padding(.leading)
+            }
+            
+        }
     }
 }
 
