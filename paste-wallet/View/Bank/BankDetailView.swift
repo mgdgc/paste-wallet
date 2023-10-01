@@ -121,10 +121,20 @@ struct BankDetailView: View {
             Spacer()
             
             HStack {
-                Text(viewStore.bank.decryptNumber(viewStore.key))
-                    .lineLimit(2)
-                    .font(.title2)
-                    .underline()
+                Menu {
+                    Button("bank_context_copy_all", systemImage: "doc.on.doc") {
+                        viewStore.send(.copy(false))
+                    }
+                    
+                    Button("bank_context_copy_numbers_only", systemImage: "textformat.123") {
+                        viewStore.send(.copy(true))
+                    }
+                } label: {
+                    Text(viewStore.bank.decryptNumber(viewStore.key))
+                        .lineLimit(2)
+                        .font(.title2)
+                        .underline()
+                }
                 Spacer()
             }
         }

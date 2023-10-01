@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import SwiftData
 import ActivityKit
+import UniformTypeIdentifiers
 import ComposableArchitecture
 
 struct BankDetailFeature: Reducer {
@@ -28,6 +29,7 @@ struct BankDetailFeature: Reducer {
     enum Action: Equatable {
         case dragChanged(DragGesture.Value)
         case dragEnded(DragGesture.Value)
+        case copy(Bool)
         case dismiss
         case setFavorite
         case showDeleteConfirmation(Bool)
@@ -52,6 +54,20 @@ struct BankDetailFeature: Reducer {
                     state.draggedOffset = .zero
                     return .none
                 }
+                
+            case let .copy(numbersOnly):
+                if numbersOnly {
+                    var copyText = ""
+                    for c in state.bank.decryptNumber(state.key) {
+                        if c.isNumber {
+                            copyText.append(c)
+                        }
+                    }
+                    UIPasteboard.general.setValue(copyText, forPasteboardType: UTType.plainText.identifier)
+                } else {
+                    UIPasteboard.general.setValue(state.bank.decryptNumber(state.key), forPasteboardType: UTType.plainText.identifier)
+                }
+                return .none
                 
             case .dismiss:
                 state.dismiss = true
