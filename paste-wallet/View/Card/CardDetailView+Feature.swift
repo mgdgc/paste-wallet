@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import SwiftData
 import ActivityKit
+import UniformTypeIdentifiers
 import ComposableArchitecture
 
 struct CardDetailFeature: Reducer {
@@ -29,6 +30,7 @@ struct CardDetailFeature: Reducer {
     enum Action: Equatable {
         case dragChanged(DragGesture.Value)
         case dragEnded(DragGesture.Value)
+        case copy(separator: Card.SeparatorStyle)
         case setFavorite
         case showDeleteConfirmation(Bool)
         case showEdit
@@ -53,6 +55,11 @@ struct CardDetailFeature: Reducer {
                     state.draggedOffset = .zero
                     return .none
                 }
+                
+            case let .copy(separator):
+                let number = state.card.getWrappedNumber(state.key, separator)
+                UIPasteboard.general.setValue(number, forPasteboardType: UTType.plainText.identifier)
+                return .none
                 
             case .setFavorite:
                 state.card.favorite.toggle()

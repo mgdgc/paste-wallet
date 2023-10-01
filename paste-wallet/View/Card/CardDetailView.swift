@@ -153,9 +153,18 @@ struct CardDetailView: View {
             Spacer()
             
             HStack {
-                Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
-                    .font(.title2)
-                    .underline()
+                Menu {
+                    Button("card_context_copy_all", systemImage: "doc.on.doc") {
+                        store.send(.copy(separator: .dash))
+                    }
+                    Button("card_context_copy_numbers", systemImage: "textformat.123") {
+                        store.send(.copy(separator: .none))
+                    }
+                } label: {
+                    Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
+                        .font(.title2)
+                        .underline()
+                }
                 Spacer()
                 Text("brand_\(viewStore.card.brand)".localized)
                     .font(.body.bold())
