@@ -17,7 +17,7 @@ struct BankWidgetAttributes: ActivityAttributes {
         var color: String
         var number: String
     }
-
+    
     // Fixed non-changing properties about your activity go here!
     var id: UUID
 }
@@ -26,7 +26,8 @@ struct BankLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: BankWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
-            Text(String("Hello"))
+            activityView(context)
+                .padding()
             
         } dynamicIsland: { context in
             DynamicIsland {
@@ -48,46 +49,7 @@ struct BankLiveActivity: Widget {
                         .padding(8)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
-                        Text(String(Locale.current.currencySymbol ?? "$"))
-                            .foregroundStyle(Color(hexCode: context.state.color).isDark ? Color.white.opacity(0.3) : Color.black.opacity(0.3))
-                            .padding()
-                            .background {
-                                Circle()
-                                    .fill(Color(hexCode: context.state.color))
-                                    .frame(maxWidth: 36, maxHeight: 36)
-                            }
-                            .padding(8)
-                        
-                        Grid {
-                            GridRow {
-                                Text("di_bank_bank")
-                                HStack {
-                                    Text(String("\(context.state.bank)"))
-                                        .padding(4)
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(Colors.backgroundTertiary.color)
-                                        }
-                                    Spacer()
-                                }
-                            }
-                            GridRow {
-                                Text("di_bank_number")
-                                HStack {
-                                    Text(String("\(context.state.number)"))
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .lineLimit(2)
-                                        .padding(4)
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(Colors.backgroundTertiary.color)
-                                        }
-                                    Spacer()
-                                }
-                            }
-                        }
-                    }
+                    activityView(context)
                 }
                 
             } compactLeading: {
@@ -99,7 +61,7 @@ struct BankLiveActivity: Widget {
                 
             } compactTrailing: {
                 Text(String(Locale.current.currencySymbol ?? "$"))
-                    .foregroundStyle(Color(hexCode: context.state.color).isDark ? Color.white.opacity(0.3) : Color.black.opacity(0.3))
+                    .foregroundStyle(Color(hexCode: context.state.color).isDark ? Color.white.opacity(0.5) : Color.black.opacity(0.5))
                     .padding(4)
                     .background {
                         Circle()
@@ -114,6 +76,49 @@ struct BankLiveActivity: Widget {
                     .tint(Color.white)
             }
             
+        }
+    }
+    
+    private func activityView(_ context: ActivityViewContext<BankWidgetAttributes>) -> some View {
+        HStack {
+            Text(String(Locale.current.currencySymbol ?? "$"))
+                .foregroundStyle(Color(hexCode: context.state.color).isDark ? Color.white.opacity(0.5) : Color.black.opacity(0.5))
+                .padding()
+                .background {
+                    Circle()
+                        .fill(Color(hexCode: context.state.color))
+                        .frame(maxWidth: 36, maxHeight: 36)
+                }
+                .padding(8)
+            
+            Grid {
+                GridRow {
+                    Text("di_bank_bank")
+                    HStack {
+                        Text(String("\(context.state.bank)"))
+                            .padding(4)
+                            .background {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Colors.backgroundTertiary.color)
+                            }
+                        Spacer()
+                    }
+                }
+                GridRow {
+                    Text("di_bank_number")
+                    HStack {
+                        Text(String("\(context.state.number)"))
+                            .fixedSize(horizontal: false, vertical: true)
+                            .lineLimit(2)
+                            .padding(4)
+                            .background {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Colors.backgroundTertiary.color)
+                            }
+                        Spacer()
+                    }
+                }
+            }
         }
     }
 }
