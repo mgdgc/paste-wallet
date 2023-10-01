@@ -43,12 +43,12 @@ struct MemoView: View {
                             }
                             .foregroundStyle(Colors.textPrimary.color)
                         }
-                        .navigationDestination(store: store.scope(state: \.$memoDetail, action: MemoFeature.Action.memoDetail)) { store in
-                            MemoDetailView(store: store)
-                        }
                     }
                 }
                 .padding()
+                .navigationDestination(store: store.scope(state: \.$memoDetail, action: MemoFeature.Action.memoDetail)) { store in
+                    MemoDetailView(store: store)
+                }
             }
             .onAppear {
                 viewStore.send(.fetchAll)

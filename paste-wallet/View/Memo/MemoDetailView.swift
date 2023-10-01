@@ -15,16 +15,17 @@ struct MemoDetailView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
-                Section("memo_fields") {
-                    if let fields = viewStore.memo.fields, !fields.isEmpty {
-                        ForEach(fields, id: \.id) { field in
+                if let fields = viewStore.memo.fields, !fields.isEmpty {
+                    ForEach(fields, id: \.id) { field in
+                        Section(field.title) {
                             HStack {
-                                Text(field.title)
-                                Spacer()
                                 Text(field.decrypt(viewStore.key))
                             }
+                            .textSelection(.enabled)
                         }
-                    } else {
+                    }
+                } else {
+                    Section {
                         Text("memo_fields_empty")
                             .foregroundStyle(Colors.textTertiary.color)
                     }
