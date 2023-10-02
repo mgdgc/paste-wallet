@@ -1730,6 +1730,45 @@
         }
       }
     },
+    "settings_info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Info"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애플리케이션 정보"
+          }
+        }
+      }
+    },
+    "settings_info_app_build" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "빌드 번호"
+          }
+        }
+      }
+    },
+    "settings_info_app_version" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애플리케이션 버전"
+          }
+        }
+      }
+    },
     "tab_bank" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1776,7 +1815,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모아보기"
+            "value" : "즐겨찾기"
           }
         }
       }
@@ -1794,6 +1833,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "메모"
+          }
+        }
+      }
+    },
+    "tab_settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정"
           }
         }
       }

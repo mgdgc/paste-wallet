@@ -20,6 +20,7 @@ struct WalletFeature: Reducer {
         @PresentationState var card: CardFeature.State?
         @PresentationState var bank: BankFeature.State?
         @PresentationState var memo: MemoFeature.State?
+        @PresentationState var settings: SettingsFeature.State?
     }
     
     enum Action: Equatable {
@@ -32,6 +33,7 @@ struct WalletFeature: Reducer {
         case card(PresentationAction<CardFeature.Action>)
         case bank(PresentationAction<BankFeature.Action>)
         case memo(PresentationAction<MemoFeature.Action>)
+        case settings(PresentationAction<SettingsFeature.Action>)
     }
     
     var body: some Reducer<State, Action> {
@@ -55,6 +57,7 @@ struct WalletFeature: Reducer {
                 state.card = .init(key: key)
                 state.bank = .init(key: key)
                 state.memo = .init(key: key)
+                state.settings = .init()
                 return .none
                 
             case .deinitChildStates:
@@ -62,18 +65,22 @@ struct WalletFeature: Reducer {
                 state.card = nil
                 state.bank = nil
                 state.memo = nil
+                state.settings = nil
                 return .none
                 
             case let .favorite(action):
                 return handleFavoriteAction(&state, action)
                 
-            case let .card(action):
+            case .card(_):
                 return .none
                 
-            case let .bank(action):
+            case .bank(_):
                 return .none
                 
-            case let .memo(action):
+            case .memo(_):
+                return .none
+                
+            case let .settings(action):
                 return .none
             }
         }
@@ -88,6 +95,9 @@ struct WalletFeature: Reducer {
         }
         .ifLet(\.$memo, action: /Action.memo) {
             MemoFeature()
+        }
+        .ifLet(\.$settings, action: /Action.settings) {
+            SettingsFeature()
         }
     }
     

@@ -28,7 +28,7 @@ struct WalletView: View {
                     NavigationStack {
                         FavoriteView(store: store)
                     }
-                    .tabItem { Label("tab_favorite", image: "dashboard") }
+                    .tabItem { Label("tab_favorite", image: "star") }
                     .tag(Tab.favorite)
                 }
                 
@@ -56,6 +56,14 @@ struct WalletView: View {
                     .tabItem { Label("tab_memo", image: "note") }
                     .tag(Tab.memo)
                 }
+                
+                IfLetStore(store.scope(state: \.$settings, action: WalletFeature.Action.settings)) { store in
+                    NavigationStack {
+                        SettingsView(store: store)
+                    }
+                    .tabItem { Label("tab_settings", image: "settings") }
+                    .tag(Tab.settings)
+                }
             }
             .tint(Colors.textPrimary.color)
             
@@ -71,6 +79,7 @@ struct WalletView: View {
         case card
         case bank
         case memo
+        case settings
     }
     
 }
