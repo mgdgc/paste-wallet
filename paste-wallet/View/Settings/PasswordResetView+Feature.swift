@@ -49,6 +49,7 @@ struct PasswordResetFeature: Reducer {
             if state.newPasscode.count == 6 && state.newPasscode.allSatisfy({ $0.isNumber }) {
                 Card.changePasscode(modelContext: state.modelContext, oldKey: state.key, newKey: state.newPasscode)
                 Bank.changePasscode(modelContext: state.modelContext, oldKey: state.key, newKey: state.newPasscode)
+                Memo.changePasscode(modelContext: state.modelContext, oldKey: state.key, newKey: state.newPasscode)
                 
                 KeychainWrapper.standard[.password] = state.newPasscode
                 state.passwordChangedSuccessfully = true

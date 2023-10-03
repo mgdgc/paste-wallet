@@ -35,4 +35,20 @@ extension Memo {
             return []
         }
     }
+    
+    static func changePasscode(modelContext: ModelContext, oldKey: String, newKey: String) {
+        let allMemos = Memo.fetchAll(modelContext)
+        for memo in allMemos {
+            if let fields = memo.fields {
+                for field in fields {
+                    field.value = MemoField.encrypt(field.decrypt(oldKey), newKey)
+                }
+            }
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            print(#function, error)
+        }
+    }
 }
