@@ -94,7 +94,7 @@ struct CardView: View {
             Button("card_empty_add", systemImage: "plus") {
                 viewStore.send(.showCardForm)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
             .sheet(store: store.scope(state: \.$cardForm, action: CardFeature.Action.cardForm), content: { store in
                 NavigationStack {

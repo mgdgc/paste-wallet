@@ -999,6 +999,40 @@
         }
       }
     },
+    "memo_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No memos to show.\nPress + to add a new one."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메모가 없습니다.\n+ 를 눌러 새 메모를 추가할 수 있습니다."
+          }
+        }
+      }
+    },
+    "memo_empty_add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add First Memo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "첫 메모 추가하기"
+          }
+        }
+      }
+    },
     "memo_favorite" : {
       "extractionState" : "manual",
       "localizations" : {

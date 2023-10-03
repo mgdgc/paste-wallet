@@ -15,39 +15,46 @@ struct MemoView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            ScrollView {
-                LazyVStack {
-                    ForEach(viewStore.memos) { memo in
-                        Button {
-                            viewStore.send(.showMemoDetail(memo))
-                        } label: {
-                            VStack {
-                                HStack {
-                                    Text(memo.title)
-                                        .font(.title2.bold())
-                                    Spacer()
-                                }
-                                if !memo.desc.isEmpty {
-                                    HStack {
-                                        Text(memo.desc)
-                                            .font(.subheadline)
-                                        Spacer()
+            VStack {
+                if viewStore.memos.isEmpty {
+                    emptyView
+                    
+                } else {
+                    ScrollView {
+                        LazyVStack {
+                            ForEach(viewStore.memos) { memo in
+                                Button {
+                                    viewStore.send(.showMemoDetail(memo))
+                                } label: {
+                                    VStack {
+                                        HStack {
+                                            Text(memo.title)
+                                                .font(.title2.bold())
+                                            Spacer()
+                                        }
+                                        if !memo.desc.isEmpty {
+                                            HStack {
+                                                Text(memo.desc)
+                                                    .font(.subheadline)
+                                                Spacer()
+                                            }
+                                        }
                                     }
+                                    .padding()
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(Colors.backgroundPrimary.color)
+                                            .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+                                    }
+                                    .foregroundStyle(Colors.textPrimary.color)
                                 }
                             }
-                            .padding()
-                            .background {
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Colors.backgroundPrimary.color)
-                                    .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
-                            }
-                            .foregroundStyle(Colors.textPrimary.color)
+                        }
+                        .padding()
+                        .navigationDestination(store: store.scope(state: \.$memoDetail, action: MemoFeature.Action.memoDetail)) { store in
+                            MemoDetailView(store: store)
                         }
                     }
-                }
-                .padding()
-                .navigationDestination(store: store.scope(state: \.$memoDetail, action: MemoFeature.Action.memoDetail)) { store in
-                    MemoDetailView(store: store)
                 }
             }
             .onAppear {
@@ -76,6 +83,40 @@ struct MemoView: View {
         }
         .background {
             Colors.backgroundSecondary.color.ignoresSafeArea()
+        }
+    }
+    
+    private var emptyView: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack(spacing: 16) {
+                Spacer()
+                Image("empty_card")
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(maxWidth: 156, maxHeight: 156)
+                    .foregroundStyle(Colors.textPrimary.color)
+                HStack {
+                    Spacer()
+                    Text("memo_empty")
+                        .multilineTextAlignment(.center)
+                    Spacer()
+                }
+                Button("bank_empty_add", systemImage: "plus") {
+                    viewStore.send(.showMemoForm)
+                }
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+                .sheet(store: store.scope(state: \.$memoForm, action: MemoFeature.Action.memoForm)) {
+                    viewStore.send(.fetchAll)
+                } content: { store in
+                    NavigationStack {
+                        MemoForm(store: store)
+                    }
+                    .interactiveDismissDisabled()
+                }
+                Spacer()
+            }
+            .padding()
         }
     }
 }

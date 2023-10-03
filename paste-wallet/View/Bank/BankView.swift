@@ -99,7 +99,7 @@ struct BankView: View {
             Button("bank_empty_add", systemImage: "plus") {
                 viewStore.send(.showBankForm)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
             .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) {
                 viewStore.send(.fetchAll)
