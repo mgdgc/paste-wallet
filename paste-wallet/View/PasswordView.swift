@@ -54,7 +54,7 @@ struct PasswordView: View {
                         if let n = Int(pad) {
                             numberPadButton(number: n)
                             
-                        } else if pad == "biometric" && laContext.biometryType != .none && password != nil {
+                        } else if pad == "biometric" && laContext.biometryType != .none && password != nil && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
                             biometricButton
                             
                         } else if pad == "del" {
@@ -75,7 +75,9 @@ struct PasswordView: View {
             } else {
                 message = "password_type".localized
                 
-                checkBiometric()
+                if UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
+                    checkBiometric()
+                }
             }
         }
     }
