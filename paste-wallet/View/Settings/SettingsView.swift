@@ -39,7 +39,7 @@ struct SettingsView: View {
                     
                     Toggle("settings_privacy_biometric", isOn: viewStore.binding(get: \.useBiometric, send: SettingsFeature.Action.setBiometric))
                     
-                    Toggle("settings_privacy_all_entry", isOn: viewStore.binding(get: \.alwaysRequirePasscode, send: SettingsFeature.Action.setAlwaysRequirePasscode))
+//                    Toggle("settings_privacy_all_entry", isOn: viewStore.binding(get: \.alwaysRequirePasscode, send: SettingsFeature.Action.setAlwaysRequirePasscode))
                 } header: {
                     Text("settings_privacy")
                 } footer: {
