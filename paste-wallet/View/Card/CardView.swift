@@ -65,9 +65,6 @@ struct CardView: View {
                             CardForm(store: store)
                         }
                         .interactiveDismissDisabled()
-                        .onDisappear {
-                            viewStore.send(.fetchAll)
-                        }
                     })
                 }
             }
@@ -101,9 +98,6 @@ struct CardView: View {
                     CardForm(store: store)
                 }
                 .interactiveDismissDisabled()
-                .onDisappear {
-                    viewStore.send(.fetchAll)
-                }
             })
             Spacer()
         }

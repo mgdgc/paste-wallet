@@ -81,10 +81,13 @@ struct BankFeature: Reducer {
                     }
                 }
                 
-            case .bankForm(_):
-                return .none
+            case .bankForm(.dismiss):
+                return .send(.fetchAll)
                 
-            case .bankDetail(_):
+            case .bankDetail(.dismiss):
+                return .send(.fetchAll)
+                
+            default:
                 return .none
             }
         }

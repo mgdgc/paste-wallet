@@ -71,10 +71,13 @@ struct CardFeature: Reducer {
                     }
                 }
                 
-            case let .cardForm(action):
-                return .none
+            case .cardForm(.dismiss):
+                return .send(.fetchAll)
                 
-            case let .cardDetail(action):
+            case .cardDetail(.dismiss):
+                return .send(.fetchAll)
+                
+            default:
                 return .none
             }
         }

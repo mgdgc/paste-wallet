@@ -101,7 +101,7 @@ struct MemoView: View {
                         .multilineTextAlignment(.center)
                     Spacer()
                 }
-                Button("bank_empty_add", systemImage: "plus") {
+                Button("memo_empty_add", systemImage: "plus") {
                     viewStore.send(.showMemoForm)
                 }
                 .buttonStyle(.bordered)
