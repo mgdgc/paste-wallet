@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 final class Bank: Identifiable {
-    @Attribute(.unique) var id: UUID
+    var id: UUID
     var name: String
     var bank: String
     var color: String
@@ -51,6 +51,18 @@ extension Bank {
         } catch {
             print(#function, error)
             return []
+        }
+    }
+    
+    static func changePasscode(modelContext: ModelContext, oldKey: String, newKey: String) {
+        let allBanks = Bank.fetchAll(modelContext: modelContext)
+        for bank in allBanks {
+            bank.number = Bank.encryptNumber(newKey, bank.decryptNumber(oldKey))
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            print(#function, error)
         }
     }
 }

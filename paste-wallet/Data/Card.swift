@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 final class Card: Identifiable, Equatable {
-    @Attribute(.unique) var id: UUID
+    var id: UUID
     var name: String
     var issuer: String?
     var brand: String
@@ -105,6 +105,21 @@ extension Card {
         } catch {
             print(#function, error)
             return []
+        }
+    }
+    
+    static func changePasscode(modelContext: ModelContext, oldKey: String, newKey: String) {
+        let allCards = Card.fetchAll(modelContext: modelContext)
+        for card in allCards {
+            card.number = Card.encryptNumber(newKey, card.decryptNumber(key: oldKey))
+            if let cvc = card.getWrappedCVC(oldKey) {
+                card.cvc = Card.encryptCVC(newKey, cvc)
+            }
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            print(#function, error)
         }
     }
 }

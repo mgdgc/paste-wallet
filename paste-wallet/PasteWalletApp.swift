@@ -28,6 +28,13 @@ struct PasteWalletApp: App {
     }()
     static var sharedModelContext: ModelContext = ModelContext(sharedModelContainer)
     
+    init() {
+        UserDefaults.standard.register(defaults: [
+            UserDefaultsKey.Settings.useBiometric : true,
+            UserDefaultsKey.Settings.alwaysRequirePasscode : true
+        ])
+    }
+    
     var body: some Scene {
         WindowGroup {
             WalletView(store: Store(initialState: WalletFeature.State(), reducer: {

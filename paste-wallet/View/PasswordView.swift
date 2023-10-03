@@ -23,10 +23,10 @@ struct PasswordView: View {
     let laContext: LAContext = LAContext()
     
     let password: String? = {
-        let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.alreadyInstalled)
+        let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
         if freshInstall {
             KeychainWrapper.standard.removeAllKeys()
-            UserDefaults.standard.set(true, forKey: UserDefaultsKey.alreadyInstalled)
+            UserDefaults.standard.set(true, forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
         }
         return KeychainWrapper.standard[.password]
     }()

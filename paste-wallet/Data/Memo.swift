@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 final class Memo: Identifiable {
-    @Attribute(.unique) var id: UUID
+    var id: UUID
     var title: String
     var desc: String
     var touch: Date

@@ -57,7 +57,7 @@ struct WalletFeature: Reducer {
                 state.card = .init(key: key)
                 state.bank = .init(key: key)
                 state.memo = .init(key: key)
-                state.settings = .init()
+                state.settings = .init(key: key)
                 return .none
                 
             case .deinitChildStates:
@@ -80,7 +80,10 @@ struct WalletFeature: Reducer {
             case .memo(_):
                 return .none
                 
-            case let .settings(action):
+            case .settings(.presented(.passwordChanged)):
+                return .send(.setKey(nil))
+                
+            default:
                 return .none
             }
         }
