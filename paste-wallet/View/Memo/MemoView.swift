@@ -106,14 +106,6 @@ struct MemoView: View {
                 }
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
-                .sheet(store: store.scope(state: \.$memoForm, action: MemoFeature.Action.memoForm)) {
-                    viewStore.send(.fetchAll)
-                } content: { store in
-                    NavigationStack {
-                        MemoForm(store: store)
-                    }
-                    .interactiveDismissDisabled()
-                }
                 Spacer()
             }
             .padding()

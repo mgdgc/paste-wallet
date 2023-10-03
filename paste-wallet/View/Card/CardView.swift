@@ -42,6 +42,12 @@ struct CardView: View {
                                     }
                                 }
 
+//                                .navigationDestination(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) { store in
+//                                    NavigationStack {
+//                                        CardDetailView(store: store)
+//                                    }
+//                                }
+
                             }
                         }
                         .padding()
@@ -93,12 +99,6 @@ struct CardView: View {
             }
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
-            .sheet(store: store.scope(state: \.$cardForm, action: CardFeature.Action.cardForm), content: { store in
-                NavigationStack {
-                    CardForm(store: store)
-                }
-                .interactiveDismissDisabled()
-            })
             Spacer()
         }
         .padding()

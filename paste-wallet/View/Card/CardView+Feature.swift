@@ -22,8 +22,6 @@ struct CardFeature: Reducer {
         // 카드 Drag and drop
         var draggingItem: Card?
         
-        var showCardView: Card?
-        
         @PresentationState var cardForm: CardFormFeature.State?
         @PresentationState var cardDetail: CardDetailFeature.State?
     }
