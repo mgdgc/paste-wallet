@@ -25,12 +25,14 @@ struct CardForm: View {
                     }, send: { value in
                         CardFormFeature.Action.nameChanged(text: value)
                     }))
+                    .submitLabel(.next)
                     
                     TextField("new_card_issuer", text: viewStore.binding(get: { state in
                         state.issuer ?? ""
                     }, send: { value in
                         CardFormFeature.Action.issuerChanged(text: value)
                     }))
+                    .submitLabel(.next)
                     
                     Picker("new_card_brand", selection: viewStore.binding(get: \.brand, send: CardFormFeature.Action.brandChanged)) {
                         ForEach(brandOptions, id: \.self) { brand in
@@ -55,6 +57,7 @@ struct CardForm: View {
                                 .keyboardType(.decimalPad)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .multilineTextAlignment(.center)
+                                .submitLabel(.next)
                                 
                                 if i < 2 {
                                     Text("-")
@@ -70,6 +73,7 @@ struct CardForm: View {
                                 .keyboardType(.decimalPad)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .multilineTextAlignment(.center)
+                                .submitLabel(.next)
                                 
                                 if i < 3 {
                                     Text("-")
@@ -91,6 +95,7 @@ struct CardForm: View {
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 36)
+                        .submitLabel(.next)
                         
                         Text(String("/"))
                         
@@ -102,6 +107,7 @@ struct CardForm: View {
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 36)
+                        .submitLabel(.next)
                     }
                     
                     HStack {
@@ -116,6 +122,7 @@ struct CardForm: View {
                         }))
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
+                        .submitLabel(.done)
                     }
                 }
                 

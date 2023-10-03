@@ -32,8 +32,7 @@ struct CardFormFeature: Reducer {
             name == nil ||
             issuer == nil ||
             year == nil ||
-            month == nil ||
-            cvc == nil
+            month == nil
         }
         
         init(modelContext: ModelContext = PasteWalletApp.sharedModelContext, key: String, card: Card? = nil) {
