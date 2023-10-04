@@ -13,6 +13,8 @@ fileprivate struct SecretField: View {
     var title: LocalizedStringKey
     var content: String
     
+    @Binding var locked: Bool
+    
     var body: some View {
         HStack {
             Text(title)
@@ -21,6 +23,12 @@ fileprivate struct SecretField: View {
             Text(String(content))
                 .textSelection(.enabled)
                 .foregroundStyle(Colors.textSecondary.color)
+                .overlay {
+                    if locked {
+                        Rectangle()
+                            .fill(.thinMaterial)
+                    }
+                }
         }
     }
 }
@@ -54,20 +62,31 @@ struct CardDetailView: View {
     let store: StoreOf<CardDetailFeature>
     
     @Environment(\.dismiss) var dismiss
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(spacing: 0) {
-                cardView(viewStore: viewStore)
+                cardView
                     .padding([.top, .horizontal])
                     .offset(viewStore.draggedOffset)
-                    .gesture(dragGesture(viewStore: viewStore))
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                viewStore.send(.dragChanged(value))
+                            }
+                            .onEnded { value in
+                                viewStore.send(.dragEnded(value))
+                            }
+                    )
                     .zIndex(1)
                 
                 List {
                     Section("card_section_info") {
-                        SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate)
-                        SecretField(title: "card_cvc", content: viewStore.card.getWrappedCVC(viewStore.key) ?? "")
+                        SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
+                        if let cvc = viewStore.card.getWrappedCVC(viewStore.key) {
+                            SecretField(title: "card_cvc", content: cvc, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
+                        }
                     }
                     
                     if let memo = viewStore.card.memo {
@@ -108,11 +127,23 @@ struct CardDetailView: View {
                 .offset(y: -8)
                 .ignoresSafeArea()
             }
+            .onAppear {
+                viewStore.send(.unlock)
+            }
             .onChange(of: viewStore.dismiss) { oldValue, newValue in
                 dismiss()
             }
-            .onAppear {
-                viewStore.send(.launchActivity)
+            .onChange(of: scenePhase) { oldValue, newValue in
+                if oldValue == .background && newValue == .inactive {
+                    viewStore.send(.lock)
+                }
+            }
+            .onChange(of: viewStore.locked) { old, new in
+                if !new {
+                    viewStore.send(.launchActivity)
+                } else {
+                    viewStore.send(.stopActivity)
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -122,7 +153,19 @@ struct CardDetailView: View {
                     }
                     .foregroundStyle(Colors.textPrimary.color)
                 }
-
+                
+                ToolbarItem(placement: .principal) {
+                    if viewStore.locked {
+                        Button("unlock", systemImage: "lock") {
+                            viewStore.send(.unlock)
+                        }
+                    } else {
+                        Button("lock", systemImage: "lock.open") {
+                            viewStore.send(.lock)
+                        }
+                    }
+                }
+                
                 ToolbarItem {
                     Button("edit") {
                         viewStore.send(.showEdit)
@@ -140,54 +183,56 @@ struct CardDetailView: View {
     }
     
     @ViewBuilder
-    func cardView(viewStore: ViewStore<CardDetailFeature.State, CardDetailFeature.Action>) -> some View {
-        VStack {
-            HStack {
-                Text(viewStore.card.name)
-                    .font(.title2)
-                Spacer()
-                Text(viewStore.card.issuer ?? "")
-                    .font(.title3)
-            }
-            
-            Spacer()
-            
-            HStack {
-                Menu {
-                    Button("card_context_copy_all", systemImage: "doc.on.doc") {
-                        store.send(.copy(separator: .dash))
-                    }
-                    Button("card_context_copy_numbers", systemImage: "textformat.123") {
-                        store.send(.copy(separator: .none))
-                    }
-                } label: {
-                    Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
+    private var cardView: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack {
+                HStack {
+                    Text(viewStore.card.name)
                         .font(.title2)
-                        .underline()
+                    Spacer()
+                    Text(viewStore.card.issuer ?? "")
+                        .font(.title3)
                 }
+                
                 Spacer()
-                Text("brand_\(viewStore.card.brand)".localized)
-                    .font(.body.bold())
+                
+                HStack {
+                    if viewStore.locked {
+                        Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
+                            .font(.title2)
+                            .underline()
+                            .overlay {
+                                Rectangle()
+                                    .fill(.thinMaterial)
+                            }
+                    } else {
+                        Menu {
+                            Button("card_context_copy_all", systemImage: "doc.on.doc") {
+                                store.send(.copy(separator: .dash))
+                            }
+                            Button("card_context_copy_numbers", systemImage: "textformat.123") {
+                                store.send(.copy(separator: .none))
+                            }
+                        } label: {
+                            Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
+                                .font(.title2)
+                                .underline()
+                        }
+                    }
+                    Spacer()
+                    Text("brand_\(viewStore.card.brand)".localized)
+                        .font(.body.bold())
+                }
             }
+            .padding(20)
+            .aspectRatio(1.58, contentMode: .fit)
+            .foregroundStyle(UIColor(hexCode: viewStore.card.color).isDark ? Color.white : Color.black)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(UIColor(hexCode: viewStore.card.color)))
+                    .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+            )
         }
-        .padding(20)
-        .aspectRatio(1.58, contentMode: .fit)
-        .foregroundStyle(UIColor(hexCode: viewStore.card.color).isDark ? Color.white : Color.black)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(UIColor(hexCode: viewStore.card.color)))
-                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
-        )
-    }
-    
-    private func dragGesture(viewStore: ViewStore<CardDetailFeature.State, CardDetailFeature.Action>) -> some Gesture {
-        DragGesture()
-            .onChanged { value in
-                viewStore.send(.dragChanged(value))
-            }
-            .onEnded { value in
-                viewStore.send(.dragEnded(value))
-            }
     }
 }
 

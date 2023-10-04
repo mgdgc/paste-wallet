@@ -10,6 +10,7 @@ import SwiftUI
 import SwiftData
 import ActivityKit
 import UniformTypeIdentifiers
+import LocalAuthentication
 import ComposableArchitecture
 
 struct CardDetailFeature: Reducer {
@@ -19,6 +20,7 @@ struct CardDetailFeature: Reducer {
         let key: String
         let card: Card
         
+        var locked: Bool = true
         var draggedOffset: CGSize = .zero
         var showDeleteConfirmation: Bool = false
         
@@ -28,6 +30,9 @@ struct CardDetailFeature: Reducer {
     }
     
     enum Action: Equatable {
+        case unlock
+        case lock
+        case setLock(Bool)
         case dragChanged(DragGesture.Value)
         case dragEnded(DragGesture.Value)
         case copy(separator: Card.SeparatorStyle)
@@ -36,6 +41,7 @@ struct CardDetailFeature: Reducer {
         case showEdit
         case delete
         case launchActivity
+        case stopActivity
         case dismiss
         
         case cardForm(PresentationAction<CardFormFeature.Action>)
@@ -44,6 +50,31 @@ struct CardDetailFeature: Reducer {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .unlock:
+                return .run { send in
+                    let laContext = LAContext()
+                    var error: NSError?
+                    if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                        let reason = "biometric_reason".localized
+                        var result: Bool = false
+                        do {
+                            result = try await laContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
+                        } catch {
+                            print(#function, error)
+                        }
+                        await send(.setLock(!result))
+                    } else {
+                        await send(.setLock(false))
+                    }
+                }
+                
+            case .lock:
+                return .send(.setLock(true))
+                           
+            case let .setLock(lock):
+                state.locked = lock
+                return .none
+                
             case let .dragChanged(value):
                 state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
                 return .none
@@ -111,11 +142,17 @@ struct CardDetailFeature: Reducer {
                     let activity = try Activity<CardWidgetAttributes>.request(
                         attributes: attributes,
                         content: content)
-                    print(activity)
                 } catch {
                     print(#function, error)
                 }
                 return .none
+                
+            case .stopActivity:
+                return .run { send in
+                    for activity in Activity<CardWidgetAttributes>.activities {
+                        await activity.end(nil, dismissalPolicy: .immediate)
+                    }
+                }
                 
             case let .cardForm(action):
                 return .none

@@ -1016,6 +1016,23 @@
         }
       }
     },
+    "lock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lock"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금"
+          }
+        }
+      }
+    },
     "memo_edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2222,6 +2239,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "카드 추가"
+          }
+        }
+      }
+    },
+    "unlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 해제"
           }
         }
       }
