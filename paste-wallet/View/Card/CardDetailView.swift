@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 
-fileprivate struct SecretField: View {
+struct SecretField: View {
     var title: LocalizedStringKey
     var content: String
     
