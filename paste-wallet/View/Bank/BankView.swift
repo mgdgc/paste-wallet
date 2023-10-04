@@ -64,6 +64,14 @@ struct BankView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
                     }
+                    .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) {
+                        viewStore.send(.fetchAll)
+                    } content: { store in
+                        NavigationStack {
+                            BankForm(store: store)
+                        }
+                        .interactiveDismissDisabled()
+                    }
                 }
             }
         }
@@ -91,14 +99,6 @@ struct BankView: View {
             }
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
-            .sheet(store: store.scope(state: \.$bankForm, action: BankFeature.Action.bankForm)) {
-                viewStore.send(.fetchAll)
-            } content: { store in
-                NavigationStack {
-                    BankForm(store: store)
-                }
-                .interactiveDismissDisabled()
-            }
             Spacer()
         }
         .padding()

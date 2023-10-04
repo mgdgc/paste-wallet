@@ -33,7 +33,7 @@ struct BankForm: View {
                         value.removeAll(where: { !$0.isNumber && $0 != "-" })
                         return .setAccountNumber(value)
                     }))
-                    .keyboardType(.decimalPad)
+                    .keyboardType(.numbersAndPunctuation)
                     .submitLabel(.done)
                 }
                 
