@@ -26,6 +26,12 @@ struct CardDetailFeature: Reducer {
         
         var dismiss: Bool = false
         
+        var biometricAvailable: Bool {
+            let laContext = LAContext()
+            var error: NSError?
+            return laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+        }
+        
         @PresentationState var cardForm: CardFormFeature.State?
     }
     

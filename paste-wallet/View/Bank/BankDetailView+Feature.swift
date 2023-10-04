@@ -26,6 +26,12 @@ struct BankDetailFeature: Reducer {
         
         var draggedOffset: CGSize = .zero
         
+        var biometricAvailable: Bool {
+            let laContext = LAContext()
+            var error: NSError?
+            return laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+        }
+        
         @PresentationState var bankForm: BankFormFeature.State?
     }
     

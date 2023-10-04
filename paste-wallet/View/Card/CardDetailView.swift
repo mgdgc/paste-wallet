@@ -128,7 +128,9 @@ struct CardDetailView: View {
                 .ignoresSafeArea()
             }
             .onAppear {
-                viewStore.send(.unlock)
+                if viewStore.biometricAvailable {
+                    viewStore.send(.unlock)
+                }
             }
             .onChange(of: viewStore.dismiss) { oldValue, newValue in
                 dismiss()
