@@ -17,6 +17,8 @@ struct PasswordView: View {
     @State private var temp: [Int] = []
     
     @State private var message: String = ""
+    @State private var authSuccess: Bool? = nil
+    @State private var authFail: Bool? = nil
     
     let columns: [GridItem] = [GridItem(alignment: .trailing), GridItem(alignment: .center), GridItem(alignment: .leading)]
     let numberPad: [String] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "biometric", "0", "del"]
@@ -63,6 +65,13 @@ struct PasswordView: View {
                         } else {
                             emptyButton
                         }
+                    }
+                    .sensoryFeedback(.success, trigger: authSuccess) { oldValue, newValue in
+                        return newValue ?? false
+                    }
+                    .sensoryFeedback(.error, trigger: authFail) { oldValue, newValue in
+                        authFail = false
+                        return newValue ?? false
                     }
                 }
             }
@@ -157,6 +166,8 @@ struct PasswordView: View {
                 // 비밀번호 불일치
                 typed = []
                 message = "password_wrong".localized
+                
+                authFail = true
             }
         } else {
             // 새 비밀번호 모드
@@ -192,6 +203,8 @@ struct PasswordView: View {
     }
     
     private func valid() {
+        self.authSuccess = true
+        
         let key = convert(array: typed)
         self.key = key
     }

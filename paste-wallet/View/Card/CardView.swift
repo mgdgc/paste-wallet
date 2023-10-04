@@ -23,6 +23,7 @@ struct CardView: View {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), spacing: 20) {
                             ForEach(viewStore.cards) { card in
                                 Button {
+                                    viewStore.send(.playHaptic)
                                     viewStore.send(.showCardDetail(card: card))
                                 } label: {
                                     SmallCardCell(card: card, key: viewStore.key)
@@ -32,6 +33,7 @@ struct CardView: View {
                                             CardPreview(card: card, key: viewStore.key, size: proxy.size)
                                         }
                                 }
+                                .sensoryFeedback(.impact, trigger: viewStore.haptic)
                                 .fullScreenCover(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) {
                                     viewStore.send(.stopLiveActivity)
                                 } content: { store in

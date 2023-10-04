@@ -22,6 +22,7 @@ struct BankView: View {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), spacing: 20) {
                             ForEach(viewStore.banks, id: \.id) { bank in
                                 Button {
+                                    viewStore.send(.playHaptic)
                                     viewStore.send(.showBankDetail(bank))
                                 } label: {
                                     SmallBankView(bank: bank, key: viewStore.key)
@@ -39,6 +40,7 @@ struct BankView: View {
                                             }
                                         }
                                 }
+                                .sensoryFeedback(.impact, trigger: viewStore.haptic)
                                 .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) {
                                     viewStore.send(.stopLiveActivity)
                                 } content: { store in

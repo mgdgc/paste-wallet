@@ -21,6 +21,8 @@ struct CardFeature: Reducer {
         var cards: [Card] = []
         // 카드 Drag and drop
         var draggingItem: Card?
+        // Haptic
+        var haptic: UUID = UUID()
         
         @PresentationState var cardForm: CardFormFeature.State?
         @PresentationState var cardDetail: CardDetailFeature.State?
@@ -28,6 +30,7 @@ struct CardFeature: Reducer {
     
     enum Action: Equatable {
         case fetchAll
+        case playHaptic
         case copy(card: Card, separator: Card.SeparatorStyle)
         case delete(card: Card)
         case showCardForm
@@ -43,6 +46,10 @@ struct CardFeature: Reducer {
             switch action {
             case .fetchAll:
                 state.cards = Card.fetchAll(modelContext: state.modelContext)
+                return .none
+                
+            case .playHaptic:
+                state.haptic = UUID()
                 return .none
                 
             case .showCardForm:

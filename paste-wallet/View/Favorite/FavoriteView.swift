@@ -56,6 +56,7 @@ struct FavoriteView: View {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), pinnedViews: .sectionHeaders) {
                                     ForEach(viewStore.cards) { card in
                                         Button {
+                                            viewStore.send(.playHaptic)
                                             viewStore.send(.showCardDetail(card))
                                         } label: {
                                             SmallCardCell(card: card, key: viewStore.key)
@@ -87,6 +88,7 @@ struct FavoriteView: View {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), pinnedViews: .sectionHeaders) {
                                     ForEach(viewStore.banks) { bank in
                                         Button {
+                                            viewStore.send(.playHaptic)
                                             viewStore.send(.showBankDetail(bank))
                                         } label: {
                                             SmallBankView(bank: bank, key: viewStore.key)
@@ -115,6 +117,7 @@ struct FavoriteView: View {
                     }
                 }
             }
+            .sensoryFeedback(.impact, trigger: viewStore.haptic)
             .onAppear {
                 viewStore.send(.fetchCard)
                 viewStore.send(.fetchBank)

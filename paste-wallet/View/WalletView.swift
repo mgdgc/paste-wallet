@@ -66,6 +66,7 @@ struct WalletView: View {
                 }
             }
             .tint(Colors.textPrimary.color)
+            .sensoryFeedback(.impact, trigger: viewStore.selected)
             
         } else {
             PasswordView(key: viewStore.binding(get: \.key, send: { value in

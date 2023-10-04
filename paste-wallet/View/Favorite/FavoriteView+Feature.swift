@@ -20,6 +20,7 @@ struct FavoriteFeature: Reducer {
         
         var cards: [Card] = []
         var banks: [Bank] = []
+        var haptic: UUID = UUID()
         
         @PresentationState var cardDetail: CardDetailFeature.State?
         @PresentationState var bankDetail: BankDetailFeature.State?
@@ -28,6 +29,7 @@ struct FavoriteFeature: Reducer {
     enum Action: Equatable {
         case fetchCard
         case fetchBank
+        case playHaptic
         case setTab(WalletView.Tab)
         case copyCard(Card, Card.SeparatorStyle)
         case copyBank(Bank, Bool)
@@ -50,6 +52,10 @@ struct FavoriteFeature: Reducer {
                 
             case .fetchBank:
                 state.banks = Bank.fetchFavorite(modelContext: state.modelContext)
+                return .none
+                
+            case .playHaptic:
+                state.haptic = UUID()
                 return .none
                 
             case let .setTab(tab):

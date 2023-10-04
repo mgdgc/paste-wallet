@@ -17,6 +17,7 @@ struct BankFeature: Reducer {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         
+        var haptic: UUID = UUID()
         var banks: [Bank] = []
         
         @PresentationState var bankForm: BankFormFeature.State?
@@ -25,6 +26,7 @@ struct BankFeature: Reducer {
     
     enum Action: Equatable {
         case fetchAll
+        case playHaptic
         case showBankForm
         case showBankDetail(Bank)
         case deleteBank(Bank)
@@ -40,6 +42,10 @@ struct BankFeature: Reducer {
             switch action {
             case .fetchAll:
                 state.banks = Bank.fetchAll(modelContext: state.modelContext)
+                return .none
+                
+            case .playHaptic:
+                state.haptic = UUID()
                 return .none
                 
             case .showBankForm:
