@@ -29,7 +29,8 @@ struct CardDetailFeature: Reducer {
         var biometricAvailable: Bool {
             let laContext = LAContext()
             var error: NSError?
-            return laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+            return laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) &&
+            UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
         }
         
         @PresentationState var cardForm: CardFormFeature.State?
@@ -60,7 +61,8 @@ struct CardDetailFeature: Reducer {
                 return .run { send in
                     let laContext = LAContext()
                     var error: NSError?
-                    if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                    if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) &&
+                        UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
                         let reason = "biometric_reason".localized
                         var result: Bool = false
                         do {
