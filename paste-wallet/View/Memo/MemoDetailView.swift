@@ -15,13 +15,34 @@ struct MemoDetailView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
+                Section {
+                    VStack(spacing: 8) {
+                        HStack {
+                            Text(viewStore.memo.title)
+                                .font(.title)
+                            Spacer()
+                        }
+                        HStack {
+                            Text(viewStore.memo.desc)
+                                .font(.body)
+                            Spacer()
+                        }
+                    }
+                    .padding(4)
+                }
+                
                 if let fields = viewStore.memo.fields, !fields.isEmpty {
                     ForEach(fields, id: \.id) { field in
                         Section(field.title) {
-                            HStack {
-                                Text(field.decrypt(viewStore.key))
+                            if viewStore.locked {
+                                ImmutableTextView(text: .constant(field.decrypt(viewStore.key)))
+                                    .overlay {
+                                        Rectangle()
+                                            .fill(.thinMaterial)
+                                    }
+                            } else {
+                                ImmutableTextView(text: .constant(field.decrypt(viewStore.key)))
                             }
-                            .textSelection(.enabled)
                         }
                     }
                 } else {
@@ -50,15 +71,32 @@ struct MemoDetailView: View {
                     }
                 }
             }
+            .onAppear {
+                if viewStore.biometricAvailable {
+                    viewStore.send(.unlock)
+                }
+            }
             .navigationTitle(String(viewStore.memo.title))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+//                ToolbarItem(placement: .principal) {
+//                    VStack {
+//                        Text(String(viewStore.memo.title))
+//                            .font(.headline)
+//                        Text(String(viewStore.memo.desc))
+//                            .font(.subheadline)
+//                    }
+//                }
+                
                 ToolbarItem(placement: .principal) {
-                    VStack {
-                        Text(String(viewStore.memo.title))
-                            .font(.headline)
-                        Text(String(viewStore.memo.desc))
-                            .font(.subheadline)
+                    if viewStore.locked {
+                        Button("unlock", systemImage: "lock") {
+                            viewStore.send(.unlock)
+                        }
+                    } else {
+                        Button("lock", systemImage: "lock.open") {
+                            viewStore.send(.lock)
+                        }
                     }
                 }
                 
@@ -80,8 +118,8 @@ struct MemoDetailView: View {
     
     var memo = Memo(title: "Memo 1", desc: "What's your TCA")
     memo.fields = [
-        MemoField(title: "Field 1", value: "12343245"),
-        MemoField(title: "Field 2", value: "928472")
+        MemoField(title: "Field 1", value: "fRA2PFBGYONOw8ZV73gujA=="),
+        MemoField(title: "Field 2", value: "fRA2PFBGYONOw8ZV73gujA==")
     ]
     modelContext.insert(memo)
     
