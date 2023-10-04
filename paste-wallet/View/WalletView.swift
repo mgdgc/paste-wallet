@@ -66,7 +66,9 @@ struct WalletView: View {
                 }
             }
             .tint(Colors.textPrimary.color)
-            .sensoryFeedback(.impact, trigger: viewStore.selected)
+            .sensoryFeedback(.impact, trigger: viewStore.selected) { _, _ in
+                return UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.tabHaptic)
+            }
             
         } else {
             PasswordView(key: viewStore.binding(get: \.key, send: { value in

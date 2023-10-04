@@ -1917,6 +1917,57 @@
         }
       }
     },
+    "settings_interaction" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interactions"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상호작용"
+          }
+        }
+      }
+    },
+    "settings_interaction_haptic_item" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item Haptic"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목 선택 시 진동"
+          }
+        }
+      }
+    },
+    "settings_interaction_haptic_tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tab Bar Haptic"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탭 선택 시 진동"
+          }
+        }
+      }
+    },
     "settings_privacy" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -33,6 +33,7 @@ struct SettingsView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
                 appView
+                interactionView
                 privacyView
                 infoView
             }
@@ -59,6 +60,16 @@ struct SettingsView: View {
                 
             } footer: {
                 Text("settings_app_footer")
+            }
+        }
+    }
+    
+    var interactionView: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Section("settings_interaction") {
+                Toggle("settings_interaction_haptic_tab", isOn: viewStore.binding(get: \.tabHaptic, send: SettingsFeature.Action.setTabHaptic))
+                
+                Toggle("settings_interaction_haptic_item", isOn: viewStore.binding(get: \.itemHaptic, send: SettingsFeature.Action.setItemHaptic))
             }
         }
     }

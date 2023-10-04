@@ -45,7 +45,9 @@ struct BankFeature: Reducer {
                 return .none
                 
             case .playHaptic:
-                state.haptic = UUID()
+                if UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.itemHaptic) {
+                    state.haptic = UUID()
+                }
                 return .none
                 
             case .showBankForm:

@@ -21,6 +21,9 @@ struct SettingsFeature: Reducer {
         let laContext = LAContext()
         // App
         var firstTab: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
+        // Interaction
+        var tabHaptic: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.tabHaptic)
+        var itemHaptic: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.itemHaptic)
         // Privacy
         var useBiometric: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
         // App Info
@@ -43,6 +46,9 @@ struct SettingsFeature: Reducer {
     enum Action: Equatable {
         // App
         case setFirstTab(WalletView.Tab)
+        // Interaction
+        case setTabHaptic(Bool)
+        case setItemHaptic(Bool)
         // Privacy
         case showPasscodeChangeView
         case setBiometric(Bool)
@@ -59,6 +65,16 @@ struct SettingsFeature: Reducer {
             case let .setFirstTab(tab):
                 state.firstTab = tab
                 UserDefaults.standard.set(tab.rawValue, forKey: UserDefaultsKey.Settings.firstTab)
+                return .none
+                
+            case let .setTabHaptic(haptic):
+                state.tabHaptic = haptic
+                UserDefaults.standard.set(haptic, forKey: UserDefaultsKey.Settings.tabHaptic)
+                return .none
+                
+            case let .setItemHaptic(haptic):
+                state.itemHaptic = haptic
+                UserDefaults.standard.set(haptic, forKey: UserDefaultsKey.Settings.itemHaptic)
                 return .none
                 
             case .showPasscodeChangeView:

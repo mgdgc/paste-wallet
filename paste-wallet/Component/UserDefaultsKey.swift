@@ -19,4 +19,6 @@ extension UserDefaultsKey.AppEnvironment {
 extension UserDefaultsKey.Settings {
     static let useBiometric = "useBiometric"
     static let firstTab = "firstTab"
+    static let tabHaptic = "tabHaptic"
+    static let itemHaptic = "itemHaptic"
 }
