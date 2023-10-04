@@ -41,7 +41,7 @@ struct FavoriteView: View {
                             Button {
                                 viewStore.send(.setTab(.bank))
                             } label: {
-                                Label("tab_card", image: "bank")
+                                Label("tab_bank", image: "bank")
                             }
                         }
                         .buttonStyle(.bordered)
@@ -53,22 +53,26 @@ struct FavoriteView: View {
                         // MARK: - Cards
                         if !viewStore.cards.isEmpty {
                             GroupBox {
-                                LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), pinnedViews: .sectionHeaders) {
                                     ForEach(viewStore.cards) { card in
-                                        SmallCardCell(card: card, key: viewStore.key)
-                                            .onTapGesture {
-                                                viewStore.send(.showCardDetail(card))
-                                            }
-                                            .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) {
-                                                viewStore.send(.stopLiveActivity)
-                                            } content: { store in
-                                                NavigationStack {
-                                                    CardDetailView(store: store)
+                                        Button {
+                                            viewStore.send(.showCardDetail(card))
+                                        } label: {
+                                            SmallCardCell(card: card, key: viewStore.key)
+                                                .contextMenu {
+                                                    contextMenu(for: card)
                                                 }
-                                                .onDisappear {
-                                                    viewStore.send(.fetchCard)
-                                                }
+                                        }
+                                        .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) {
+                                            viewStore.send(.stopLiveActivity)
+                                        } content: { store in
+                                            NavigationStack {
+                                                CardDetailView(store: store)
                                             }
+                                            .onDisappear {
+                                                viewStore.send(.fetchCard)
+                                            }
+                                        }
                                     }
                                 }
                             } label: {
@@ -80,23 +84,27 @@ struct FavoriteView: View {
                         // MARK: - Banks
                         if !viewStore.banks.isEmpty {
                             GroupBox {
-                                LazyVGrid(columns: [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)], pinnedViews: .sectionHeaders) {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), pinnedViews: .sectionHeaders) {
                                     ForEach(viewStore.banks) { bank in
-                                        SmallBankView(bank: bank, key: viewStore.key)
-                                            .onTapGesture {
-                                                viewStore.send(.showBankDetail(bank))
-                                            }
-                                            .fullScreenCover(store: store.scope(state: \.$bankDetail, action: FavoriteFeature.Action.bankDetail)) {
-                                                viewStore.send(.stopLiveActivity)
-                                            } content: { store in
-                                                NavigationStack {
-                                                    BankDetailView(store: store)
+                                        Button {
+                                            viewStore.send(.showBankDetail(bank))
+                                        } label: {
+                                            SmallBankView(bank: bank, key: viewStore.key)
+                                                .contextMenu {
+                                                    contextMenu(for: bank)
                                                 }
-                                                .onDisappear {
-                                                    viewStore.send(.fetchCard)
-                                                }
+                                        }
+                                        .fullScreenCover(store: store.scope(state: \.$bankDetail, action: FavoriteFeature.Action.bankDetail)) {
+                                            viewStore.send(.stopLiveActivity)
+                                        } content: { store in
+                                            NavigationStack {
+                                                BankDetailView(store: store)
                                             }
-
+                                            .onDisappear {
+                                                viewStore.send(.fetchCard)
+                                            }
+                                        }
+                                        
                                     }
                                 }
                             } label: {
@@ -135,6 +143,40 @@ struct FavoriteView: View {
                         Image(systemName: "chevron.forward")
                     }
                 }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func contextMenu(for card: Card) -> some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Button("card_context_copy_all", systemImage: "doc.on.doc") {
+                store.send(.copyCard(card, .dash))
+            }
+            
+            Button("card_context_copy_numbers", systemImage: "textformat.123") {
+                store.send(.copyCard(card, .none))
+            }
+            
+            Button("card_context_unfavorite", systemImage: "star.fill", role: .destructive) {
+                store.send(.unfavoriteCard(card))
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func contextMenu(for bank: Bank) -> some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Button("bank_context_copy_all", systemImage: "doc.on.doc") {
+                store.send(.copyBank(bank, false))
+            }
+            
+            Button("bank_context_copy_numbers_only", systemImage: "textformat.123") {
+                store.send(.copyBank(bank, true))
+            }
+            
+            Button("bank_context_unfavorite", systemImage: "star.fill", role: .destructive) {
+                store.send(.unfavoriteBank(bank))
             }
         }
     }

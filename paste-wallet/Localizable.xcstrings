@@ -109,6 +109,23 @@
         }
       }
     },
+    "bank_context_unfavorite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove From Favorite"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기 해제"
+          }
+        }
+      }
+    },
     "bank_edit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -479,6 +496,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "카드 삭제"
+          }
+        }
+      }
+    },
+    "card_context_unfavorite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove From Favorite"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기 해제"
           }
         }
       }

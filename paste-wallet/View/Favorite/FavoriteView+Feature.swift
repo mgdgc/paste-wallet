@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import SwiftData
 import ActivityKit
+import UniformTypeIdentifiers
 import ComposableArchitecture
 
 struct FavoriteFeature: Reducer {
@@ -28,6 +29,10 @@ struct FavoriteFeature: Reducer {
         case fetchCard
         case fetchBank
         case setTab(WalletView.Tab)
+        case copyCard(Card, Card.SeparatorStyle)
+        case copyBank(Bank, Bool)
+        case unfavoriteCard(Card)
+        case unfavoriteBank(Bank)
         case showCardDetail(Card)
         case showBankDetail(Bank)
         case stopLiveActivity
@@ -50,6 +55,33 @@ struct FavoriteFeature: Reducer {
             case let .setTab(tab):
                 state.tab = tab
                 return .none
+                
+            case let .copyCard(card, separator):
+                let number = card.getWrappedNumber(state.key, separator)
+                UIPasteboard.general.setValue(number, forPasteboardType: UTType.plainText.identifier)
+                return .none
+                
+            case let .copyBank(bank, numbersOnly):
+                if numbersOnly {
+                    var copyText = ""
+                    for c in bank.decryptNumber(state.key) {
+                        if c.isNumber {
+                            copyText.append(c)
+                        }
+                    }
+                    UIPasteboard.general.setValue(copyText, forPasteboardType: UTType.plainText.identifier)
+                } else {
+                    UIPasteboard.general.setValue(bank.decryptNumber(state.key), forPasteboardType: UTType.plainText.identifier)
+                }
+                return .none
+                
+            case let .unfavoriteCard(card):
+                card.favorite = false
+                return .send(.fetchCard)
+                
+            case let .unfavoriteBank(bank):
+                bank.favorite = false
+                return .send(.fetchBank)
                 
             case let .showCardDetail(card):
                 state.cardDetail = .init(key: state.key, card: card)

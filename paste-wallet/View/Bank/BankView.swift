@@ -14,14 +14,12 @@ struct BankView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            GeometryReader { _ in
+            GeometryReader { proxy in
                 if viewStore.banks.isEmpty {
                     emptyView(viewStore)
                 } else {
                     ScrollView {
-                        let columns = [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)]
-                        
-                        LazyVGrid(columns: columns, spacing: 20) {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), spacing: 20) {
                             ForEach(viewStore.banks, id: \.id) { bank in
                                 Button {
                                     viewStore.send(.showBankDetail(bank))

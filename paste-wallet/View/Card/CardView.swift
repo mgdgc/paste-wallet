@@ -20,9 +20,7 @@ struct CardView: View {
                     
                 } else {
                     ScrollView {
-                        let columns = [GridItem(.flexible(), spacing: 20), GridItem(.flexible(), spacing: 20)]
-                        
-                        LazyVGrid(columns: columns, spacing: 20) {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), spacing: 20) {
                             ForEach(viewStore.cards) { card in
                                 Button {
                                     viewStore.send(.showCardDetail(card: card))
@@ -41,13 +39,6 @@ struct CardView: View {
                                         CardDetailView(store: store)
                                     }
                                 }
-
-//                                .navigationDestination(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) { store in
-//                                    NavigationStack {
-//                                        CardDetailView(store: store)
-//                                    }
-//                                }
-
                             }
                         }
                         .padding()
