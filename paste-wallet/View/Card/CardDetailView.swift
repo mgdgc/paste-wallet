@@ -20,15 +20,22 @@ struct SecretField: View {
             Text(title)
                 .foregroundStyle(Colors.textPrimary.color)
             Spacer()
-            Text(String(content))
-                .textSelection(.enabled)
-                .foregroundStyle(Colors.textSecondary.color)
-                .overlay {
-                    if locked {
-                        Rectangle()
-                            .fill(.thinMaterial)
+            if locked {
+                Text(String(content))
+                    .textSelection(.enabled)
+                    .foregroundStyle(Colors.textSecondary.color)
+                    .overlay {
+                        if locked {
+                            Rectangle()
+                                .fill(.thinMaterial)
+                        }
                     }
-                }
+            } else {
+                Text(String(content))
+                    .textSelection(.enabled)
+                    .foregroundStyle(Colors.textSecondary.color)
+                    .textSelection(.enabled)
+            }
         }
     }
 }
