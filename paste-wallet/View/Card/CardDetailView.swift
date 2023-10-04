@@ -92,7 +92,15 @@ struct CardDetailView: View {
                     if let memo = viewStore.card.memo {
                         Section("card_section_memo") {
                             HStack {
-                                ImmutableTextView(text: .constant(memo))
+                                if viewStore.locked {
+                                    ImmutableTextView(text: .constant(memo))
+                                        .overlay {
+                                            Rectangle()
+                                                .fill(.thinMaterial)
+                                        }
+                                } else {
+                                    ImmutableTextView(text: .constant(memo))
+                                }
                             }
                         }
                     }

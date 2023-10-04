@@ -39,7 +39,15 @@ struct BankDetailView: View {
                     
                     if let memo = viewStore.bank.memo, !memo.isEmpty {
                         Section("bank_memo") {
-                            ImmutableTextView(text: .constant(memo))
+                            if viewStore.locked {
+                                ImmutableTextView(text: .constant(memo))
+                                    .overlay {
+                                        Rectangle()
+                                            .fill(.thinMaterial)
+                                    }
+                            } else {
+                                ImmutableTextView(text: .constant(memo))
+                            }
                         }
                     }
                     
