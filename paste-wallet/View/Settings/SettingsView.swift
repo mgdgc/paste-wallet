@@ -42,9 +42,10 @@ struct SettingsView: View {
 //                    Toggle("settings_privacy_all_entry", isOn: viewStore.binding(get: \.alwaysRequirePasscode, send: SettingsFeature.Action.setAlwaysRequirePasscode))
                 } header: {
                     Text("settings_privacy")
-                } footer: {
-                    Text("settings_privacy_footer")
-                }
+                } 
+//            footer: {
+//                    Text("settings_privacy_footer")
+//                }
                 
                 Section("settings_info") {
                     InfoCell(title: "settings_info_app_version", message: viewStore.appVersion)
