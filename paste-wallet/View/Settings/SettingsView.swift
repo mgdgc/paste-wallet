@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalAuthentication
 import SwiftKeychainWrapper
 import ComposableArchitecture
 
@@ -25,6 +26,8 @@ fileprivate struct InfoCell: View {
 
 struct SettingsView: View {
     let store: StoreOf<SettingsFeature>
+    
+    private let laContext = LAContext()
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
@@ -70,15 +73,12 @@ struct SettingsView: View {
                     PasswordResetView(store: store)
                 }
                 
-                Toggle("settings_privacy_biometric", isOn: viewStore.binding(get: \.useBiometric, send: SettingsFeature.Action.setBiometric))
-                
-                // Toggle("settings_privacy_all_entry", isOn: viewStore.binding(get: \.alwaysRequirePasscode, send: SettingsFeature.Action.setAlwaysRequirePasscode))
+                if viewStore.canEvaluate {
+                    Toggle("settings_privacy_biometric", isOn: viewStore.binding(get: \.useBiometric, send: SettingsFeature.Action.setBiometric))
+                }
             } header: {
                 Text("settings_privacy")
             }
-            // footer: {
-            //    Text("settings_privacy_footer")
-            // }
         }
     }
     

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import LocalAuthentication
 import ComposableArchitecture
 import SwiftKeychainWrapper
 
@@ -16,14 +17,25 @@ struct SettingsFeature: Reducer {
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
+        // None Changing Value
+        let laContext = LAContext()
         // App
         var firstTab: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
         // Privacy
         var useBiometric: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
-        var alwaysRequirePasscode: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.alwaysRequirePasscode)
         // App Info
         var appVersion: String = "1.0.0"
         var appBuild: String = "1"
+        
+        var canEvaluate: Bool {
+            var error: NSError?
+            if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                if error == nil {
+                    return true
+                }
+            }
+            return false
+        }
         
         @PresentationState var passwordReset: PasswordResetFeature.State?
     }
@@ -34,7 +46,6 @@ struct SettingsFeature: Reducer {
         // Privacy
         case showPasscodeChangeView
         case setBiometric(Bool)
-        case setAlwaysRequirePasscode(Bool)
         case passwordChanged
         // App Info
         case fetchAppVersion
@@ -57,11 +68,6 @@ struct SettingsFeature: Reducer {
             case let .setBiometric(use):
                 state.useBiometric = use
                 UserDefaults.standard.set(use, forKey: UserDefaultsKey.Settings.useBiometric)
-                return .none
-                
-            case let .setAlwaysRequirePasscode(use):
-                state.alwaysRequirePasscode = use
-                UserDefaults.standard.set(use, forKey: UserDefaultsKey.Settings.alwaysRequirePasscode)
                 return .none
                 
             case .fetchAppVersion:

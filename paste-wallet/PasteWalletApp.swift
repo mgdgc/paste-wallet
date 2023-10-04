@@ -31,8 +31,7 @@ struct PasteWalletApp: App {
     init() {
         UserDefaults.standard.register(defaults: [
             UserDefaultsKey.Settings.firstTab : WalletView.Tab.favorite.rawValue,
-            UserDefaultsKey.Settings.useBiometric : true,
-            UserDefaultsKey.Settings.alwaysRequirePasscode : true
+            UserDefaultsKey.Settings.useBiometric : true
         ])
     }
     

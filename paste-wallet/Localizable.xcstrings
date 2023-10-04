@@ -1923,7 +1923,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Always Require Passcode"
+            "value" : "Always Require Authentication"
           }
         },
         "ko" : {
@@ -1947,6 +1947,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "생체인증 사용"
+          }
+        }
+      }
+    },
+    "settings_privacy_blur" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide Screen On Background"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "백그라운드에서 화면 가림"
           }
         }
       }
@@ -2002,19 +2019,36 @@
         }
       }
     },
-    "settings_privacy_footer" : {
+    "settings_privacy_footer_all_entry" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The app will require the passcode when the app goes background to foreground when 'Always Require Passcode' options is enabled."
+            "value" : "The app will require the biometric unlock when the app goes background to foreground when 'Always Require Authentication' options is enabled."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "'백그라운드 상태가 되면 잠금' 옵션을 활성화하면, 앱을 백그라운드 상태에서 호출했을 때 비밀번호를 입력해야 합니다."
+            "value" : "'백그라운드 상태가 되면 잠금' 옵션을 활성화하면, 앱을 백그라운드 상태에서 호출했을 때 생체인증을 해야 합니다."
+          }
+        }
+      }
+    },
+    "settings_privacy_footer_blur" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app will block the screen when the app goes background."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'백그라운드에서 화면 가림' 옵션을 활성화하면, 앱이 백그라운드 상태일 때 화면을 흐리게 처리합니다."
           }
         }
       }
