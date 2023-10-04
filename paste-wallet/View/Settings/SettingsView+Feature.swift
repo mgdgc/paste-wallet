@@ -16,6 +16,8 @@ struct SettingsFeature: Reducer {
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
+        // App
+        var firstTab: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
         // Privacy
         var useBiometric: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
         var alwaysRequirePasscode: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.alwaysRequirePasscode)
@@ -27,6 +29,8 @@ struct SettingsFeature: Reducer {
     }
     
     enum Action: Equatable {
+        // App
+        case setFirstTab(WalletView.Tab)
         // Privacy
         case showPasscodeChangeView
         case setBiometric(Bool)
@@ -41,6 +45,11 @@ struct SettingsFeature: Reducer {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case let .setFirstTab(tab):
+                state.firstTab = tab
+                UserDefaults.standard.set(tab.rawValue, forKey: UserDefaultsKey.Settings.firstTab)
+                return .none
+                
             case .showPasscodeChangeView:
                 state.passwordReset = .init(key: state.key)
                 return .none

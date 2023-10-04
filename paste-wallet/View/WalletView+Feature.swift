@@ -14,7 +14,7 @@ struct WalletFeature: Reducer {
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         var key: String? = nil
-        var selected: WalletView.Tab = .favorite
+        var selected: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
         
         @PresentationState var favorite: FavoriteFeature.State?
         @PresentationState var card: CardFeature.State?

@@ -1798,6 +1798,57 @@
         }
       }
     },
+    "settings_app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Application"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애플리케이션 설정"
+          }
+        }
+      }
+    },
+    "settings_app_first_tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entry Tab"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시작 탭"
+          }
+        }
+      }
+    },
+    "settings_app_footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entry Tab is the tab to show when the app is launched."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앱을 처음 실행했을 때 시작 탭으로 설정한 탭이 보여집니다."
+          }
+        }
+      }
+    },
     "settings_info" : {
       "extractionState" : "manual",
       "localizations" : {

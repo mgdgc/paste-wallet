@@ -19,4 +19,5 @@ extension UserDefaultsKey.AppEnvironment {
 extension UserDefaultsKey.Settings {
     static let useBiometric = "useBiometric"
     static let alwaysRequirePasscode = "alwaysRequirePasscode"
+    static let firstTab = "firstTab"
 }
