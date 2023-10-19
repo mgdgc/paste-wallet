@@ -52,6 +52,7 @@ struct PasswordResetFeature: Reducer {
                 Memo.changePasscode(modelContext: state.modelContext, oldKey: state.key, newKey: state.newPasscode)
                 
                 KeychainWrapper.standard[.password] = state.newPasscode
+                ICloudHelper.shared.setICloudKey(state.newPasscode)
                 state.passwordChangedSuccessfully = true
             } else {
                 state.passwordChangedSuccessfully = false
@@ -65,6 +66,9 @@ struct PasswordResetFeature: Reducer {
             return .none
             
         case let .passwordChanged(success):
+            if success {
+                exit(0)
+            }
             return .none
         }
     }

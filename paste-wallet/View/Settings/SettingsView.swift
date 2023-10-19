@@ -32,6 +32,7 @@ struct SettingsView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Form {
+                iCloudView
                 appView
                 interactionView
                 privacyView
@@ -41,6 +42,26 @@ struct SettingsView: View {
         }
         .background {
             Colors.backgroundSecondary.color.ignoresSafeArea()
+        }
+    }
+    
+    var iCloudView: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Section {
+                Label {
+                    Text(viewStore.iCloudAvailable ? "settings_icloud_available" : "settings_icloud_unavailable")
+                } icon: {
+                    Image(systemName: viewStore.iCloudAvailable ? "checkmark.circle.fill" : "xmark.circle.fill")
+                }
+
+            } header: {
+                Text("settings_section_icloud")
+            } footer: {
+                Text(viewStore.iCloudAvailable ? "settings_section_icloud_available" : "settings_section_icloud_unavailable")
+            }
+            .onAppear {
+                viewStore.send(.checkICloud)
+            }
         }
     }
     

@@ -10,14 +10,14 @@ import SwiftData
 
 @Model
 final class Bank: Identifiable {
-    var id: UUID
-    var name: String
-    var bank: String
-    var color: String
-    var number: String
+    var id: UUID = UUID()
+    var name: String = ""
+    var bank: String = ""
+    var color: String = "#ffffff"
+    var number: String = ""
     var memo: String?
-    var touch: Date
-    var favorite: Bool
+    var touch: Date = Date()
+    var favorite: Bool = false
     
     init(id: UUID = UUID(), name: String, bank: String, color: String, number: String, memo: String? = nil) {
         self.id = id

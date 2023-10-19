@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import ComposableArchitecture
+import SwiftKeychainWrapper
 
 @main
 struct PasteWalletApp: App {
@@ -18,7 +19,7 @@ struct PasteWalletApp: App {
             Memo.self,
             MemoField.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, groupContainer: .automatic, cloudKitDatabase: .private("Wallet"))
         
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
@@ -35,6 +36,12 @@ struct PasteWalletApp: App {
             UserDefaultsKey.Settings.tabHaptic : false,
             UserDefaultsKey.Settings.itemHaptic : false
         ])
+        
+        let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
+        if freshInstall {
+            KeychainWrapper.standard.removeAllKeys()
+            UserDefaults.standard.set(true, forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
+        }
     }
     
     var body: some Scene {

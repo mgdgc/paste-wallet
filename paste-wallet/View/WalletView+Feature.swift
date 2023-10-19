@@ -9,12 +9,19 @@ import Foundation
 import SwiftUI
 import SwiftData
 import ComposableArchitecture
+import SwiftKeychainWrapper
 
 struct WalletFeature: Reducer {
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         var key: String? = nil
         var selected: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
+        var showPasscodeView: Bool = true
+        
+        var localKey: String? = {
+            KeychainWrapper.standard.string(forKey: .password)
+        }()
+        var tempPassword: String?
         
         @PresentationState var favorite: FavoriteFeature.State?
         @PresentationState var card: CardFeature.State?
@@ -28,6 +35,8 @@ struct WalletFeature: Reducer {
         case setKey(_ key: String?)
         case initChildStates(_ key: String)
         case deinitChildStates
+        case showPasscodeView(Bool)
+        case setTempPassword(String?)
         
         case favorite(PresentationAction<FavoriteFeature.Action>)
         case card(PresentationAction<CardFeature.Action>)
@@ -66,6 +75,14 @@ struct WalletFeature: Reducer {
                 state.bank = nil
                 state.memo = nil
                 state.settings = nil
+                return .none
+                
+            case let .showPasscodeView(show):
+                state.showPasscodeView = show
+                return .none
+                
+            case let .setTempPassword(temp):
+                state.tempPassword = temp
                 return .none
                 
             case let .favorite(action):

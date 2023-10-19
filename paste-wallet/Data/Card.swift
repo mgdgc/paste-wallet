@@ -10,18 +10,18 @@ import SwiftData
 
 @Model
 final class Card: Identifiable, Equatable {
-    var id: UUID
-    var name: String
+    var id: UUID = UUID()
+    var name: String = ""
     var issuer: String?
-    var brand: String
-    var color: String
-    var number: [String]
-    var year: Int
-    var month: Int
+    var brand: String = "etc"
+    var color: String = "#ffffff"
+    var number: [String] = ["", "", "", ""]
+    var year: Int = 00
+    var month: Int = 00
     var cvc: String?
     var memo: String?
-    var touch: Date
-    var favorite: Bool
+    var touch: Date = Date()
+    var favorite: Bool = false
     
     // MARK: - Initializer
     init(id: UUID = UUID(), name: String, issuer: String? = nil, brand: Brand, color: String, number: [String], year: Int, month: Int, cvc: String? = nil, memo: String? = nil, favorite: Bool = false) {

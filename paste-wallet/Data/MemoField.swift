@@ -10,10 +10,10 @@ import SwiftData
 
 @Model
 final class MemoField: Identifiable {
-    var id: UUID
-    var title: String
-    var value: String
-    var touch: Date
+    var id: UUID = UUID()
+    var title: String = ""
+    var value: String = ""
+    var touch: Date = Date()
     
     var memo: Memo?
     

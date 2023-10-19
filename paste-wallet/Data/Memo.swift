@@ -10,10 +10,10 @@ import SwiftData
 
 @Model
 final class Memo: Identifiable {
-    var id: UUID
-    var title: String
-    var desc: String
-    var touch: Date
+    var id: UUID = UUID()
+    var title: String = ""
+    var desc: String = ""
+    var touch: Date = Date()
     
     @Relationship(inverse: \MemoField.memo) var fields: [MemoField]?
     

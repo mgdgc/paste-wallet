@@ -1730,6 +1730,91 @@
         }
       }
     },
+    "password_help" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Having Trouble?"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비밀번호를 잊었나요?"
+          }
+        }
+      }
+    },
+    "password_help_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To keep your data safe, Paste Wallet encrypts critical data on device and iCloud.\nIf you're having trouble logging in, unfortunately, the only option is to remove all of the data and clear the pass code.\nI'm sorry you're going through this."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "페이스트 월렛은 기기와 iCloud에서 사용자의 데이터를 안전하게 보관하기 위해 중요한 데이터를 암호화하여 저장합니다.\n만약 비밀번호를 잊었다면, 안타깝게도 기기와 iCloud의 데이터를 모두 지우고 다시 비밀번호를 설정하는 방법 밖에는 없습니다.\n이런 일을 겪게 해서 죄송합니다."
+          }
+        }
+      }
+    },
+    "password_help_remove" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove All Data"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 데이터 삭제"
+          }
+        }
+      }
+    },
+    "password_icloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pass code has been generated from other device.\nPlease enter the pass code."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다른 기기에서 비밀번호가 설정되었습니다.\n비밀번호를 입력해 주세요."
+          }
+        }
+      }
+    },
+    "password_icloud_wrong" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pass code has been changed from other device.\nPlease enter the changed pass code."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비밀번호가 다른 기기에서 변경되었습니다.\n변경된 비밀번호를 입력해 주세요."
+          }
+        }
+      }
+    },
     "password_init" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1862,6 +1947,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "앱을 처음 실행했을 때 시작 탭으로 설정한 탭이 보여집니다."
+          }
+        }
+      }
+    },
+    "settings_icloud_available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Enabled"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud 활성화됨"
+          }
+        }
+      }
+    },
+    "settings_icloud_unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Disabled"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud 비활성화됨"
           }
         }
       }
@@ -2168,6 +2287,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "비밀번호는 6자리의 숫자로 설정할 수 있습니다."
+          }
+        }
+      }
+    },
+    "settings_section_icloud" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud"
+          }
+        }
+      }
+    },
+    "settings_section_icloud_available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data are syncing via iCloud. To turn off the iCloud sync, open the settings app and turn off the iCloud for Paste Wallet."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터가 iCloud를 통해 동기화되고 있습니다. 동기화를 끄려면 설정 앱의 iCloud 설정에서 페이스트 월렛을 비활성화하십시오."
+          }
+        }
+      }
+    },
+    "settings_section_icloud_unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud is currently unavailable. Please log in your Apple ID at the settings app, and turn on iCloud."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud를 사용할 수 없습니다. 설정 앱에서 Apple ID로 로그인하고, iCloud 설정을 켜십시오."
           }
         }
       }

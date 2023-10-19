@@ -11,6 +11,7 @@ import SwiftData
 import LocalAuthentication
 import ComposableArchitecture
 import SwiftKeychainWrapper
+import CloudKit
 
 struct SettingsFeature: Reducer {
     
@@ -19,6 +20,8 @@ struct SettingsFeature: Reducer {
         let key: String
         // None Changing Value
         let laContext = LAContext()
+        // iCloud
+        var iCloudAvailable: Bool = false
         // App
         var firstTab: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
         // Interaction
@@ -44,6 +47,9 @@ struct SettingsFeature: Reducer {
     }
     
     enum Action: Equatable {
+        // ICloud
+        case checkICloud
+        case setICloudStatus(Bool)
         // App
         case setFirstTab(WalletView.Tab)
         // Interaction
@@ -62,6 +68,21 @@ struct SettingsFeature: Reducer {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .checkICloud:
+                return .run { send in
+                    do {
+                        let status = try await CKContainer.default().accountStatus()
+                        await send(.setICloudStatus(status == .available))
+                    } catch {
+                        print(#function, error)
+                        await send(.setICloudStatus(false))
+                    }
+                }
+                
+            case let .setICloudStatus(status):
+                state.iCloudAvailable = status
+                return .none
+                
             case let .setFirstTab(tab):
                 state.firstTab = tab
                 UserDefaults.standard.set(tab.rawValue, forKey: UserDefaultsKey.Settings.firstTab)
