@@ -17,69 +17,74 @@ struct BankDetailView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(spacing: 0) {
-                bankView
-                    .padding([.top, .horizontal])
-                    .offset(viewStore.draggedOffset)
-                    .zIndex(1)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                viewStore.send(.dragChanged(value))
-                            }
-                            .onEnded { value in
-                                viewStore.send(.dragEnded(value))
-                            }
-                    )
+            ZStack {
+                Colors.backgroundSecondary.color.ignoresSafeArea()
                 
-                List {
-                    Section("bank_section_information") {
-                        SecretField(title: "bank_number", content: viewStore.bank.decryptNumber(viewStore.key), locked: viewStore.binding(get: \.locked, send: BankDetailFeature.Action.setLock))
-                    }
+                VStack(spacing: 0) {
+                    bankView
+                        .padding([.top, .horizontal])
+                        .offset(viewStore.draggedOffset)
+                        .zIndex(1)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    viewStore.send(.dragChanged(value))
+                                }
+                                .onEnded { value in
+                                    viewStore.send(.dragEnded(value))
+                                }
+                        )
                     
-                    if let memo = viewStore.bank.memo, !memo.isEmpty {
-                        Section("bank_memo") {
-                            if viewStore.locked {
-                                ImmutableTextView(text: .constant(memo))
-                                    .overlay {
-                                        Rectangle()
-                                            .fill(.thinMaterial)
-                                    }
-                            } else {
-                                ImmutableTextView(text: .constant(memo))
-                            }
-                        }
-                    }
-                    
-                    Section {
-                        Button("bank_set_favorite", systemImage: viewStore.bank.favorite ? "star.fill" : "star") {
-                            viewStore.send(.setFavorite)
+                    List {
+                        Section("bank_section_information") {
+                            SecretField(title: "bank_number", content: viewStore.bank.decryptNumber(viewStore.key), locked: viewStore.binding(get: \.locked, send: BankDetailFeature.Action.setLock))
                         }
                         
-                        Button(role: .destructive) {
-                            viewStore.send(.showDeleteConfirmation(true))
-                        } label: {
-                            Label("delete", systemImage: "trash")
-                                .foregroundStyle(Color.red)
+                        if let memo = viewStore.bank.memo, !memo.isEmpty {
+                            Section("bank_memo") {
+                                if viewStore.locked {
+                                    ImmutableTextView(text: .constant(memo))
+                                        .overlay {
+                                            Rectangle()
+                                                .fill(.thinMaterial)
+                                        }
+                                } else {
+                                    ImmutableTextView(text: .constant(memo))
+                                }
+                            }
                         }
-                        .alert("delete_confirmation_title", isPresented: viewStore.binding(get: \.showDeleteConfirmation, send: BankDetailFeature.Action.showDeleteConfirmation)) {
-                            Button("cancel", role: .cancel) {
-                                viewStore.send(.showDeleteConfirmation(false))
+                        
+                        Section {
+                            Button("bank_set_favorite", systemImage: viewStore.bank.favorite ? "star.fill" : "star") {
+                                viewStore.send(.setFavorite)
                             }
-                            Button("delete", role: .destructive) {
-                                viewStore.send(.delete)
+                            
+                            Button(role: .destructive) {
+                                viewStore.send(.showDeleteConfirmation(true))
+                            } label: {
+                                Label("delete", systemImage: "trash")
+                                    .foregroundStyle(Color.red)
                             }
-                        } message: {
-                            Text("delete_confirmation_message")
+                            .alert("delete_confirmation_title", isPresented: viewStore.binding(get: \.showDeleteConfirmation, send: BankDetailFeature.Action.showDeleteConfirmation)) {
+                                Button("cancel", role: .cancel) {
+                                    viewStore.send(.showDeleteConfirmation(false))
+                                }
+                                Button("delete", role: .destructive) {
+                                    viewStore.send(.delete)
+                                }
+                            } message: {
+                                Text("delete_confirmation_message")
+                            }
                         }
                     }
+                    .scrollContentBackground(.hidden)
+                    .safeAreaInset(edge: .top, content: {
+                        Spacer().frame(height: 20)
+                    })
+                    .offset(y: -8)
+                    .ignoresSafeArea()
                 }
-                .scrollContentBackground(.hidden)
-                .safeAreaInset(edge: .top, content: {
-                    Spacer().frame(height: 20)
-                })
-                .offset(y: -8)
-                .ignoresSafeArea()
+                .frame(maxWidth: 480)
             }
             .onAppear {
                 if viewStore.biometricAvailable {
@@ -132,9 +137,6 @@ struct BankDetailView: View {
                     }
                 }
             }
-        }
-        .background {
-            Colors.backgroundSecondary.color.ignoresSafeArea()
         }
     }
     

@@ -73,74 +73,79 @@ struct CardDetailView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(spacing: 0) {
-                cardView
-                    .padding([.top, .horizontal])
-                    .offset(viewStore.draggedOffset)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                viewStore.send(.dragChanged(value))
-                            }
-                            .onEnded { value in
-                                viewStore.send(.dragEnded(value))
-                            }
-                    )
-                    .zIndex(1)
+            ZStack {
+                Colors.backgroundSecondary.color.ignoresSafeArea()
                 
-                List {
-                    Section("card_section_info") {
-                        SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
-                        if let cvc = viewStore.card.getWrappedCVC(viewStore.key) {
-                            SecretField(title: "card_cvc", content: cvc, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
-                        }
-                    }
+                VStack(spacing: 0) {
+                    cardView
+                        .padding([.top, .horizontal])
+                        .offset(viewStore.draggedOffset)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    viewStore.send(.dragChanged(value))
+                                }
+                                .onEnded { value in
+                                    viewStore.send(.dragEnded(value))
+                                }
+                        )
+                        .zIndex(1)
                     
-                    if let memo = viewStore.card.memo {
-                        Section("card_section_memo") {
-                            HStack {
-                                if viewStore.locked {
-                                    ImmutableTextView(text: .constant(memo))
-                                        .overlay {
-                                            Rectangle()
-                                                .fill(.thinMaterial)
-                                        }
-                                } else {
-                                    ImmutableTextView(text: .constant(memo))
+                    List {
+                        Section("card_section_info") {
+                            SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
+                            if let cvc = viewStore.card.getWrappedCVC(viewStore.key) {
+                                SecretField(title: "card_cvc", content: cvc, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
+                            }
+                        }
+                        
+                        if let memo = viewStore.card.memo {
+                            Section("card_section_memo") {
+                                HStack {
+                                    if viewStore.locked {
+                                        ImmutableTextView(text: .constant(memo))
+                                            .overlay {
+                                                Rectangle()
+                                                    .fill(.thinMaterial)
+                                            }
+                                    } else {
+                                        ImmutableTextView(text: .constant(memo))
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    Section {
-                        Button("card_set_favorite", systemImage: viewStore.card.favorite ? "star.fill" : "star") {
-                            viewStore.send(.setFavorite)
-                        }
                         
-                        Button(role: .destructive) {
-                            viewStore.send(.showDeleteConfirmation(true))
-                        } label: {
-                            Label("delete", systemImage: "trash")
-                                .foregroundStyle(Color.red)
-                        }
-                        .alert("delete_confirmation_title", isPresented: viewStore.binding(get: \.showDeleteConfirmation, send: CardDetailFeature.Action.showDeleteConfirmation)) {
-                            Button("cancel", role: .cancel) {
-                                viewStore.send(.showDeleteConfirmation(false))
+                        Section {
+                            Button("card_set_favorite", systemImage: viewStore.card.favorite ? "star.fill" : "star") {
+                                viewStore.send(.setFavorite)
                             }
-                            Button("delete", role: .destructive) {
-                                viewStore.send(.delete)
+                            
+                            Button(role: .destructive) {
+                                viewStore.send(.showDeleteConfirmation(true))
+                            } label: {
+                                Label("delete", systemImage: "trash")
+                                    .foregroundStyle(Color.red)
                             }
-                        } message: {
-                            Text("delete_confirmation_message")
+                            .alert("delete_confirmation_title", isPresented: viewStore.binding(get: \.showDeleteConfirmation, send: CardDetailFeature.Action.showDeleteConfirmation)) {
+                                Button("cancel", role: .cancel) {
+                                    viewStore.send(.showDeleteConfirmation(false))
+                                }
+                                Button("delete", role: .destructive) {
+                                    viewStore.send(.delete)
+                                }
+                            } message: {
+                                Text("delete_confirmation_message")
+                            }
                         }
                     }
+                    .scrollContentBackground(.hidden)
+                    .safeAreaInset(edge: .top, content: {
+                        Spacer().frame(height: 20)
+                    })
+                    .offset(y: -8)
+                    .ignoresSafeArea()
                 }
-                .scrollContentBackground(.hidden)
-                .safeAreaInset(edge: .top, content: {
-                    Spacer().frame(height: 20)
-                })
-                .offset(y: -8)
-                .ignoresSafeArea()
+                .frame(maxWidth: 480)
             }
             .onAppear {
                 if viewStore.biometricAvailable {
@@ -193,9 +198,6 @@ struct CardDetailView: View {
                     }
                 }
             }
-        }
-        .background {
-            Colors.backgroundSecondary.color.ignoresSafeArea()
         }
     }
     

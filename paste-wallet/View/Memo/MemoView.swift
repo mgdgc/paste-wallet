@@ -41,6 +41,7 @@ struct MemoView: View {
                                         }
                                     }
                                     .padding()
+                                    .frame(maxWidth: 560)
                                     .background {
                                         RoundedRectangle(cornerRadius: 16)
                                             .fill(Colors.backgroundPrimary.color)

@@ -31,17 +31,19 @@ struct SettingsView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            Form {
-                iCloudView
-                appView
-                interactionView
-                privacyView
-                infoView
+            ZStack {
+                Colors.backgroundSecondary.color.ignoresSafeArea()
+                Form {
+                    iCloudView
+                    appView
+                    interactionView
+                    privacyView
+                    infoView
+                }
+                .frame(maxWidth: 640)
             }
             .navigationTitle("tab_settings")
-        }
-        .background {
-            Colors.backgroundSecondary.color.ignoresSafeArea()
+            .scrollContentBackground(.hidden)
         }
     }
     

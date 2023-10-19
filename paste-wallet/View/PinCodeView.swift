@@ -102,6 +102,7 @@ struct PinCodeView: View {
                     }
                 }
             }
+            
             Spacer()
             
             LazyVGrid(columns: columns, alignment: .center, spacing: 20) {
@@ -123,6 +124,7 @@ struct PinCodeView: View {
                 }
             }
             .padding(.bottom, 20)
+            .frame(maxWidth: 360)
         }
         .background(Colors.backgroundSecondary.color.ignoresSafeArea())
         .onAppear {
@@ -146,6 +148,7 @@ struct PinCodeView: View {
                 .background {
                     Circle()
                         .stroke(style: StrokeStyle(lineWidth: 1))
+                        .fill(.ultraThinMaterial)
                 }
         }
         .foregroundStyle(Colors.textPrimary.color)
