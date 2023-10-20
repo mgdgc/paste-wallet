@@ -30,7 +30,7 @@ struct PinCodeView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    private let columns: [GridItem] = [GridItem(alignment: .trailing), GridItem(alignment: .center), GridItem(alignment: .leading)]
+    private let columns: [GridItem] = [GridItem(alignment: .center), GridItem(alignment: .center), GridItem(alignment: .center)]
     private let numberPad: [String] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "biometric", "0", "del"]
     private let laContext: LAContext = LAContext()
     
@@ -111,7 +111,7 @@ struct PinCodeView: View {
                         if let n = Int(pad) {
                             numberPadButton(number: n)
                             
-                        } else if pad == "biometric" && laContext.biometryType != .none && biometric {
+                        } else if pad == "biometric" && laContext.biometryType != .none && biometric && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
                             biometricButton
                             
                         } else if pad == "del" {
@@ -128,7 +128,7 @@ struct PinCodeView: View {
         }
         .background(Colors.backgroundSecondary.color.ignoresSafeArea())
         .onAppear {
-            if biometric && authenticateOnLaunch {
+            if biometric && authenticateOnLaunch && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
                 checkBiometric()
             }
         }
@@ -148,7 +148,7 @@ struct PinCodeView: View {
                 .background {
                     Circle()
                         .stroke(style: StrokeStyle(lineWidth: 1))
-                        .fill(.ultraThinMaterial)
+                        .fill(Colors.backgroundTertiary.color)
                 }
         }
         .foregroundStyle(Colors.textPrimary.color)
@@ -163,10 +163,13 @@ struct PinCodeView: View {
             
         } label: {
             Image(systemName: icon[laContext.biometryType]!)
+                .resizable()
+                .padding(16)
                 .frame(width: 64, height: 64)
                 .background {
                     Circle()
                         .stroke(style: StrokeStyle(lineWidth: 1))
+                        .fill(Colors.backgroundTertiary.color)
                 }
         }
         .foregroundStyle(Colors.textPrimary.color)
@@ -183,8 +186,7 @@ struct PinCodeView: View {
             Image(systemName: "delete.left")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .padding()
-                .frame(width: 64, height: 64)
+                .frame(width: 24, height: 24)
         }
         .foregroundStyle(typed.isEmpty ? Colors.textTertiary.color : Colors.textPrimary.color)
         .disabled(typed.isEmpty)

@@ -23,7 +23,6 @@ struct WalletView: View {
     
     var body: some View {
         TabView(selection: viewStore.binding(get: \.selected, send: WalletFeature.Action.select)) {
-            
             IfLetStore(store.scope(state: \.$favorite, action: WalletFeature.Action.favorite)) { store in
                 NavigationStack {
                     FavoriteView(store: store)
@@ -31,7 +30,6 @@ struct WalletView: View {
                 .tabItem { Label("tab_favorite", image: "star") }
                 .tag(Tab.favorite)
             }
-            
             
             IfLetStore(store.scope(state: \.$card, action: WalletFeature.Action.card)) { store in
                 NavigationStack {
@@ -72,14 +70,6 @@ struct WalletView: View {
         .fullScreenCover(isPresented: viewStore.binding(get: \.showPasscodeView, send: WalletFeature.Action.showPasscodeView)) {
             passcodeView
         }
-        //        if viewStore.key != nil {
-        //
-        //
-        //        } else {
-        //            PasswordView(key: viewStore.binding(get: \.key, send: { value in
-        //                    .setKey(value)
-        //            }))
-        //        }
     }
     
     var passcodeView: some View {

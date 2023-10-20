@@ -80,6 +80,7 @@ struct CardDetailView: View {
                     cardView
                         .padding([.top, .horizontal])
                         .offset(viewStore.draggedOffset)
+                        .zIndex(1)
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
@@ -89,7 +90,6 @@ struct CardDetailView: View {
                                     viewStore.send(.dragEnded(value))
                                 }
                         )
-                        .zIndex(1)
                     
                     List {
                         Section("card_section_info") {

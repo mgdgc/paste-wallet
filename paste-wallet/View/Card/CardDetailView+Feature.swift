@@ -147,7 +147,7 @@ struct CardDetailFeature: Reducer {
                 let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
                 
                 do {
-                    let activity = try Activity<CardWidgetAttributes>.request(
+                    let _ = try Activity<CardWidgetAttributes>.request(
                         attributes: attributes,
                         content: content)
                 } catch {

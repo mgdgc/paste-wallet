@@ -151,10 +151,9 @@ struct BankDetailFeature: Reducer {
                 let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
                 
                 do {
-                    let activity = try Activity<BankWidgetAttributes>.request(
+                    let _ = try Activity<BankWidgetAttributes>.request(
                         attributes: attribute,
                         content: content)
-                    print(activity)
                 } catch {
                     print(#function, error)
                 }

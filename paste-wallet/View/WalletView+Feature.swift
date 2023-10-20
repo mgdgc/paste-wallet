@@ -88,15 +88,6 @@ struct WalletFeature: Reducer {
             case let .favorite(action):
                 return handleFavoriteAction(&state, action)
                 
-            case .card(_):
-                return .none
-                
-            case .bank(_):
-                return .none
-                
-            case .memo(_):
-                return .none
-                
             case .settings(.presented(.passwordChanged)):
                 return .send(.setKey(nil))
                 
