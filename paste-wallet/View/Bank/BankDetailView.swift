@@ -75,6 +75,7 @@ struct BankDetailView: View {
                             } message: {
                                 Text("delete_confirmation_message")
                             }
+                            .disabled(viewStore.locked)
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -127,13 +128,15 @@ struct BankDetailView: View {
                     }
                 }
 
-                ToolbarItem {
-                    Button("edit") {
-                        viewStore.send(.showBankForm)
-                    }
-                    .foregroundStyle(Colors.textPrimary.color)
-                    .navigationDestination(store: store.scope(state: \.$bankForm, action: BankDetailFeature.Action.bankForm)) { store in
-                        BankForm(store: store)
+                if !viewStore.locked {
+                    ToolbarItem {
+                        Button("edit") {
+                            viewStore.send(.showBankForm)
+                        }
+                        .foregroundStyle(Colors.textPrimary.color)
+                        .navigationDestination(store: store.scope(state: \.$bankForm, action: BankDetailFeature.Action.bankForm)) { store in
+                            BankForm(store: store)
+                        }
                     }
                 }
             }

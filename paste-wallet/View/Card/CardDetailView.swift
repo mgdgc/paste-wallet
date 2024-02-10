@@ -136,6 +136,7 @@ struct CardDetailView: View {
                             } message: {
                                 Text("delete_confirmation_message")
                             }
+                            .disabled(viewStore.locked)
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -188,13 +189,15 @@ struct CardDetailView: View {
                     }
                 }
                 
-                ToolbarItem {
-                    Button("edit") {
-                        viewStore.send(.showEdit)
-                    }
-                    .foregroundStyle(Colors.textPrimary.color)
-                    .navigationDestination(store: store.scope(state: \.$cardForm, action: CardDetailFeature.Action.cardForm)) { store in
-                        CardForm(store: store)
+                if !viewStore.locked {
+                    ToolbarItem {
+                        Button("edit") {
+                            viewStore.send(.showEdit)
+                        }
+                        .foregroundStyle(Colors.textPrimary.color)
+                        .navigationDestination(store: store.scope(state: \.$cardForm, action: CardDetailFeature.Action.cardForm)) { store in
+                            CardForm(store: store)
+                        }
                     }
                 }
             }

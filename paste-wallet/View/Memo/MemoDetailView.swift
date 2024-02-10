@@ -69,6 +69,7 @@ struct MemoDetailView: View {
                     } message: {
                         Text("delete_confirmation_message")
                     }
+                    .disabled(viewStore.locked)
                 }
             }
             .onAppear {
@@ -101,11 +102,13 @@ struct MemoDetailView: View {
                 }
                 
                 ToolbarItem {
-                    Button("edit") {
-                        viewStore.send(.showMemoForm)
-                    }
-                    .navigationDestination(store: store.scope(state: \.$memoForm, action: MemoDetailFeature.Action.memoForm)) { store in
-                        MemoForm(store: store)
+                    if !viewStore.locked {
+                        Button("edit") {
+                            viewStore.send(.showMemoForm)
+                        }
+                        .navigationDestination(store: store.scope(state: \.$memoForm, action: MemoDetailFeature.Action.memoForm)) { store in
+                            MemoForm(store: store)
+                        }
                     }
                 }
             }
