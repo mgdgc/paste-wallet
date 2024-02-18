@@ -2190,13 +2190,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Passcode changed successfully."
+            "value" : "Passcode changed successfully. Please restart the app."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "비밀번호가 변경되었습니다. 다시 인증해주세요."
+            "value" : "비밀번호가 변경되었습니다. 앱을 다시 실행해주세요."
           }
         }
       }

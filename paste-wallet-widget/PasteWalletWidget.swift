@@ -53,7 +53,7 @@ struct PasteWalletWidgetEntryView: View {
         WidgetFamily.systemSmall : 1, .systemMedium : 2, .systemLarge : 2, .systemExtraLarge : 4
     ]
     private let properAmount = [
-        WidgetFamily.systemSmall : 1, .systemMedium : 2, .systemLarge : 6, .systemExtraLarge : 12
+        WidgetFamily.systemSmall : 1, .systemMedium : 2, .systemLarge : 6, .systemExtraLarge : 8
     ]
     
     var body: some View {
