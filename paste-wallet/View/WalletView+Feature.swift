@@ -11,17 +11,16 @@ import SwiftData
 import ComposableArchitecture
 import SwiftKeychainWrapper
 
-struct WalletFeature: Reducer {
+@Reducer
+struct WalletFeature {
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
-        var key: String? = nil
+        var key: String
         var selected: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
         var showPasscodeView: Bool = true
         
-        var localKey: String? = {
-            KeychainWrapper.standard.string(forKey: .password)
-        }()
-        var tempPassword: String?
+        var openByWidgetCard: String?
+        var openByWidgetBank: String?
         
         @PresentationState var favorite: FavoriteFeature.State?
         @PresentationState var card: CardFeature.State?
@@ -31,12 +30,14 @@ struct WalletFeature: Reducer {
     }
     
     enum Action: Equatable {
+        case onAppear
         case select(_ tab: WalletView.Tab)
-        case setKey(_ key: String?)
-        case initChildStates(_ key: String)
+        case setKey(String)
+        case openByWidget
+        case initChildStates
         case deinitChildStates
-        case showPasscodeView(Bool)
-        case setTempPassword(String?)
+        case setOpenByWidgetCard(String)
+        case setOpenByWidgetBank(String)
         
         case favorite(PresentationAction<FavoriteFeature.Action>)
         case card(PresentationAction<CardFeature.Action>)
@@ -48,6 +49,12 @@ struct WalletFeature: Reducer {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                return .run { send in
+                    await send(.initChildStates)
+                    await send(.openByWidget)
+                }
+                
             case let .select(tab):
                 state.selected = tab
                 state.favorite?.tab = tab
@@ -55,18 +62,23 @@ struct WalletFeature: Reducer {
                 
             case let .setKey(key):
                 state.key = key
-                if let key = key {
-                    return .send(.initChildStates(key))
+                return .none
+                
+            case .openByWidget:
+                if state.openByWidgetCard != nil {
+                    return .send(.select(.card))
+                } else if state.openByWidgetBank != nil {
+                    return .send(.select(.bank))
                 } else {
-                    return .send(.deinitChildStates)
+                    return .none
                 }
                 
-            case let .initChildStates(key):
-                state.favorite = .init(key: key)
-                state.card = .init(key: key)
-                state.bank = .init(key: key)
-                state.memo = .init(key: key)
-                state.settings = .init(key: key)
+            case .initChildStates:
+                state.favorite = .init(key: state.key)
+                state.card = .init(key: state.key, openByWidget: state.openByWidgetCard)
+                state.bank = .init(key: state.key, openByWidget: state.openByWidgetBank)
+                state.memo = .init(key: state.key)
+                state.settings = .init(key: state.key)
                 return .none
                 
             case .deinitChildStates:
@@ -77,19 +89,19 @@ struct WalletFeature: Reducer {
                 state.settings = nil
                 return .none
                 
-            case let .showPasscodeView(show):
-                state.showPasscodeView = show
-                return .none
+            case let .setOpenByWidgetCard(id):
+                state.openByWidgetCard = id
+                return .send(.initChildStates)
                 
-            case let .setTempPassword(temp):
-                state.tempPassword = temp
-                return .none
+            case let .setOpenByWidgetBank(id):
+                state.openByWidgetBank = id
+                return .send(.initChildStates)
                 
             case let .favorite(action):
                 return handleFavoriteAction(&state, action)
                 
             case .settings(.presented(.passwordChanged)):
-                return .send(.setKey(nil))
+                return .none
                 
             default:
                 return .none

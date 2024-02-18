@@ -12,7 +12,8 @@ import SwiftData
 import LocalAuthentication
 import ComposableArchitecture
 
-struct MemoDetailFeature: Reducer {
+@Reducer
+struct MemoDetailFeature {
     
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext

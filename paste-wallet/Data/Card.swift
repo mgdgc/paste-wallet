@@ -108,6 +108,20 @@ extension Card {
         }
     }
     
+    static func fetchById(modelContext: ModelContext, id: String) -> Card? {
+        let uuid = UUID(uuidString: id)!
+        let predicate = #Predicate<Card> { card in
+            card.id == uuid
+        }
+        let descriptor = FetchDescriptor<Card>(predicate: predicate, sortBy: [SortDescriptor(\.touch, order: .forward)])
+        do {
+            return try modelContext.fetch(descriptor).first
+        } catch {
+            print(#function, error)
+            return nil
+        }
+    }
+    
     static func changePasscode(modelContext: ModelContext, oldKey: String, newKey: String) {
         let allCards = Card.fetchAll(modelContext: modelContext)
         for card in allCards {

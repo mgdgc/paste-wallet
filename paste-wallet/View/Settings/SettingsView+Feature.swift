@@ -13,7 +13,8 @@ import ComposableArchitecture
 import SwiftKeychainWrapper
 import CloudKit
 
-struct SettingsFeature: Reducer {
+@Reducer
+struct SettingsFeature {
     
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext

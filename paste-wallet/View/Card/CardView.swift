@@ -34,7 +34,7 @@ struct CardView: View {
                                         }
                                 }
                                 .sensoryFeedback(.impact, trigger: viewStore.haptic)
-                                .fullScreenCover(store: store.scope(state: \.$cardDetail, action: CardFeature.Action.cardDetail)) {
+                                .fullScreenCover(store: store.scope(state: \.$cardDetail, action: \.cardDetail)) {
                                     viewStore.send(.stopLiveActivity)
                                 } content: { store in
                                     NavigationStack {
@@ -48,7 +48,7 @@ struct CardView: View {
                 
             }
             .onAppear {
-                viewStore.send(.fetchAll)
+                viewStore.send(.onAppear)
             }
             .navigationTitle("tab_card")
             .toolbar {
@@ -59,7 +59,7 @@ struct CardView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
                     }
-                    .sheet(store: store.scope(state: \.$cardForm, action: CardFeature.Action.cardForm), content: { store in
+                    .sheet(store: store.scope(state: \.$cardForm, action: \.cardForm), content: { store in
                         NavigationStack {
                             CardForm(store: store)
                         }

@@ -12,10 +12,13 @@ import UniformTypeIdentifiers
 import ComposableArchitecture
 import ActivityKit
 
-struct BankFeature: Reducer {
+@Reducer
+struct BankFeature {
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
+        
+        var openByWidget: String?
         
         var haptic: UUID = UUID()
         var banks: [Bank] = []
@@ -25,6 +28,7 @@ struct BankFeature: Reducer {
     }
     
     enum Action: Equatable {
+        case onAppear
         case fetchAll
         case playHaptic
         case showBankForm
@@ -32,6 +36,7 @@ struct BankFeature: Reducer {
         case deleteBank(Bank)
         case copy(_ bank: Bank, _ numbersOnly: Bool)
         case stopLiveActivity
+        case showTargetBank(String)
         
         case bankForm(PresentationAction<BankFormFeature.Action>)
         case bankDetail(PresentationAction<BankDetailFeature.Action>)
@@ -40,6 +45,15 @@ struct BankFeature: Reducer {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                let openByWidget = state.openByWidget
+                return .run { send in
+                    await send(.fetchAll)
+                    if let openByWidgetBank = openByWidget {
+                        await send(.showTargetBank(openByWidgetBank))
+                    }
+                }
+                
             case .fetchAll:
                 state.banks = Bank.fetchAll(modelContext: state.modelContext)
                 return .none
@@ -87,6 +101,13 @@ struct BankFeature: Reducer {
                     for activity in Activity<BankWidgetAttributes>.activities {
                         await activity.end(nil, dismissalPolicy: .immediate)
                     }
+                }
+                
+            case let .showTargetBank(id):
+                if let bank = state.banks.first(where: { $0.id.uuidString == id }) {
+                    return .send(.showBankDetail(bank))
+                } else {
+                    return .none
                 }
                 
             case .bankForm(.dismiss):

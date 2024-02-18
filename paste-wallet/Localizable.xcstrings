@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     " " : {
+      "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -704,9 +705,6 @@
         }
       }
     },
-    "Configuration" : {
-
-    },
     "confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -944,9 +942,6 @@
           }
         }
       }
-    },
-    "Favorite Emoji" : {
-
     },
     "favorite_empty" : {
       "extractionState" : "manual",
@@ -2426,9 +2421,6 @@
           }
         }
       }
-    },
-    "This is an example widget." : {
-
     },
     "title_card_detail" : {
       "extractionState" : "manual",

@@ -10,7 +10,8 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 
-struct BankFormFeature: Reducer {
+@Reducer
+struct BankFormFeature {
     
     struct State: Equatable {
         var modelContext: ModelContext

@@ -10,7 +10,8 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 
-struct MemoFormFeature: Reducer {
+@Reducer
+struct MemoFormFeature {
     
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext

@@ -195,7 +195,7 @@ struct CardDetailView: View {
                             viewStore.send(.showEdit)
                         }
                         .foregroundStyle(Colors.textPrimary.color)
-                        .navigationDestination(store: store.scope(state: \.$cardForm, action: CardDetailFeature.Action.cardForm)) { store in
+                        .navigationDestination(store: store.scope(state: \.$cardForm, action: \.cardForm)) { store in
                             CardForm(store: store)
                         }
                     }

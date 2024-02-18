@@ -103,7 +103,7 @@ struct SettingsView: View {
                 Button("settings_privacy_change_passcode") {
                     viewStore.send(.showPasscodeChangeView)
                 }
-                .navigationDestination(store: store.scope(state: \.$passwordReset, action: SettingsFeature.Action.passwordReset)) { store in
+                .navigationDestination(store: store.scope(state: \.$passwordReset, action: \.passwordReset)) { store in
                     PasswordResetView(store: store)
                 }
                 

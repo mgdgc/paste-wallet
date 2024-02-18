@@ -41,7 +41,7 @@ struct BankView: View {
                                         }
                                 }
                                 .sensoryFeedback(.impact, trigger: viewStore.haptic)
-                                .fullScreenCover(store: store.scope(state: \.$bankDetail, action: BankFeature.Action.bankDetail)) {
+                                .fullScreenCover(store: store.scope(state: \.$bankDetail, action: \.bankDetail)) {
                                     viewStore.send(.stopLiveActivity)
                                 } content: { store in
                                     NavigationStack {
@@ -55,7 +55,7 @@ struct BankView: View {
                 }
             }
             .onAppear {
-                viewStore.send(.fetchAll)
+                viewStore.send(.onAppear)
             }
             .navigationTitle("tab_bank")
             .toolbar {

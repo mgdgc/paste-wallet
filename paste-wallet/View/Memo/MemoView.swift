@@ -52,7 +52,7 @@ struct MemoView: View {
                             }
                         }
                         .padding()
-                        .navigationDestination(store: store.scope(state: \.$memoDetail, action: MemoFeature.Action.memoDetail)) { store in
+                        .navigationDestination(store: store.scope(state: \.$memoDetail, action: \.memoDetail)) { store in
                             MemoDetailView(store: store)
                         }
                     }
@@ -70,7 +70,7 @@ struct MemoView: View {
                         Image(systemName: "plus.circle.fill")
                             .foregroundStyle(Colors.textPrimary.color)
                     }
-                    .sheet(store: store.scope(state: \.$memoForm, action: MemoFeature.Action.memoForm)) { store in
+                    .sheet(store: store.scope(state: \.$memoForm, action: \.memoForm)) { store in
                         NavigationStack {
                             MemoForm(store: store)
                         }

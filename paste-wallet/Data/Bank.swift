@@ -54,6 +54,18 @@ extension Bank {
         }
     }
     
+    static func fetchById(modelContext: ModelContext, id: String) -> Bank? {
+        let uuid = UUID(uuidString: id)!
+        let predicate = #Predicate<Bank> { $0.id == uuid }
+        let descriptor = FetchDescriptor<Bank>(predicate: predicate)
+        do {
+            return try modelContext.fetch(descriptor).first
+        } catch {
+            print(#function, error)
+            return nil
+        }
+    }
+    
     static func changePasscode(modelContext: ModelContext, oldKey: String, newKey: String) {
         let allBanks = Bank.fetchAll(modelContext: modelContext)
         for bank in allBanks {

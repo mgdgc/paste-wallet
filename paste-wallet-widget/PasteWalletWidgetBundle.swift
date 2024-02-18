@@ -11,7 +11,8 @@ import SwiftUI
 @main
 struct PasteWalletWidgetBundle: WidgetBundle {
     var body: some Widget {
-//        PasteWalletWidget()
+//        SimpleWidget()
+        PasteWalletWidget()
         CardLiveActivity()
         BankLiveActivity()
     }

@@ -11,11 +11,14 @@ import ActivityKit
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
-struct CardFeature: Reducer {
+@Reducer
+struct CardFeature {
     
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
+        
+        var openByWidget: String?
         
         // Fetch Data
         var cards: [Card] = []
@@ -29,6 +32,7 @@ struct CardFeature: Reducer {
     }
     
     enum Action: Equatable {
+        case onAppear
         case fetchAll
         case playHaptic
         case copy(card: Card, separator: Card.SeparatorStyle)
@@ -36,6 +40,7 @@ struct CardFeature: Reducer {
         case showCardForm
         case showCardDetail(card: Card)
         case stopLiveActivity
+        case showTargetCard(String)
         
         case cardForm(PresentationAction<CardFormFeature.Action>)
         case cardDetail(PresentationAction<CardDetailFeature.Action>)
@@ -44,6 +49,15 @@ struct CardFeature: Reducer {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                let openByWidget = state.openByWidget
+                return .run { send in
+                    await send(.fetchAll)
+                    if let openByWidgetCard = openByWidget {
+                        await send(.showTargetCard(openByWidgetCard))
+                    }
+                }
+                
             case .fetchAll:
                 state.cards = Card.fetchAll(modelContext: state.modelContext)
                 return .none
@@ -76,6 +90,13 @@ struct CardFeature: Reducer {
                     for activity in Activity<CardWidgetAttributes>.activities {
                         await activity.end(nil, dismissalPolicy: .immediate)
                     }
+                }
+                
+            case let .showTargetCard(id):
+                if let card = state.cards.first(where: { $0.id.uuidString == id }) {
+                    return .send(.showCardDetail(card: card))
+                } else {
+                    return .none
                 }
                 
             case .cardForm(.dismiss):

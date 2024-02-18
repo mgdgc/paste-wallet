@@ -106,7 +106,7 @@ struct MemoDetailView: View {
                         Button("edit") {
                             viewStore.send(.showMemoForm)
                         }
-                        .navigationDestination(store: store.scope(state: \.$memoForm, action: MemoDetailFeature.Action.memoForm)) { store in
+                        .navigationDestination(store: store.scope(state: \.$memoForm, action: \.memoForm)) { store in
                             MemoForm(store: store)
                         }
                     }

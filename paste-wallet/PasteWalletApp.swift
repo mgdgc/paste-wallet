@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 import SwiftKeychainWrapper
+import WidgetKit
+import NotificationCenter
 
 @main
 struct PasteWalletApp: App {
@@ -42,13 +44,46 @@ struct PasteWalletApp: App {
             KeychainWrapper.standard.removeAllKeys()
             UserDefaults.standard.set(true, forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
         }
+        
+        WidgetCenter.shared.reloadAllTimelines()
     }
+    
+    @State private var key: String? = nil
+    @State private var splashFinished: Bool = false
+    @State private var openByWidgetCard: String? = nil
+    @State private var openByWidgetBank: String? = nil
     
     var body: some Scene {
         WindowGroup {
-            WalletView(store: Store(initialState: WalletFeature.State(), reducer: {
-                WalletFeature()
-            }))
+            Group {
+                if splashFinished {
+                    ContentView(store: Store(initialState: Feature.State(openByWidgetCard: openByWidgetCard, openByWidgetBank: openByWidgetBank), reducer: {
+                        Feature()
+                    }))
+                } else {
+                    SplashView {
+                        splashFinished = true
+                    }
+                }
+            }
+            .onOpenURL { url in
+                splashFinished = false
+                openByWidgetCard = nil
+                openByWidgetBank = nil
+                
+                if url.absoluteString.starts(with: "widget://key") {
+                    guard let urlComponents = URLComponents(string: url.absoluteString) else { return }
+                    guard let type = urlComponents.queryItems?.first(where: { $0.name == "type" })?.value else { return }
+                    guard let id = urlComponents.queryItems?.first(where: { $0.name == "id" })?.value else { return }
+                    
+                    if type == "card" {
+                        openByWidgetCard = id
+                        
+                    } else if type == "bank" {
+                        openByWidgetBank = id
+                    }
+                }
+            }
         }
     }
 }

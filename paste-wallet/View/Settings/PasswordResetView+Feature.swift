@@ -11,7 +11,8 @@ import SwiftData
 import ComposableArchitecture
 import SwiftKeychainWrapper
 
-struct PasswordResetFeature: Reducer {
+@Reducer
+struct PasswordResetFeature {
     
     struct State: Equatable {
         let modelContext = PasteWalletApp.sharedModelContext

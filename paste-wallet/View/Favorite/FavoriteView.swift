@@ -64,7 +64,7 @@ struct FavoriteView: View {
                                                     contextMenu(for: card)
                                                 }
                                         }
-                                        .fullScreenCover(store: store.scope(state: \.$cardDetail, action: FavoriteFeature.Action.cardDetail)) {
+                                        .fullScreenCover(store: store.scope(state: \.$cardDetail, action: \.cardDetail)) {
                                             viewStore.send(.stopLiveActivity)
                                         } content: { store in
                                             NavigationStack {
@@ -96,7 +96,7 @@ struct FavoriteView: View {
                                                     contextMenu(for: bank)
                                                 }
                                         }
-                                        .fullScreenCover(store: store.scope(state: \.$bankDetail, action: FavoriteFeature.Action.bankDetail)) {
+                                        .fullScreenCover(store: store.scope(state: \.$bankDetail, action: \.bankDetail)) {
                                             viewStore.send(.stopLiveActivity)
                                         } content: { store in
                                             NavigationStack {

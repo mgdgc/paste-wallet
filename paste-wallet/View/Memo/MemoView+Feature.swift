@@ -11,7 +11,8 @@ import SwiftData
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
-struct MemoFeature: Reducer {
+@Reducer
+struct MemoFeature {
     
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext

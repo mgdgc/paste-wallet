@@ -1,28 +1,38 @@
 //
-//  PasswordView.swift
+//  NewPasswordView.swift
 //  paste-wallet
 //
-//  Created by 최명근 on 9/10/23.
+//  Created by 최명근 on 10/16/23.
 //
 
 import SwiftUI
 import LocalAuthentication
 import SwiftKeychainWrapper
 
-struct PasswordView: View {
+struct PinCodeView: View {
     
-    @Binding var key: String?
+    enum AfterAction {
+        case none
+        case dismiss
+        case retype(_ message: String)
+    }
     
+    private var dismissable: Bool
+    private var biometric: Bool
+    private var authenticateOnLaunch: Bool
+    private var onPasswordEntered: (String) -> AfterAction
+    
+    @State private var showHelpMessage: Bool = false
     @State private var typed: [Int] = []
     @State private var temp: [Int] = []
     
-    @State private var message: String = ""
-    @State private var authSuccess: Bool? = nil
-    @State private var authFail: Bool? = nil
+    @State private var message: String
     
-    let columns: [GridItem] = [GridItem(alignment: .trailing), GridItem(alignment: .center), GridItem(alignment: .leading)]
-    let numberPad: [String] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "biometric", "0", "del"]
-    let laContext: LAContext = LAContext()
+    @Environment(\.dismiss) var dismiss
+    
+    private let columns: [GridItem] = [GridItem(alignment: .center), GridItem(alignment: .center), GridItem(alignment: .center)]
+    private let numberPad: [String] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "biometric", "0", "del"]
+    private let laContext: LAContext = LAContext()
     
     let password: String? = {
         let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
@@ -33,12 +43,56 @@ struct PasswordView: View {
         return KeychainWrapper.standard[.password]
     }()
     
+    init(initialMessage: String = "password_type".localized, dismissable: Bool = false, enableBiometric: Bool = true, authenticateOnLaunch: Bool = true, onPasswordEntered: @escaping (String) -> AfterAction) {
+        self._message = State(initialValue: initialMessage)
+        self.dismissable = dismissable
+        self.biometric = enableBiometric
+        self.authenticateOnLaunch = authenticateOnLaunch
+        self.onPasswordEntered = onPasswordEntered
+    }
+    
     var body: some View {
         VStack {
+            HStack {
+                Spacer()
+                Button("password_help", systemImage: "questionmark.circle") {
+                    showHelpMessage = true
+                }
+                .labelStyle(.iconOnly)
+            }
+            .padding()
+            .alert("password_help", isPresented: $showHelpMessage) {
+                Button("password_help_remove", role: .destructive) {
+                    do {
+                        try PasteWalletApp.sharedModelContext.delete(model: Card.self)
+                        try PasteWalletApp.sharedModelContext.delete(model: Bank.self)
+                        try PasteWalletApp.sharedModelContext.delete(model: Memo.self)
+                        try PasteWalletApp.sharedModelContext.delete(model: MemoField.self)
+                        ICloudHelper.shared.deleteICloudKey()
+                        KeychainWrapper.standard.removeAllKeys()
+                        
+                        exit(0)
+                    } catch {
+                        print(error)
+                    }
+                }
+                
+                Button("cancel", role: .cancel) {
+                    showHelpMessage = false
+                }
+                
+            } message: {
+                Text("password_help_message")
+            }
+
+            
             Spacer()
+            
             Text(message)
                 .multilineTextAlignment(.center)
+            
             Spacer()
+            
             HStack {
                 ForEach(0..<6) { i in
                     if i < typed.count {
@@ -48,6 +102,7 @@ struct PasswordView: View {
                     }
                 }
             }
+            
             Spacer()
             
             LazyVGrid(columns: columns, alignment: .center, spacing: 20) {
@@ -56,7 +111,7 @@ struct PasswordView: View {
                         if let n = Int(pad) {
                             numberPadButton(number: n)
                             
-                        } else if pad == "biometric" && laContext.biometryType != .none && password != nil && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) && ICloudHelper.shared.getICloudKey(predictKey: password ?? "") == password {
+                        } else if pad == "biometric" && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) && biometric && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
                             biometricButton
                             
                         } else if pad == "del" {
@@ -66,33 +121,15 @@ struct PasswordView: View {
                             emptyButton
                         }
                     }
-                    .sensoryFeedback(.success, trigger: authSuccess) { oldValue, newValue in
-                        return newValue ?? false
-                    }
-                    .sensoryFeedback(.error, trigger: authFail) { oldValue, newValue in
-                        authFail = false
-                        return newValue ?? false
-                    }
                 }
             }
             .padding(.bottom, 20)
+            .frame(maxWidth: 360)
         }
         .background(Colors.backgroundSecondary.color.ignoresSafeArea())
         .onAppear {
-            if let password = password, ICloudHelper.shared.iCloudKeyExist {
-                if ICloudHelper.shared.getICloudKey(predictKey: password) == password {
-                    message = "password_type".localized
-                    
-                    if UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
-                        checkBiometric()
-                    }
-                } else {
-                    // 비밀번호가 다른 기기에서 변경됨
-                    message = "password_icloud".localized
-                }
-            } else {
-                // 비밀번호 초기 설정
-                message = "password_init".localized
+            if biometric && authenticateOnLaunch && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
+                checkBiometric()
             }
         }
     }
@@ -111,6 +148,7 @@ struct PasswordView: View {
                 .background {
                     Circle()
                         .stroke(style: StrokeStyle(lineWidth: 1))
+                        .fill(Colors.backgroundTertiary.color)
                 }
         }
         .foregroundStyle(Colors.textPrimary.color)
@@ -125,10 +163,13 @@ struct PasswordView: View {
             
         } label: {
             Image(systemName: icon[laContext.biometryType]!)
+                .resizable()
+                .padding(16)
                 .frame(width: 64, height: 64)
                 .background {
                     Circle()
                         .stroke(style: StrokeStyle(lineWidth: 1))
+                        .fill(Colors.backgroundTertiary.color)
                 }
         }
         .foregroundStyle(Colors.textPrimary.color)
@@ -145,8 +186,7 @@ struct PasswordView: View {
             Image(systemName: "delete.left")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .padding()
-                .frame(width: 64, height: 64)
+                .frame(width: 24, height: 24)
         }
         .foregroundStyle(typed.isEmpty ? Colors.textTertiary.color : Colors.textPrimary.color)
         .disabled(typed.isEmpty)
@@ -161,42 +201,21 @@ struct PasswordView: View {
         if typed.count < 6 {
             return
         }
-        // 입력 모드 판별 (새 비밀번호 or 비밀번호 입력)
-        if let password = password {
-            // 비밀번호 입력 모드
-            // 비밀번호 확인
-            if password == convert(array: typed) {
-                // 비밀번호 일치
-                valid()
-            } else {
-                // 비밀번호 불일치
-                typed = []
-                message = "password_wrong".localized
-                
-                authFail = true
-            }
-        } else {
-            // 새 비밀번호 모드
-            if temp.isEmpty {
-                // 첫 비밀번호 입력
-                temp = typed
-                typed = []
-                
-                message = "password_check".localized
-                
-            } else {
-                // 비밀번호 확인
-                if temp == typed {
-                    // 비밀번호 일치
-                    save()
-                    valid()
-                } else {
-                    typed = []
-                    temp = []
-                    
-                    message = "password_check_fail".localized
-                }
-            }
+        
+        valid(password: convert(array: typed))
+    }
+    
+    private func valid(password: String) {
+        switch onPasswordEntered(password) {
+        case .none:
+            break
+        case .dismiss:
+            dismiss()
+            break
+        case .retype(let message):
+            self.message = message
+            typed = []
+            break
         }
     }
     
@@ -206,18 +225,6 @@ struct PasswordView: View {
             string.append(String(i))
         }
         return string
-    }
-    
-    private func valid() {
-        self.authSuccess = true
-        
-        let key = convert(array: typed)
-        self.key = key
-    }
-    
-    private func save() {
-        let keychain = KeychainWrapper.standard
-        keychain[.password] = convert(array: typed)
     }
     
     private func checkBiometric() {
@@ -230,7 +237,9 @@ struct PasswordView: View {
                 // 생체인증 결과
                 if authenticated {
                     // 인증 성공
-                    self.key = password
+                    if let password = password {
+                        valid(password: password)
+                    }
                     
                 } else {
                     // 인증 실패
@@ -242,5 +251,7 @@ struct PasswordView: View {
 }
 
 #Preview {
-    PasswordView(key: .constant(nil))
+    PinCodeView(initialMessage: "password_type".localized, dismissable: false, enableBiometric: true, authenticateOnLaunch: true) { typed in
+        return .dismiss
+    }
 }

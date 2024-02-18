@@ -13,7 +13,8 @@ import UniformTypeIdentifiers
 import LocalAuthentication
 import ComposableArchitecture
 
-struct CardDetailFeature: Reducer {
+@Reducer
+struct CardDetailFeature {
     
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext

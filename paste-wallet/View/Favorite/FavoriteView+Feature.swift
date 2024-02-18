@@ -12,7 +12,8 @@ import ActivityKit
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
-struct FavoriteFeature: Reducer {
+@Reducer
+struct FavoriteFeature {
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
