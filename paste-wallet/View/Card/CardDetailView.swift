@@ -99,18 +99,23 @@ struct CardDetailView: View {
                             }
                         }
                         
-                        if let memo = viewStore.card.memo {
+                        if let memo = viewStore.card.memo, !memo.isEmpty {
                             Section("card_section_memo") {
+//                                ImmutableTextView(text: .constant(memo))
+//                                    .overlay {
+//                                        if viewStore.locked {
+//                                            Rectangle()
+//                                                .fill(.thinMaterial)
+//                                        }
+//                                    }
+//                                    .background {
+//                                        Text(memo)
+//                                            .foregroundStyle(.clear)
+//                                    }
                                 HStack {
-                                    if viewStore.locked {
-                                        ImmutableTextView(text: .constant(memo))
-                                            .overlay {
-                                                Rectangle()
-                                                    .fill(.thinMaterial)
-                                            }
-                                    } else {
-                                        ImmutableTextView(text: .constant(memo))
-                                    }
+                                    Text(memo)
+                                        .textSelection(.enabled)
+                                    Spacer()
                                 }
                             }
                         }

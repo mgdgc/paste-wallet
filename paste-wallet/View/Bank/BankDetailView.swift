@@ -42,14 +42,21 @@ struct BankDetailView: View {
                         
                         if let memo = viewStore.bank.memo, !memo.isEmpty {
                             Section("bank_memo") {
-                                if viewStore.locked {
-                                    ImmutableTextView(text: .constant(memo))
-                                        .overlay {
-                                            Rectangle()
-                                                .fill(.thinMaterial)
-                                        }
-                                } else {
-                                    ImmutableTextView(text: .constant(memo))
+//                                ImmutableTextView(text: .constant(memo))
+//                                    .overlay {
+//                                        if viewStore.locked {
+//                                            Rectangle()
+//                                                .fill(.thinMaterial)
+//                                        }
+//                                    }
+//                                    .background {
+//                                        Text(memo)
+//                                            .foregroundStyle(.clear)
+//                                    }
+                                HStack {
+                                    Text(memo)
+                                        .textSelection(.enabled)
+                                    Spacer()
                                 }
                             }
                         }

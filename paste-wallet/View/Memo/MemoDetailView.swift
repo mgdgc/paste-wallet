@@ -34,14 +34,21 @@ struct MemoDetailView: View {
                 if let fields = viewStore.memo.fields, !fields.isEmpty {
                     ForEach(fields, id: \.id) { field in
                         Section(field.title) {
-                            if viewStore.locked {
-                                ImmutableTextView(text: .constant(field.decrypt(viewStore.key)))
-                                    .overlay {
-                                        Rectangle()
-                                            .fill(.thinMaterial)
-                                    }
-                            } else {
-                                ImmutableTextView(text: .constant(field.decrypt(viewStore.key)))
+//                            ImmutableTextView(text: .constant(field.decrypt(viewStore.key)))
+//                                .overlay {
+//                                    if viewStore.locked {
+//                                        Rectangle()
+//                                            .fill(.thinMaterial)
+//                                    }
+//                                }
+//                                .background {
+//                                    Text(field.decrypt(viewStore.key))
+//                                        .foregroundStyle(.clear)
+//                                }
+                            HStack {
+                                Text(field.decrypt(viewStore.key))
+                                    .textSelection(.enabled)
+                                Spacer()
                             }
                         }
                     }
@@ -80,15 +87,6 @@ struct MemoDetailView: View {
             .navigationTitle(String(viewStore.memo.title))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-//                ToolbarItem(placement: .principal) {
-//                    VStack {
-//                        Text(String(viewStore.memo.title))
-//                            .font(.headline)
-//                        Text(String(viewStore.memo.desc))
-//                            .font(.subheadline)
-//                    }
-//                }
-                
                 ToolbarItem(placement: .principal) {
                     if viewStore.locked {
                         Button("unlock", systemImage: "lock") {

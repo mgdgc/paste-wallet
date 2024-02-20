@@ -18,6 +18,7 @@ struct ImmutableTextView: UIViewRepresentable {
         textView.isEditable = false
         textView.font = UIFont.systemFont(ofSize: 17)
         textView.backgroundColor = .clear
+        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textView
     }
     
