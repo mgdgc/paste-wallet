@@ -48,6 +48,10 @@ Dynamic Island에 정보를 띄워놓고 필요할 때 힐끗 보면서 사용�
   <img src="res/screenshots/6.7-ko-9.jpg" width="320px">
 </div>
 
+| <img src="res/screenshots/6.7-ko-1.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-2.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-3.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-4.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-5.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-6.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-7.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-8.jpg" width="320px"> | <img src="res/screenshots/6.7-ko-9.jpg" width="320px">
+
+
+
 ### iPad (12.9")
 
 <div class="scroll">
