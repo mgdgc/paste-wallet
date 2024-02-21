@@ -4,6 +4,11 @@
 
 카드나 계좌 번호를 안전하게 저장하고 빠르게 복사하여 사용할 수 있는 Paste Wallet.
 
+<div>
+  <img src="https://img.shields.io/badge/iOS-000000?style=flat&logo=iOS&logoColor=white" />
+  <img src="https://img.shields.io/badge/Swift-F05138?style=flat&logo=Swift&logoColor=white" />
+</div>
+
 ## 기능
 
 ### 1. 카드 번호 복사
