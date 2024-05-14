@@ -115,6 +115,12 @@ struct CardDetailView: View {
                                 HStack {
                                     Text(memo)
                                         .textSelection(.enabled)
+                                        .overlay {
+                                            if viewStore.locked {
+                                                Rectangle()
+                                                    .fill(.thinMaterial)
+                                            }
+                                        }
                                     Spacer()
                                 }
                             }

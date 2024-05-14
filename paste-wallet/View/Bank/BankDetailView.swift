@@ -56,6 +56,12 @@ struct BankDetailView: View {
                                 HStack {
                                     Text(memo)
                                         .textSelection(.enabled)
+                                        .overlay {
+                                            if viewStore.locked {
+                                                Rectangle()
+                                                    .fill(.thinMaterial)
+                                            }
+                                        }
                                     Spacer()
                                 }
                             }
@@ -207,7 +213,7 @@ struct BankDetailView: View {
 
 #Preview {
     let modelContext = ModelContext(try! ModelContainer(for: Bank.self, configurations: .init(isStoredInMemoryOnly: true)))
-    let bank = Bank(name: "주계좌", bank: "토스뱅크", color: "#eeedff", number: "fRA2PFBGYONOw8ZV73gujA==")
+    let bank = Bank(name: "주계좌", bank: "토스뱅크", color: "#eeedff", number: "fRA2PFBGYONOw8ZV73gujA==", memo: "askldfjs\nasdfasdfasdfasd\nsadfas\nfsdafasdf\nsadfasdfasdf\n\nasdfs")
     modelContext.insert(bank)
     
     return NavigationStack {

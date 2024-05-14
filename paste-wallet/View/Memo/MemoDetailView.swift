@@ -48,6 +48,12 @@ struct MemoDetailView: View {
                             HStack {
                                 Text(field.decrypt(viewStore.key))
                                     .textSelection(.enabled)
+                                    .overlay {
+                                        if viewStore.locked {
+                                            Rectangle()
+                                                .fill(.thinMaterial)
+                                        }
+                                    }
                                 Spacer()
                             }
                         }
