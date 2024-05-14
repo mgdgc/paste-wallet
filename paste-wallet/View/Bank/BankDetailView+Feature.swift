@@ -25,8 +25,6 @@ struct BankDetailFeature {
         var dismiss: Bool = false
         var showDeleteConfirmation: Bool = false
         
-        var draggedOffset: CGSize = .zero
-        
         var biometricAvailable: Bool {
             let laContext = LAContext()
             var error: NSError?
@@ -41,8 +39,6 @@ struct BankDetailFeature {
         case unlock
         case lock
         case setLock(Bool)
-        case dragChanged(DragGesture.Value)
-        case dragEnded(DragGesture.Value)
         case copy(Bool)
         case dismiss
         case setFavorite
@@ -83,18 +79,6 @@ struct BankDetailFeature {
             case let .setLock(lock):
                 state.locked = lock
                 return .none
-                
-            case let .dragChanged(value):
-                state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
-                return .none
-                
-            case let .dragEnded(value):
-                if value.translation.height > 100 {
-                    return .send(.dismiss)
-                } else {
-                    state.draggedOffset = .zero
-                    return .none
-                }
                 
             case let .copy(numbersOnly):
                 if numbersOnly {

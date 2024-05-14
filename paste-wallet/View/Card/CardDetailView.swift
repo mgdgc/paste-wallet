@@ -68,6 +68,8 @@ fileprivate struct CardDetailSection<Content>: View where Content: View {
 struct CardDetailView: View {
     let store: StoreOf<CardDetailFeature>
     
+    @State private var dragOffset: CGSize = .zero
+    
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) var scenePhase
     
@@ -79,17 +81,9 @@ struct CardDetailView: View {
                 VStack(spacing: 0) {
                     cardView
                         .padding([.top, .horizontal])
-                        .offset(viewStore.draggedOffset)
+                        .offset(dragOffset)
                         .zIndex(1)
-                        .gesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    viewStore.send(.dragChanged(value))
-                                }
-                                .onEnded { value in
-                                    viewStore.send(.dragEnded(value))
-                                }
-                        )
+                        .gesture(dragGesture)
                     
                     List {
                         Section("card_section_info") {
@@ -266,6 +260,22 @@ struct CardDetailView: View {
                     .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
             )
         }
+    }
+    
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                dragOffset = CGSize(width: .zero, height: value.translation.height)
+            }
+            .onEnded { value in
+                if value.translation.height > 100 {
+                    dismiss()
+                } else {
+                    withAnimation {
+                        dragOffset = .zero
+                    }
+                }
+            }
     }
 }
 

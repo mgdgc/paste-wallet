@@ -20,7 +20,7 @@ struct PinCodeView: View {
     private var dismissable: Bool
     private var biometric: Bool
     private var authenticateOnLaunch: Bool
-    private var onPasswordEntered: (String) -> AfterAction
+    private var onPasswordEntered: @MainActor (String) -> AfterAction
     
     @State private var showHelpMessage: Bool = false
     @State private var typed: [Int] = []
@@ -139,7 +139,9 @@ struct PinCodeView: View {
         Button {
             typed.append(number)
             
-            checkValidation()
+            Task { @MainActor in
+                checkValidation()
+            }
             
         } label: {
             Text("\(number)")
@@ -197,6 +199,7 @@ struct PinCodeView: View {
         Text(" ")
     }
     
+    @MainActor 
     private func checkValidation() {
         if typed.count < 6 {
             return
@@ -205,6 +208,7 @@ struct PinCodeView: View {
         valid(password: convert(array: typed))
     }
     
+    @MainActor
     private func valid(password: String) {
         switch onPasswordEntered(password) {
         case .none:

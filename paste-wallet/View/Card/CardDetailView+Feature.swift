@@ -22,7 +22,6 @@ struct CardDetailFeature {
         let card: Card
         
         var locked: Bool = true
-        var draggedOffset: CGSize = .zero
         var showDeleteConfirmation: Bool = false
         
         var dismiss: Bool = false
@@ -41,8 +40,6 @@ struct CardDetailFeature {
         case unlock
         case lock
         case setLock(Bool)
-        case dragChanged(DragGesture.Value)
-        case dragEnded(DragGesture.Value)
         case copy(separator: Card.SeparatorStyle)
         case setFavorite
         case showDeleteConfirmation(Bool)
@@ -83,18 +80,6 @@ struct CardDetailFeature {
             case let .setLock(lock):
                 state.locked = lock
                 return .none
-                
-            case let .dragChanged(value):
-                state.draggedOffset = CGSize(width: .zero, height: value.translation.height)
-                return .none
-                
-            case let .dragEnded(value):
-                if value.translation.height > 100 {
-                    return .send(.dismiss)
-                } else {
-                    state.draggedOffset = .zero
-                    return .none
-                }
                 
             case let .copy(separator):
                 let number = state.card.getWrappedNumber(state.key, separator)
