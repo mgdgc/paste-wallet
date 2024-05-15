@@ -7,10 +7,12 @@
 
 import SwiftUI
 import SwiftData
+import ActivityKit
 import ComposableArchitecture
 import SwiftKeychainWrapper
 import WidgetKit
 import NotificationCenter
+import BackgroundTasks
 
 @main
 struct PasteWalletApp: App {
@@ -32,6 +34,7 @@ struct PasteWalletApp: App {
     static var sharedModelContext: ModelContext = ModelContext(sharedModelContainer)
     
     init() {
+        // Set default value for UserDefaults
         UserDefaults.standard.register(defaults: [
             UserDefaultsKey.Settings.firstTab : WalletView.Tab.favorite.rawValue,
             UserDefaultsKey.Settings.useBiometric : true,
@@ -39,12 +42,14 @@ struct PasteWalletApp: App {
             UserDefaultsKey.Settings.itemHaptic : false
         ])
         
+        // Erase Keychain value if the app has reinstalled
         let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
         if freshInstall {
             KeychainWrapper.standard.removeAllKeys()
             UserDefaults.standard.set(true, forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
         }
         
+        // Reload Widgets
         WidgetCenter.shared.reloadAllTimelines()
     }
     
@@ -84,6 +89,12 @@ struct PasteWalletApp: App {
                     }
                 }
             }
+        }
+        .backgroundTask(.appRefresh(LiveActivityManager.BGTaskName.cardKill.identifier)) {
+            await LiveActivityManager.shared.killCardLiveActivities()
+        }
+        .backgroundTask(.appRefresh(LiveActivityManager.BGTaskName.bankKill.identifier)) {
+            await LiveActivityManager.shared.killBankLiveActivities()
         }
     }
 }

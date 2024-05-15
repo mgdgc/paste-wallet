@@ -127,28 +127,19 @@ struct BankDetailFeature {
                 return .send(.dismiss)
                 
             case .launchActivity:
-                let attribute = BankWidgetAttributes(id: state.bank.id)
+                
                 let contentState = BankWidgetAttributes.ContentState(
                     name: state.bank.name,
                     bank: state.bank.bank,
                     color: state.bank.color,
                     number: state.bank.decryptNumber(state.key))
-                let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
                 
-                do {
-                    let _ = try Activity<BankWidgetAttributes>.request(
-                        attributes: attribute,
-                        content: content)
-                } catch {
-                    print(#function, error)
-                }
+                LiveActivityManager.shared.startBankLiveActivity(state: contentState, bankId: state.bank.id)
                 return .none
                 
             case .stopActivity:
                 return .run { send in
-                    for activity in Activity<BankWidgetAttributes>.activities {
-                        await activity.end(nil, dismissalPolicy: .immediate)
-                    }
+                    await LiveActivityManager.shared.killBankLiveActivities()
                 }
                 
             case let .bankForm(action):

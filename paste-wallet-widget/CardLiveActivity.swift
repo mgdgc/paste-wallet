@@ -25,6 +25,8 @@ struct CardWidgetAttributes: ActivityAttributes {
 
     // Fixed non-changing properties about your activity go here!
     var id: UUID
+    var createdAt: Date = Date()
+    var terminateAt: Date = Date(timeIntervalSinceNow: 180)
 }
 
 struct CardLiveActivity: Widget {
@@ -177,7 +179,7 @@ extension CardWidgetAttributes.ContentState {
      }
 }
 
-#Preview("Notification", as: .dynamicIsland(.compact), using: CardWidgetAttributes.preview) {
+#Preview("Notification", as: .dynamicIsland(.expanded), using: CardWidgetAttributes.preview) {
    CardLiveActivity()
 } contentStates: {
     CardWidgetAttributes.ContentState.card

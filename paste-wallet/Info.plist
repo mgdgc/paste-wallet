@@ -4,6 +4,11 @@
 <dict>
 	<key>AppIdentifierPrefix</key>
 	<string>${AppIdentifierPrefix}</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.mgchoi.paste-wallet.cardKill</string>
+		<string>com.mgchoi.paste-wallet.bankKill</string>
+	</array>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>ConfigurationIntent</string>
@@ -11,6 +16,8 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 </dict>

@@ -119,7 +119,6 @@ struct CardDetailFeature {
                 return .none
                 
             case .launchActivity:
-                let attributes = CardWidgetAttributes(id: state.card.id)
                 let contentState = CardWidgetAttributes.ContentState(
                     id: state.card.id,
                     name: state.card.name,
@@ -130,22 +129,14 @@ struct CardDetailFeature {
                     year: state.card.year,
                     month: state.card.month,
                     cvc: state.card.getWrappedCVC(state.key))
-                let content = ActivityContent(state: contentState, staleDate: .now.advanced(by: 3600))
                 
-                do {
-                    let _ = try Activity<CardWidgetAttributes>.request(
-                        attributes: attributes,
-                        content: content)
-                } catch {
-                    print(#function, error)
-                }
+                LiveActivityManager.shared.startCardLiveActivity(state: contentState, cardId: state.card.id)
+                
                 return .none
                 
             case .stopActivity:
                 return .run { send in
-                    for activity in Activity<CardWidgetAttributes>.activities {
-                        await activity.end(nil, dismissalPolicy: .immediate)
-                    }
+                    await LiveActivityManager.shared.killCardLiveActivities()
                 }
                 
             case let .cardForm(action):

@@ -37,4 +37,8 @@ extension Date {
         return "\(year)-\(month < 10 ? "0" : "")\(month)-\(day < 10 ? "0" : "")\(day)"
     }
     
+    var hhMM: String {
+        return String(format: "%02d:%02d", hour, minute)
+    }
+    
 }

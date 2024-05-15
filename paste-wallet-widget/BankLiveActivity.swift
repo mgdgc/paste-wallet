@@ -20,6 +20,8 @@ struct BankWidgetAttributes: ActivityAttributes {
     
     // Fixed non-changing properties about your activity go here!
     var id: UUID
+    var createdAt: Date = Date()
+    var terminateAt: Date = Date(timeIntervalSinceNow: 180)
 }
 
 struct BankLiveActivity: Widget {
