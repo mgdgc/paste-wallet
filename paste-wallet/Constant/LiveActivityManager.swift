@@ -60,6 +60,10 @@ class LiveActivityManager {
         return 60
     }
     
+    var useLiveActivity: Bool {
+        UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useLiveActivity)
+    }
+    
     var cardSealing: [CardSealing] {
         guard let cardSealing: [String] = UserDefaults.standard.array(forKey: UserDefaultsKey.Settings.cardSealProperties) as? [String] else {
             return []
@@ -80,7 +84,7 @@ class LiveActivityManager {
     @discardableResult
     func startCardLiveActivity(state: CardWidgetAttributes.ContentState, cardId: UUID) -> Activity<CardWidgetAttributes>? {
         // Check whether the user has authorized live activity or not
-        guard authorized else {
+        guard authorized, useLiveActivity else {
             return nil
         }
         
@@ -108,7 +112,7 @@ class LiveActivityManager {
     @discardableResult
     func startBankLiveActivity(state: BankWidgetAttributes.ContentState, bankId: UUID) -> Activity<BankWidgetAttributes>? {
         // Check whether the user has authorized live activity or not
-        guard authorized else {
+        guard authorized, useLiveActivity else {
             return nil
         }
         

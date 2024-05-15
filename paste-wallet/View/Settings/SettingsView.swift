@@ -103,29 +103,31 @@ struct SettingsView: View {
             Section {
                 Toggle("settings_activity_liveactivity", isOn: viewStore.binding(get: \.useLiveActivity, send: SettingsFeature.Action.setUseLiveActivity))
                 
-                NavigationLink("settings_activity_card_sealing") {
-                    List(LiveActivityManager.CardSealing.allCases, id: \.self) { property in
-                        HStack {
-                            Text(property.string)
-                            Spacer()
-                            if viewStore.cardSealing.contains(property) {
-                                Image(systemName: "checkmark")
+                if viewStore.useLiveActivity {
+                    NavigationLink("settings_activity_card_sealing") {
+                        List(LiveActivityManager.CardSealing.allCases, id: \.self) { property in
+                            HStack {
+                                Text(property.string)
+                                Spacer()
+                                if viewStore.cardSealing.contains(property) {
+                                    Image(systemName: "checkmark")
+                                }
                             }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            var sealings = viewStore.cardSealing
-                            if sealings.contains(property) {
-                                sealings.removeAll(where: { $0 == property })
-                            } else {
-                                sealings.append(property)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                var sealings = viewStore.cardSealing
+                                if sealings.contains(property) {
+                                    sealings.removeAll(where: { $0 == property })
+                                } else {
+                                    sealings.append(property)
+                                }
+                                viewStore.send(.setCardSealing(sealings))
                             }
-                            viewStore.send(.setCardSealing(sealings))
                         }
                     }
+                    
+                    Stepper("settings_activity_bank_sealing_\(viewStore.bankSealing)", value: viewStore.binding(get: \.bankSealing, send: SettingsFeature.Action.setBankSealing))
                 }
-                
-                Stepper("settings_activity_bank_sealing_\(viewStore.bankSealing)", value: viewStore.binding(get: \.bankSealing, send: SettingsFeature.Action.setBankSealing))
             } header: {
                 Text("settings_section_activity")
             } footer: {
