@@ -129,13 +129,14 @@ struct CardLiveActivity: Widget {
                 
                 VStack {
                     HStack {
-                        let propertyMapped: [Int: LiveActivityManager.CardSealing] = [0: .first, 1: .second, 2: .third, 3: .fourth]
+                        let propertyMapped: [Int: LiveActivityManager.CardSealing] = context.state.number.count >= 4 ? [0: .first, 1: .second, 2: .third, 3: .fourth] : [0: .second, 1: .third, 2: .fourth]
                         ForEach(context.state.number.indices, id: \.self) { i in
                             let n = context.state.number[i]
                             
                             Group {
                                 if let mapped = propertyMapped[i], context.attributes.sealing.contains(mapped) {
                                     Text(String(repeating: "*", count: n.count))
+                                        .padding(.horizontal, 2)
                                 } else {
                                     Text(n)
                                 }

@@ -37,6 +37,7 @@ struct SettingsView: View {
                     iCloudView
                     appView
                     interactionView
+                    activityView
                     privacyView
                     infoView
                 }
@@ -93,6 +94,42 @@ struct SettingsView: View {
                 Toggle("settings_interaction_haptic_tab", isOn: viewStore.binding(get: \.tabHaptic, send: SettingsFeature.Action.setTabHaptic))
                 
                 Toggle("settings_interaction_haptic_item", isOn: viewStore.binding(get: \.itemHaptic, send: SettingsFeature.Action.setItemHaptic))
+            }
+        }
+    }
+    
+    var activityView: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Section {
+                Toggle("settings_activity_liveactivity", isOn: viewStore.binding(get: \.useLiveActivity, send: SettingsFeature.Action.setUseLiveActivity))
+                
+                NavigationLink("settings_activity_card_sealing") {
+                    List(LiveActivityManager.CardSealing.allCases, id: \.self) { property in
+                        HStack {
+                            Text(property.string)
+                            Spacer()
+                            if viewStore.cardSealing.contains(property) {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            var sealings = viewStore.cardSealing
+                            if sealings.contains(property) {
+                                sealings.removeAll(where: { $0 == property })
+                            } else {
+                                sealings.append(property)
+                            }
+                            viewStore.send(.setCardSealing(sealings))
+                        }
+                    }
+                }
+                
+                Stepper("settings_activity_bank_sealing_\(viewStore.bankSealing)", value: viewStore.binding(get: \.bankSealing, send: SettingsFeature.Action.setBankSealing))
+            } header: {
+                Text("settings_section_activity")
+            } footer: {
+                Text("settings_footer_activity")
             }
         }
     }

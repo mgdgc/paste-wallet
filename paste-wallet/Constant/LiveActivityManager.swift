@@ -19,13 +19,17 @@ class LiveActivityManager {
         }
     }
     
-    enum CardSealing: String, Codable {
+    enum CardSealing: String, Codable, CaseIterable {
         case first
         case second
         case third
         case fourth
         case expiration
         case cvc
+        
+        var string: String {
+            "live_activity_card_sealing_\(rawValue)".localized
+        }
     }
     
     static let shared = LiveActivityManager()

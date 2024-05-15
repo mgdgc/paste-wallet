@@ -19,17 +19,28 @@ struct SettingsFeature {
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
+        
         // None Changing Value
         let laContext = LAContext()
+        
         // iCloud
         var iCloudAvailable: Bool = false
+        
         // App
         var firstTab: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
+        
         // Interaction
         var tabHaptic: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.tabHaptic)
         var itemHaptic: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.itemHaptic)
+        
+        // Activity
+        var useLiveActivity: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useLiveActivity)
+        var cardSealing: [LiveActivityManager.CardSealing] = LiveActivityManager.shared.cardSealing
+        var bankSealing: Int = LiveActivityManager.shared.bankSealing
+        
         // Privacy
         var useBiometric: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
+        
         // App Info
         var appVersion: String = "1.0.0"
         var appBuild: String = "1"
@@ -51,15 +62,24 @@ struct SettingsFeature {
         // ICloud
         case checkICloud
         case setICloudStatus(Bool)
+        
         // App
         case setFirstTab(WalletView.Tab)
+        
         // Interaction
         case setTabHaptic(Bool)
         case setItemHaptic(Bool)
+        
+        // Activity
+        case setUseLiveActivity(Bool)
+        case setCardSealing([LiveActivityManager.CardSealing])
+        case setBankSealing(Int)
+        
         // Privacy
         case showPasscodeChangeView
         case setBiometric(Bool)
         case passwordChanged
+        
         // App Info
         case fetchAppVersion
         
@@ -97,6 +117,21 @@ struct SettingsFeature {
             case let .setItemHaptic(haptic):
                 state.itemHaptic = haptic
                 UserDefaults.standard.set(haptic, forKey: UserDefaultsKey.Settings.itemHaptic)
+                return .none
+                
+            case let .setUseLiveActivity(use):
+                state.useLiveActivity = use
+                UserDefaults.standard.set(use, forKey: UserDefaultsKey.Settings.useLiveActivity)
+                return .none
+                
+            case let .setCardSealing(sealing):
+                state.cardSealing = sealing
+                UserDefaults.standard.set(sealing.map { $0.rawValue }, forKey: UserDefaultsKey.Settings.cardSealProperties)
+                return .none
+                
+            case let .setBankSealing(sealing):
+                state.bankSealing = sealing
+                UserDefaults.standard.set(sealing, forKey: UserDefaultsKey.Settings.bankSealCount)
                 return .none
                 
             case .showPasscodeChangeView:

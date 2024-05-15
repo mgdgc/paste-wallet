@@ -22,6 +22,26 @@
         }
       }
     },
+    "** / **" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "** / **"
+          }
+        }
+      }
+    },
+    "***" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "***"
+          }
+        }
+      }
+    },
     "%@" : {
       "localizations" : {
         "ko" : {
@@ -1011,6 +1031,108 @@
         }
       }
     },
+    "live_activity_card_sealing_cvc" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CVC"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CVC"
+          }
+        }
+      }
+    },
+    "live_activity_card_sealing_expiration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expiration Date"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유효기간"
+          }
+        }
+      }
+    },
+    "live_activity_card_sealing_first" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "First Number"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "첫번째 번호"
+          }
+        }
+      }
+    },
+    "live_activity_card_sealing_fourth" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second Number"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "두번째 번호"
+          }
+        }
+      }
+    },
+    "live_activity_card_sealing_second" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Third Number"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세번째 번호"
+          }
+        }
+      }
+    },
+    "live_activity_card_sealing_third" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fourth Number"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "네번째 번호"
+          }
+        }
+      }
+    },
     "lock" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1895,6 +2017,57 @@
         }
       }
     },
+    "settings_activity_bank_sealing_%lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide %lld Bank Account Numbers"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계좌번호 %lld자리 숨김"
+          }
+        }
+      }
+    },
+    "settings_activity_card_sealing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide Card Properties"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 속성 숨김"
+          }
+        }
+      }
+    },
+    "settings_activity_liveactivity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Live Activities"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live Activity 사용"
+          }
+        }
+      }
+    },
     "settings_app" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1942,6 +2115,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "앱을 처음 실행했을 때 시작 탭으로 설정한 탭이 보여집니다."
+          }
+        }
+      }
+    },
+    "settings_footer_activity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the device supports Dynamic Island, 'Use Live Activities' also enables Dynamic Island."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dynamic Island를 지원하는 경우, Live Activity 옵션을 활성화하면 같이 실행됩니다."
           }
         }
       }
@@ -2282,6 +2472,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "비밀번호는 6자리의 숫자로 설정할 수 있습니다."
+          }
+        }
+      }
+    },
+    "settings_section_activity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live Activities"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live Activity"
           }
         }
       }
