@@ -19,6 +19,15 @@ class LiveActivityManager {
         }
     }
     
+    enum CardSealing: String, Codable {
+        case first
+        case second
+        case third
+        case fourth
+        case expiration
+        case cvc
+    }
+    
     static let shared = LiveActivityManager()
     
     private let authorizationInfo: ActivityAuthorizationInfo
@@ -47,6 +56,23 @@ class LiveActivityManager {
         return 60
     }
     
+    var cardSealing: [CardSealing] {
+        guard let cardSealing: [String] = UserDefaults.standard.array(forKey: UserDefaultsKey.Settings.cardSealProperties) as? [String] else {
+            return []
+        }
+        var properties: [CardSealing] = []
+        cardSealing.forEach { rawValue in
+            if let sealing = CardSealing(rawValue: rawValue) {
+                properties.append(sealing)
+            }
+        }
+        return properties
+    }
+    
+    var bankSealing: Int {
+        UserDefaults.standard.integer(forKey: UserDefaultsKey.Settings.bankSealCount)
+    }
+    
     @discardableResult
     func startCardLiveActivity(state: CardWidgetAttributes.ContentState, cardId: UUID) -> Activity<CardWidgetAttributes>? {
         // Check whether the user has authorized live activity or not
@@ -58,7 +84,7 @@ class LiveActivityManager {
             return nil
         }
         
-        let attribute = CardWidgetAttributes(id: cardId, createdAt: Date(), terminateAt: terminationDate)
+        let attribute = CardWidgetAttributes(id: cardId, createdAt: Date(), terminateAt: terminationDate, sealing: cardSealing)
         let content = ActivityContent(state: state, staleDate: .now.advanced(by: liveActivityExpiration))
         
         do {
@@ -86,7 +112,7 @@ class LiveActivityManager {
             return nil
         }
         
-        let attribute = BankWidgetAttributes(id: bankId, createdAt: Date(), terminateAt: terminationDate)
+        let attribute = BankWidgetAttributes(id: bankId, createdAt: Date(), terminateAt: terminationDate, sealing: bankSealing)
         let content = ActivityContent(state: state, staleDate: .now.advanced(by: liveActivityExpiration))
         
         do {

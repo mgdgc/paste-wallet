@@ -39,7 +39,13 @@ struct PasteWalletApp: App {
             UserDefaultsKey.Settings.firstTab : WalletView.Tab.favorite.rawValue,
             UserDefaultsKey.Settings.useBiometric : true,
             UserDefaultsKey.Settings.tabHaptic : false,
-            UserDefaultsKey.Settings.itemHaptic : false
+            UserDefaultsKey.Settings.itemHaptic : false,
+            UserDefaultsKey.Settings.useLiveActivity : true,
+            UserDefaultsKey.Settings.cardSealProperties : [
+                LiveActivityManager.CardSealing.fourth.rawValue,
+                LiveActivityManager.CardSealing.cvc.rawValue
+            ],
+            UserDefaultsKey.Settings.bankSealCount : 4
         ])
         
         // Erase Keychain value if the app has reinstalled

@@ -21,4 +21,7 @@ extension UserDefaultsKey.Settings {
     static let firstTab = "firstTab"
     static let tabHaptic = "tabHaptic"
     static let itemHaptic = "itemHaptic"
+    static let useLiveActivity = "useLiveActivity"
+    static let cardSealProperties = "cardSealProperties"
+    static let bankSealCount = "bankSealCount"
 }

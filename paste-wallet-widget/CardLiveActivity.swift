@@ -27,6 +27,7 @@ struct CardWidgetAttributes: ActivityAttributes {
     var id: UUID
     var createdAt: Date = Date()
     var terminateAt: Date = Date(timeIntervalSinceNow: 180)
+    var sealing: [LiveActivityManager.CardSealing] = [.fourth, .cvc]
 }
 
 struct CardLiveActivity: Widget {
@@ -128,14 +129,22 @@ struct CardLiveActivity: Widget {
                 
                 VStack {
                     HStack {
+                        let propertyMapped: [Int: LiveActivityManager.CardSealing] = [0: .first, 1: .second, 2: .third, 3: .fourth]
                         ForEach(context.state.number.indices, id: \.self) { i in
                             let n = context.state.number[i]
-                            Text(String("\(n)"))
-                                .padding(4)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Colors.backgroundTertiary.color)
+                            
+                            Group {
+                                if let mapped = propertyMapped[i], context.attributes.sealing.contains(mapped) {
+                                    Text(String(repeating: "*", count: n.count))
+                                } else {
+                                    Text(n)
                                 }
+                            }
+                            .padding(4)
+                            .background {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Colors.backgroundTertiary.color)
+                            }
                             
                             if i < context.state.number.count - 1 {
                                 Spacer()
@@ -144,19 +153,31 @@ struct CardLiveActivity: Widget {
                     }
                     
                     HStack {
-                        Text(String(format: "%02d / %02d", context.state.month, context.state.year))
-                            .underline()
+                        Group {
+                            if context.attributes.sealing.contains(.expiration) {
+                                Text("** / **")
+                            } else {
+                                Text(String(format: "%02d / %02d", context.state.month, context.state.year))
+                            }
+                        }
+                        .underline()
                         
                         Spacer()
                         
                         if let cvc = context.state.cvc {
                             Text(String("CVC"))
-                            Text(String("\(cvc)"))
-                                .padding(4)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Colors.backgroundTertiary.color)
+                            Group {
+                                if context.attributes.sealing.contains(.cvc) {
+                                    Text("***")
+                                } else {
+                                    Text(cvc)
                                 }
+                            }
+                            .padding(4)
+                            .background {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Colors.backgroundTertiary.color)
+                            }
                         }
                     }
                 }

@@ -16,12 +16,20 @@ struct BankWidgetAttributes: ActivityAttributes {
         var bank: String
         var color: String
         var number: String
+        
+        func sealedNumber(sealingCount: Int) -> String {
+            let safeCount = number.count < sealingCount ? number.count : sealingCount
+            let exposedString = number[..<number.index(number.endIndex, offsetBy: -1 * safeCount)]
+            var sealedString = String(repeating: "*", count: safeCount)
+            return String(exposedString) + sealedString
+        }
     }
     
     // Fixed non-changing properties about your activity go here!
     var id: UUID
     var createdAt: Date = Date()
     var terminateAt: Date = Date(timeIntervalSinceNow: 180)
+    var sealing: Int = 4
 }
 
 struct BankLiveActivity: Widget {
@@ -109,7 +117,7 @@ struct BankLiveActivity: Widget {
                 GridRow {
                     Text("di_bank_number")
                     HStack {
-                        Text(String("\(context.state.number)"))
+                        Text(context.state.sealedNumber(sealingCount: context.attributes.sealing))
                             .fixedSize(horizontal: false, vertical: true)
                             .lineLimit(2)
                             .padding(4)
@@ -137,7 +145,7 @@ extension BankWidgetAttributes.ContentState {
     }
 }
 
-#Preview("Bank", as: .dynamicIsland(.compact), using: BankWidgetAttributes.preview) {
+#Preview("Bank", as: .dynamicIsland(.expanded), using: BankWidgetAttributes.preview) {
     BankLiveActivity()
 } contentStates: {
     BankWidgetAttributes.ContentState.bank
