@@ -23,10 +23,18 @@ struct PasteWalletApp: App {
             Memo.self,
             MemoField.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, groupContainer: .automatic, cloudKitDatabase: .private("Wallet"))
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            groupContainer: .automatic,
+            cloudKitDatabase: .private("Wallet")
+        )
         
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(
+                for: schema,
+                configurations: [modelConfiguration]
+            )
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -49,28 +57,33 @@ struct PasteWalletApp: App {
         ])
         
         // Erase Keychain value if the app has reinstalled
-        let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
+        let freshInstall = !UserDefaults.standard.bool(
+            forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled
+        )
         if freshInstall {
             KeychainWrapper.standard.removeAllKeys()
-            UserDefaults.standard.set(true, forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
+            UserDefaults.standard.set(
+                true,
+                forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled
+            )
         }
         
         // Reload Widgets
         WidgetCenter.shared.reloadAllTimelines()
     }
     
+    static let appStore: StoreOf<AppFeature> = .init(initialState: AppFeature.State()) {
+        AppFeature()
+    }
+    
     @State private var key: String? = nil
     @State private var splashFinished: Bool = false
-    @State private var openByWidgetCard: String? = nil
-    @State private var openByWidgetBank: String? = nil
     
     var body: some Scene {
         WindowGroup {
             Group {
                 if splashFinished {
-                    ContentView(store: Store(initialState: Feature.State(openByWidgetCard: openByWidgetCard, openByWidgetBank: openByWidgetBank), reducer: {
-                        Feature()
-                    }))
+                    AppView(store: PasteWalletApp.appStore)
                 } else {
                     SplashView {
                         splashFinished = true
@@ -79,19 +92,19 @@ struct PasteWalletApp: App {
             }
             .onOpenURL { url in
                 splashFinished = false
-                openByWidgetCard = nil
-                openByWidgetBank = nil
                 
                 if url.absoluteString.starts(with: "widget://key") {
-                    guard let urlComponents = URLComponents(string: url.absoluteString) else { return }
-                    guard let type = urlComponents.queryItems?.first(where: { $0.name == "type" })?.value else { return }
-                    guard let id = urlComponents.queryItems?.first(where: { $0.name == "id" })?.value else { return }
+                    guard let urlComponents = URLComponents(string: url.absoluteString),
+                          let type = urlComponents.queryItems?.first(where: { $0.name == "type" })?.value,
+                          let id = urlComponents.queryItems?.first(where: { $0.name == "id" })?.value else {
+                        return
+                    }
                     
                     if type == "card" {
-                        openByWidgetCard = id
+                        PasteWalletApp.appStore.send(.openByWidgetCard(id))
                         
                     } else if type == "bank" {
-                        openByWidgetBank = id
+                        PasteWalletApp.appStore.send(.openByWidgetBank(id))
                     }
                 }
             }

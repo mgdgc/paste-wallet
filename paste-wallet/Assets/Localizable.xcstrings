@@ -1088,6 +1088,23 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Fourth Number"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "네번째 번호"
+          }
+        }
+      }
+    },
+    "live_activity_card_sealing_second" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Second Number"
           }
         },
@@ -1099,7 +1116,7 @@
         }
       }
     },
-    "live_activity_card_sealing_second" : {
+    "live_activity_card_sealing_third" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -1112,23 +1129,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "세번째 번호"
-          }
-        }
-      }
-    },
-    "live_activity_card_sealing_third" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fourth Number"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "네번째 번호"
           }
         }
       }

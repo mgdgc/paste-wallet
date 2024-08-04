@@ -126,7 +126,7 @@ struct SettingsView: View {
                         }
                     }
                     
-                    Stepper("settings_activity_bank_sealing_\(viewStore.bankSealing)", value: viewStore.binding(get: \.bankSealing, send: SettingsFeature.Action.setBankSealing))
+                    Stepper("settings_activity_bank_sealing_\(viewStore.bankSealing)", value: viewStore.binding(get: \.bankSealing, send: SettingsFeature.Action.setBankSealing), in: 0...Int.max)
                 }
             } header: {
                 Text("settings_section_activity")
