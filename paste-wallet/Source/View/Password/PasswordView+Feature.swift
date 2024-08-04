@@ -11,32 +11,22 @@ import ComposableArchitecture
 
 @Reducer
 struct PasswordFeature {
+    @ObservableState
     struct State: Equatable {
         var key: String?
-        
         var tempPassword: String?
         
-        var localKey: String? = {
-            KeychainWrapper.standard.string(forKey: .password)
-        }()
+        var localKey: String? = KeychainWrapper.standard.string(forKey: .password)
     }
     
-    enum Action: Equatable {
-        case setKey(String?)
-        case setTempPassword(String?)
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
     }
     
     var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
-            case let .setKey(key):
-                state.key = key
-                return .none
-                
-            case let .setTempPassword(temp):
-                state.tempPassword = temp
-                return .none
-                
             default: return .none
             }
         }
