@@ -9,7 +9,7 @@ import SwiftUI
 import LocalAuthentication
 import SwiftKeychainWrapper
 
-struct PinCodeView: View {
+struct PasscodeView: View {
     enum AfterAction {
         case none
         case dismiss
@@ -280,7 +280,7 @@ struct PinCodeView: View {
 }
 
 #Preview {
-    PinCodeView(initialMessage: "password_type".localized, dismissable: false, enableBiometric: true, authenticateOnLaunch: true) { typed in
+    PasscodeView(initialMessage: "password_type".localized, dismissable: false, enableBiometric: true, authenticateOnLaunch: true) { typed in
         return .dismiss
     }
 }

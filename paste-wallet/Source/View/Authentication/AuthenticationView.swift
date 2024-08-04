@@ -10,15 +10,15 @@ import ComposableArchitecture
 import LocalAuthentication
 import SwiftKeychainWrapper
 
-struct PasswordView: View {
-    @Bindable var store: StoreOf<PasswordFeature>
+struct AuthenticationView: View {
+    @Bindable var store: StoreOf<AuthenticationFeature>
     
     var body: some View {
         if let localKey = store.localKey {
             if ICloudHelper.shared.iCloudKeyExist {
                 if ICloudHelper.shared.getICloudKey(predictKey: localKey) == localKey {
                     // 비밀번호 확인 모드
-                    PinCodeView(
+                    PasscodeView(
                         initialMessage: "password_type".localized,
                         dismissable: false,
                         enableBiometric: true,
@@ -33,7 +33,7 @@ struct PasswordView: View {
                     }
                 } else {
                     // 다른 기기에서 비밀번호 변경함
-                    PinCodeView(
+                    PasscodeView(
                         initialMessage: "password_icloud_wrong".localized,
                         dismissable: false,
                         enableBiometric: false,
@@ -53,7 +53,7 @@ struct PasswordView: View {
         } else {
             if ICloudHelper.shared.iCloudKeyExist {
                 // 다른 기기에서 사용중일 때
-                PinCodeView(
+                PasscodeView(
                     initialMessage: "password_icloud".localized,
                     dismissable: false,
                     enableBiometric: false,
@@ -70,7 +70,7 @@ struct PasswordView: View {
                 
             } else {
                 // 비밀번호 설정 모드
-                PinCodeView(
+                PasscodeView(
                     initialMessage: "password_init".localized,
                     dismissable: false,
                     enableBiometric: false,
@@ -98,7 +98,7 @@ struct PasswordView: View {
 }
 
 #Preview {
-    PasswordView(store: Store(initialState: PasswordFeature.State(), reducer: {
-        PasswordFeature()
+    AuthenticationView(store: Store(initialState: AuthenticationFeature.State(), reducer: {
+        AuthenticationFeature()
     }))
 }

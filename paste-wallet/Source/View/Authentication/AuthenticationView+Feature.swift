@@ -10,7 +10,7 @@ import SwiftKeychainWrapper
 import ComposableArchitecture
 
 @Reducer
-struct PasswordFeature {
+struct AuthenticationFeature {
     @ObservableState
     struct State: Equatable {
         var key: String?

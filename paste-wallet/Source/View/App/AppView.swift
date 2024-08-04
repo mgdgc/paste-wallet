@@ -16,7 +16,7 @@ struct AppView: View {
             if let store = store.scope(state: \.wallet, action: \.wallet) {
                 WalletView(store: store)
             } else if let store = store.scope(state: \.password, action: \.password) {
-                PasswordView(store: store)
+                AuthenticationView(store: store)
             }
         }
     }

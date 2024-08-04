@@ -18,7 +18,7 @@ struct AppFeature {
         var openByWidgetBank: String? = nil
         
         var wallet: WalletFeature.State?
-        var password: PasswordFeature.State? = .init()
+        var password: AuthenticationFeature.State? = .init()
     }
     
     enum Action {
@@ -29,7 +29,7 @@ struct AppFeature {
         case openByWidgetBank(String)
         
         case wallet(WalletFeature.Action)
-        case password(PasswordFeature.Action)
+        case password(AuthenticationFeature.Action)
     }
     
     var body: some ReducerOf<Self> {
@@ -74,7 +74,7 @@ struct AppFeature {
             WalletFeature()
         }
         .ifLet(\.password, action: \.password) {
-            PasswordFeature()
+            AuthenticationFeature()
         }
     }
 }
