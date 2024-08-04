@@ -27,7 +27,7 @@ struct FavoriteFeature {
         @PresentationState var bankDetail: BankDetailFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action {
         case fetchCard
         case fetchBank
         case playHaptic

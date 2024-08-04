@@ -10,61 +10,82 @@ import ComposableArchitecture
 import SwiftData
 
 struct CardView: View {
-    let store: StoreOf<CardFeature>
+    @Bindable var store: StoreOf<CardFeature>
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            GeometryReader { proxy in
-                if viewStore.cards.isEmpty {
-                    emptyView(viewStore)
-                    
-                } else {
-                    ScrollView {
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: Int(proxy.size.width) / 160), spacing: 20) {
-                            ForEach(viewStore.cards) { card in
-                                Button {
-                                    viewStore.send(.playHaptic)
-                                    viewStore.send(.showCardDetail(card: card))
-                                } label: {
-                                    SmallCardCell(card: card, key: viewStore.key)
-                                        .contextMenu {
-                                            contextMenu(viewStore, for: card)
-                                        } preview: {
-                                            CardPreview(card: card, key: viewStore.key, size: proxy.size)
-                                        }
-                                }
-                                .sensoryFeedback(.impact, trigger: viewStore.haptic)
-                                .fullScreenCover(store: store.scope(state: \.$cardDetail, action: \.cardDetail)) {
-                                    viewStore.send(.stopLiveActivity)
-                                } content: { store in
-                                    NavigationStack {
-                                        CardDetailView(store: store)
-                                    }
-                                }
-                            }
-                        }
-                        .padding()
-                    }}
+        GeometryReader { proxy in
+            if store.cards.isEmpty {
+                emptyView
                 
-            }
-            .onAppear {
-                viewStore.send(.onAppear)
-            }
-            .navigationTitle("tab_card")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        viewStore.send(.showCardForm)
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(Colors.textPrimary.color)
-                    }
-                    .sheet(store: store.scope(state: \.$cardForm, action: \.cardForm), content: { store in
-                        NavigationStack {
-                            CardForm(store: store)
+            } else {
+                ScrollView {
+                    LazyVGrid(
+                        columns: Array(
+                            repeating: GridItem(.flexible()),
+                            count: Int(proxy.size.width) / 160
+                        ),
+                        spacing: 20
+                    ) {
+                        ForEach(store.cards) { card in
+                            Button {
+                                store.send(.playHaptic)
+                                store.send(.showCardDetail(card: card))
+                            } label: {
+                                SmallCardCell(card: card, key: store.key)
+                                    .contextMenu {
+                                        contextMenu(card: card)
+                                    } preview: {
+                                        CardPreview(
+                                            card: card,
+                                            key: store.key,
+                                            size: proxy.size
+                                        )
+                                    }
+                            }
+                            .sensoryFeedback(
+                                .impact,
+                                trigger: store.haptic
+                            )
                         }
-                        .interactiveDismissDisabled()
-                    })
+                    }
+                    .padding()
+                }
+            }
+        }
+        .fullScreenCover(
+            item: $store.scope(
+                state: \.cardDetail,
+                action: \.cardDetail
+            )
+        ) {
+            store.send(.stopLiveActivity)
+        } content: { store in
+            NavigationStack {
+                CardDetailView(store: store)
+            }
+        }
+        .onAppear {
+            store.send(.onAppear)
+        }
+        .navigationTitle("tab_card")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    store.send(.showCardForm)
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(Colors.textPrimary.color)
+                }
+                .sheet(
+                    item: $store.scope(
+                        state: \.cardForm,
+                        action: \.cardForm
+                    )
+                ) { store in
+                    NavigationStack {
+                        CardForm(store: store)
+                    }
+                    .interactiveDismissDisabled()
                 }
             }
         }
@@ -73,7 +94,7 @@ struct CardView: View {
         }
     }
     
-    private func emptyView(_ viewStore: ViewStore<CardFeature.State, CardFeature.Action>) -> some View {
+    private var emptyView: some View {
         VStack(spacing: 16) {
             Spacer()
             Image("empty_card")
@@ -88,7 +109,7 @@ struct CardView: View {
                 Spacer()
             }
             Button("card_empty_add", systemImage: "plus") {
-                viewStore.send(.showCardForm)
+                store.send(.showCardForm)
             }
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
@@ -98,7 +119,7 @@ struct CardView: View {
     }
     
     @ViewBuilder
-    private func contextMenu(_ store: ViewStore<CardFeature.State, CardFeature.Action>, for card: Card) -> some View {
+    private func contextMenu(card: Card) -> some View {
         Button("card_context_copy_all", systemImage: "doc.on.doc") {
             store.send(.copy(card: card, separator: .dash))
         }

@@ -25,7 +25,7 @@ struct PasswordView: View {
                         authenticateOnLaunch: true
                     ) { typed in
                         if typed == localKey {
-                            store.send(.binding(.set(\.key, localKey)))
+                            store.send(.setKey(localKey))
                             return .dismiss
                         } else {
                             return .retype("password_wrong".localized)
@@ -41,7 +41,7 @@ struct PasswordView: View {
                     ) { typed in
                         if ICloudHelper.shared.getICloudKey(predictKey: typed) == typed {
                             KeychainWrapper.standard[.password] = typed
-                            store.send(.binding(.set(\.key, typed)))
+                            store.send(.setKey(typed))
                             return .dismiss
                         } else {
                             return .retype("password_wrong".localized)
@@ -61,7 +61,7 @@ struct PasswordView: View {
                 ) { typed in
                     if ICloudHelper.shared.getICloudKey(predictKey: typed) == typed {
                         KeychainWrapper.standard[.password] = typed
-                        store.send(.binding(.set(\.key, typed)))
+                        store.send(.setKey(typed))
                         return .dismiss
                     } else {
                         return .retype("password_wrong".localized)
@@ -80,15 +80,15 @@ struct PasswordView: View {
                         if temp == typed {
                             KeychainWrapper.standard[.password] = typed
                             ICloudHelper.shared.initICloudKey(keyToSet: typed)
-                            store.send(.binding(.set(\.key, typed)))
+                            store.send(.setKey(typed))
                             return .dismiss
                         } else {
-                            store.send(.binding(.set(\.tempPassword, nil)))
+                            store.send(.setKey(nil))
                             return .retype("password_check_fail".localized)
                         }
                         
                     } else {
-                        store.send(.binding(.set(\.tempPassword, typed)))
+                        store.send(.setKey(typed))
                         return .retype("password_check".localized)
                     }
                 }

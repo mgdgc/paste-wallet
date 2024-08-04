@@ -13,7 +13,7 @@ import ComposableArchitecture
 
 @Reducer
 struct CardFeature {
-    
+    @ObservableState
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
@@ -27,11 +27,11 @@ struct CardFeature {
         // Haptic
         var haptic: UUID = UUID()
         
-        @PresentationState var cardForm: CardFormFeature.State?
-        @PresentationState var cardDetail: CardDetailFeature.State?
+        @Presents var cardForm: CardFormFeature.State?
+        @Presents var cardDetail: CardDetailFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action {
         case onAppear
         case fetchAll
         case playHaptic
@@ -46,16 +46,18 @@ struct CardFeature {
         case cardDetail(PresentationAction<CardDetailFeature.Action>)
     }
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .onAppear:
                 let openByWidget = state.openByWidget
-                return .run { send in
-                    await send(.fetchAll)
-                    if let openByWidgetCard = openByWidget {
-                        await send(.showTargetCard(openByWidgetCard))
-                    }
+                if let openByWidgetCard = openByWidget {
+                    return .concatenate(
+                        .send(.fetchAll),
+                        .send(.showTargetCard(openByWidgetCard))
+                    )
+                } else {
+                    return .send(.fetchAll)
                 }
                 
             case .fetchAll:
@@ -109,10 +111,10 @@ struct CardFeature {
                 return .none
             }
         }
-        .ifLet(\.$cardForm, action: /Action.cardForm) {
+        .ifLet(\.$cardForm, action: \.cardForm) {
             CardFormFeature()
         }
-        .ifLet(\.$cardDetail, action: /Action.cardDetail) {
+        .ifLet(\.$cardDetail, action: \.cardDetail) {
             CardDetailFeature()
         }
     }

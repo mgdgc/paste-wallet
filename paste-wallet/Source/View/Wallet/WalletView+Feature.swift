@@ -56,7 +56,7 @@ struct WalletFeature {
         case settings(SettingsFeature.Action)
     }
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         BindingReducer()
         Scope(state: \.favorite, action: \.favorite) {
             FavoriteFeature()

@@ -21,6 +21,7 @@ struct PasswordFeature {
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case setKey(String?)
     }
     
     var body: some Reducer<State, Action> {

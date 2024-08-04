@@ -32,11 +32,15 @@ struct AppFeature {
         case password(PasswordFeature.Action)
     }
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case let .setKey(key):
                 state.key = key
+                return .none
+                
+            case let .splashFinished(finished):
+                state.splashFinished = finished
                 return .none
                 
             case .initView:
@@ -57,10 +61,6 @@ struct AppFeature {
             case .openByWidgetBank(let id):
                 state.openByWidgetCard = nil
                 state.openByWidgetBank = id
-                return .none
-                
-            case let .splashFinished(finished):
-                state.splashFinished = finished
                 return .none
                 
             case let .password(.setKey(key)):

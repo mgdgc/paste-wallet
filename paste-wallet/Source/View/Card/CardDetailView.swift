@@ -9,37 +9,6 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 
-struct SecretField: View {
-    var title: LocalizedStringKey
-    var content: String
-    
-    @Binding var locked: Bool
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(Colors.textPrimary.color)
-            Spacer()
-            if locked {
-                Text(String(content))
-                    .textSelection(.enabled)
-                    .foregroundStyle(Colors.textSecondary.color)
-                    .overlay {
-                        if locked {
-                            Rectangle()
-                                .fill(.thinMaterial)
-                        }
-                    }
-            } else {
-                Text(String(content))
-                    .textSelection(.enabled)
-                    .foregroundStyle(Colors.textSecondary.color)
-                    .textSelection(.enabled)
-            }
-        }
-    }
-}
-
 fileprivate struct CardDetailSection<Content>: View where Content: View {
     var sectionTitle: LocalizedStringKey? = nil
     @ViewBuilder var content: () -> Content
@@ -66,200 +35,202 @@ fileprivate struct CardDetailSection<Content>: View where Content: View {
 }
 
 struct CardDetailView: View {
-    let store: StoreOf<CardDetailFeature>
+    @Bindable var store: StoreOf<CardDetailFeature>
     
     @State private var dragOffset: CGSize = .zero
     
-    @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            ZStack {
-                Colors.backgroundSecondary.color.ignoresSafeArea()
+        ZStack {
+            Colors.backgroundSecondary.color.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                cardView
+                    .padding([.top, .horizontal])
+                    .offset(dragOffset)
+                    .zIndex(1)
+                    .gesture(dragGesture)
                 
-                VStack(spacing: 0) {
-                    cardView
-                        .padding([.top, .horizontal])
-                        .offset(dragOffset)
-                        .zIndex(1)
-                        .gesture(dragGesture)
-                    
-                    List {
-                        Section("card_section_info") {
-                            SecretField(title: "card_expire", content: viewStore.card.wrappedExpirationDate, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
-                            if let cvc = viewStore.card.getWrappedCVC(viewStore.key) {
-                                SecretField(title: "card_cvc", content: cvc, locked: viewStore.binding(get: \.locked, send: CardDetailFeature.Action.setLock))
-                            }
-                        }
-                        
-                        if let memo = viewStore.card.memo, !memo.isEmpty {
-                            Section("card_section_memo") {
-//                                ImmutableTextView(text: .constant(memo))
-//                                    .overlay {
-//                                        if viewStore.locked {
-//                                            Rectangle()
-//                                                .fill(.thinMaterial)
-//                                        }
-//                                    }
-//                                    .background {
-//                                        Text(memo)
-//                                            .foregroundStyle(.clear)
-//                                    }
-                                HStack {
-                                    Text(memo)
-                                        .textSelection(.enabled)
-                                        .overlay {
-                                            if viewStore.locked {
-                                                Rectangle()
-                                                    .fill(.thinMaterial)
-                                            }
-                                        }
-                                    Spacer()
-                                }
-                            }
-                        }
-                        
-                        Section {
-                            Button("card_set_favorite", systemImage: viewStore.card.favorite ? "star.fill" : "star") {
-                                viewStore.send(.setFavorite)
-                            }
-                            
-                            Button(role: .destructive) {
-                                viewStore.send(.showDeleteConfirmation(true))
-                            } label: {
-                                Label("delete", systemImage: "trash")
-                                    .foregroundStyle(Color.red)
-                            }
-                            .alert("delete_confirmation_title", isPresented: viewStore.binding(get: \.showDeleteConfirmation, send: CardDetailFeature.Action.showDeleteConfirmation)) {
-                                Button("cancel", role: .cancel) {
-                                    viewStore.send(.showDeleteConfirmation(false))
-                                }
-                                Button("delete", role: .destructive) {
-                                    viewStore.send(.delete)
-                                }
-                            } message: {
-                                Text("delete_confirmation_message")
-                            }
-                            .disabled(viewStore.locked)
+                List {
+                    Section("card_section_info") {
+                        SecretField(
+                            title: "card_expire",
+                            content: store.card.wrappedExpirationDate,
+                            locked: $store.isCardInfoLocked
+                        )
+                        if let cvc = store.card.getWrappedCVC(store.key) {
+                            SecretField(
+                                title: "card_cvc",
+                                content: cvc,
+                                locked: $store.isCardInfoLocked
+                            )
                         }
                     }
-                    .scrollContentBackground(.hidden)
-                    .safeAreaInset(edge: .top, content: {
-                        Spacer().frame(height: 20)
-                    })
-                    .offset(y: -8)
-                    .ignoresSafeArea()
+                    
+                    if let memo = store.card.memo, !memo.isEmpty {
+                        Section("card_section_memo") {
+                            HStack {
+                                Text(memo)
+                                    .textSelection(.enabled)
+                                    .overlay {
+                                        if store.isCardInfoLocked {
+                                            Rectangle()
+                                                .fill(.thinMaterial)
+                                        }
+                                    }
+                                Spacer()
+                            }
+                        }
+                    }
+                    
+                    Section {
+                        Button(
+                            "card_set_favorite",
+                            systemImage: store.card.favorite ? "star.fill" : "star"
+                        ) {
+                            store.send(.toggleFavorite)
+                        }
+                        
+                        Button(role: .destructive) {
+                            store.send(.binding(.set(\.showDeleteConfirmation, true)))
+                        } label: {
+                            Label("delete", systemImage: "trash")
+                                .foregroundStyle(Color.red)
+                        }
+                        .alert(
+                            "delete_confirmation_title",
+                            isPresented: $store.showDeleteConfirmation) {
+                            Button("cancel", role: .cancel) { }
+                            Button("delete", role: .destructive) {
+                                store.send(.deleteCard)
+                            }
+                        } message: {
+                            Text("delete_confirmation_message")
+                        }
+                        .disabled(store.isCardInfoLocked)
+                    }
                 }
-                .frame(maxWidth: 480)
+                .scrollContentBackground(.hidden)
+                .safeAreaInset(edge: .top, content: {
+                    Spacer().frame(height: 20)
+                })
+                .offset(y: -8)
+                .ignoresSafeArea()
             }
-            .onAppear {
-                if viewStore.biometricAvailable {
-                    viewStore.send(.unlock)
+            .frame(maxWidth: 480)
+        }
+        .onAppear {
+            if store.biometricAvailable {
+                store.send(.authenticate)
+            }
+        }
+        .onChange(of: scenePhase) { oldValue, newValue in
+            if oldValue == .background && newValue == .inactive {
+                store.send(.setCardInfoLock(true))
+            }
+        }
+        .onChange(of: store.isCardInfoLocked) { old, new in
+            if !new {
+                store.send(.launchActivity)
+            } else {
+                store.send(.stopActivity)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("done") {
+                    store.send(.dismiss)
                 }
+                .foregroundStyle(Colors.textPrimary.color)
             }
-            .onChange(of: viewStore.dismiss) { oldValue, newValue in
-                dismiss()
-            }
-            .onChange(of: scenePhase) { oldValue, newValue in
-                if oldValue == .background && newValue == .inactive {
-                    viewStore.send(.lock)
-                }
-            }
-            .onChange(of: viewStore.locked) { old, new in
-                if !new {
-                    viewStore.send(.launchActivity)
+            
+            ToolbarItem(placement: .principal) {
+                if store.isCardInfoLocked {
+                    Button("unlock", systemImage: "lock") {
+                        store.send(.authenticate)
+                    }
                 } else {
-                    viewStore.send(.stopActivity)
+                    Button("lock", systemImage: "lock.open") {
+                        store.send(.setCardInfoLock(true))
+                    }
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("done") {
-                        viewStore.send(.dismiss)
+            
+            if !store.isCardInfoLocked {
+                ToolbarItem {
+                    Button("edit") {
+                        store.send(.editCard)
                     }
                     .foregroundStyle(Colors.textPrimary.color)
                 }
-                
-                ToolbarItem(placement: .principal) {
-                    if viewStore.locked {
-                        Button("unlock", systemImage: "lock") {
-                            viewStore.send(.unlock)
-                        }
-                    } else {
-                        Button("lock", systemImage: "lock.open") {
-                            viewStore.send(.lock)
-                        }
-                    }
-                }
-                
-                if !viewStore.locked {
-                    ToolbarItem {
-                        Button("edit") {
-                            viewStore.send(.showEdit)
-                        }
-                        .foregroundStyle(Colors.textPrimary.color)
-                        .navigationDestination(store: store.scope(state: \.$cardForm, action: \.cardForm)) { store in
-                            CardForm(store: store)
-                        }
-                    }
-                }
             }
+        }
+        .navigationDestination(
+            item: $store.scope(state: \.cardForm, action: \.cardForm)
+        ) { store in
+            CardForm(store: store)
         }
     }
     
-    @ViewBuilder
     private var cardView: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack {
-                HStack {
-                    Text(viewStore.card.name)
-                        .font(.title2)
-                    Spacer()
-                    Text(viewStore.card.issuer ?? "")
-                        .font(.title3)
-                }
-                
+        VStack {
+            HStack {
+                Text(store.card.name)
+                    .font(.title2)
                 Spacer()
-                
-                HStack {
-                    if viewStore.locked {
-                        Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
+                Text(store.card.issuer ?? "")
+                    .font(.title3)
+            }
+            
+            Spacer()
+            
+            HStack {
+                if store.isCardInfoLocked {
+                    Text(store.card.getWrappedNumber(store.key, .space))
+                        .font(.title2)
+                        .underline()
+                        .overlay {
+                            Rectangle()
+                                .fill(.thinMaterial)
+                        }
+                } else {
+                    Menu {
+                        Button(
+                            "card_context_copy_all",
+                            systemImage: "doc.on.doc"
+                        ) {
+                            store.send(.copyToClipboard(.dash))
+                        }
+                        
+                        Button(
+                            "card_context_copy_numbers",
+                            systemImage: "textformat.123"
+                        ) {
+                            store.send(.copyToClipboard(.none))
+                        }
+                    } label: {
+                        Text(store.card.getWrappedNumber(store.key, .space))
                             .font(.title2)
                             .underline()
-                            .overlay {
-                                Rectangle()
-                                    .fill(.thinMaterial)
-                            }
-                    } else {
-                        Menu {
-                            Button("card_context_copy_all", systemImage: "doc.on.doc") {
-                                store.send(.copy(separator: .dash))
-                            }
-                            Button("card_context_copy_numbers", systemImage: "textformat.123") {
-                                store.send(.copy(separator: .none))
-                            }
-                        } label: {
-                            Text(viewStore.card.getWrappedNumber(viewStore.key, .space))
-                                .font(.title2)
-                                .underline()
-                        }
                     }
-                    Spacer()
-                    Text("brand_\(viewStore.card.brand)".localized)
-                        .font(.body.bold())
                 }
+                Spacer()
+                Text("brand_\(store.card.brand)".localized)
+                    .font(.body.bold())
             }
-            .padding(20)
-            .aspectRatio(1.58, contentMode: .fit)
-            .foregroundStyle(UIColor(hexCode: viewStore.card.color).isDark ? Color.white : Color.black)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(UIColor(hexCode: viewStore.card.color)))
-                    .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
-            )
         }
+        .padding(20)
+        .aspectRatio(1.58, contentMode: .fit)
+        .foregroundStyle(
+            UIColor(hexCode: store.card.color).isDark ? Color.white : Color.black
+        )
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(UIColor(hexCode: store.card.color)))
+                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+        )
     }
     
     private var dragGesture: some Gesture {
@@ -269,7 +240,7 @@ struct CardDetailView: View {
             }
             .onEnded { value in
                 if value.translation.height > 100 {
-                    dismiss()
+                    store.send(.dismiss)
                 } else {
                     withAnimation {
                         dragOffset = .zero

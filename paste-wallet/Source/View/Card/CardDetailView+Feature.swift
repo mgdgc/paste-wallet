@@ -15,78 +15,90 @@ import ComposableArchitecture
 
 @Reducer
 struct CardDetailFeature {
-    
+    @ObservableState
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         let card: Card
         
-        var locked: Bool = true
+        var isCardInfoLocked: Bool = true
         var showDeleteConfirmation: Bool = false
+        var isAuthenticating: Bool = false
         
-        var dismiss: Bool = false
+        @Shared(.appStorage(UserDefaultsKey.Settings.useBiometric))
+        var biometricEnabled: Bool = false
         
         var biometricAvailable: Bool {
-            let laContext = LAContext()
-            var error: NSError?
-            return laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) &&
-            UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
+            LAContext().canEvaluatePolicy(
+                .deviceOwnerAuthenticationWithBiometrics,
+                error: nil
+            ) && biometricEnabled
         }
         
-        @PresentationState var cardForm: CardFormFeature.State?
+        @Presents var cardForm: CardFormFeature.State?
     }
     
-    enum Action: Equatable {
-        case unlock
-        case lock
-        case setLock(Bool)
-        case copy(separator: Card.SeparatorStyle)
-        case setFavorite
-        case showDeleteConfirmation(Bool)
-        case showEdit
-        case delete
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        case setCardInfoLock(Bool)
+        case authenticate
+        case setAuthenticating(Bool)
+        case toggleFavorite
+        case editCard
+        case deleteCard
         case launchActivity
         case stopActivity
+        case copyToClipboard(Card.SeparatorStyle)
         case dismiss
         
         case cardForm(PresentationAction<CardFormFeature.Action>)
     }
     
+    enum CancellableID {
+        case authentication
+    }
+    
+    let laContext = LAContext()
+    
+    @Dependency(\.dismiss) var dismiss
+    
     var body: some Reducer<State, Action> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
-            case .unlock:
-                return .run { send in
-                    let laContext = LAContext()
-                    var error: NSError?
-                    if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) &&
-                        UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
-                        let reason = "biometric_reason".localized
-                        var result: Bool = false
-                        do {
-                            result = try await laContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
-                        } catch {
-                            print(#function, error)
-                        }
-                        await send(.setLock(!result))
+            case .authenticate:
+                guard !state.isAuthenticating else { return .none }
+                return .run { [
+                    biometricAvailable = state.biometricAvailable
+                ] send in
+                    await send(.setAuthenticating(true))
+                    let authResult = await authenticateWithBiometric()
+                    if biometricAvailable {
+                        await send(.setCardInfoLock(!authResult))
                     } else {
-                        await send(.setLock(false))
+                        await send(.setCardInfoLock(false))
                     }
+                    await send(.setAuthenticating(false))
                 }
+                .cancellable(id: CancellableID.authentication)
                 
-            case .lock:
-                return .send(.setLock(true))
-                           
-            case let .setLock(lock):
-                state.locked = lock
+            case .setAuthenticating(let isAuthenticating):
+                state.isAuthenticating = isAuthenticating
                 return .none
                 
-            case let .copy(separator):
+            case .setCardInfoLock(let lock):
+                state.isCardInfoLocked = lock
+                return .none
+                
+            case .copyToClipboard(let separator):
                 let number = state.card.getWrappedNumber(state.key, separator)
-                UIPasteboard.general.setValue(number, forPasteboardType: UTType.plainText.identifier)
+                UIPasteboard.general.setValue(
+                    number,
+                    forPasteboardType: UTType.plainText.identifier
+                )
                 return .none
                 
-            case .setFavorite:
+            case .toggleFavorite:
                 state.card.favorite.toggle()
                 do {
                     try state.modelContext.save()
@@ -96,15 +108,11 @@ struct CardDetailFeature {
                 }
                 return .none
                 
-            case let .showDeleteConfirmation(show):
-                state.showDeleteConfirmation = show
-                return .none
-                
-            case .showEdit:
+            case .editCard:
                 state.cardForm = .init(key: state.key, card: state.card)
                 return .none
                 
-            case .delete:
+            case .deleteCard:
                 state.modelContext.delete(state.card)
                 do {
                     try state.modelContext.save()
@@ -115,8 +123,9 @@ struct CardDetailFeature {
                 return .send(.dismiss)
                 
             case .dismiss:
-                state.dismiss.toggle()
-                return .none
+                return .run { _ in
+                    await dismiss()
+                }
                 
             case .launchActivity:
                 let contentState = CardWidgetAttributes.ContentState(
@@ -139,13 +148,30 @@ struct CardDetailFeature {
                     await LiveActivityManager.shared.killCardLiveActivities()
                 }
                 
-            case let .cardForm(action):
-                return .none
+            default: return .none
             }
         }
-        .ifLet(\.$cardForm, action: /Action.cardForm) {
+        .ifLet(\.$cardForm, action: \.cardForm) {
             CardFormFeature()
         }
     }
     
+    private func authenticateWithBiometric() async -> Bool {
+        var error: NSError?
+        if laContext.canEvaluatePolicy(
+            .deviceOwnerAuthenticationWithBiometrics,
+            error: &error
+        ) {
+            do {
+                let result = try await laContext.evaluatePolicy(
+                    .deviceOwnerAuthenticationWithBiometrics,
+                    localizedReason: "biometric_reason".localized
+                )
+                return result
+            } catch {
+                print(#function, error)
+            }
+        }
+        return true
+    }
 }

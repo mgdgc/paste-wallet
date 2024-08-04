@@ -10,7 +10,6 @@ import LocalAuthentication
 import SwiftKeychainWrapper
 
 struct PinCodeView: View {
-    
     enum AfterAction {
         case none
         case dismiss
@@ -30,20 +29,40 @@ struct PinCodeView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    private let columns: [GridItem] = [GridItem(alignment: .center), GridItem(alignment: .center), GridItem(alignment: .center)]
-    private let numberPad: [String] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "biometric", "0", "del"]
-    private let laContext: LAContext = LAContext()
+    private let columns: [GridItem] = [
+        GridItem(alignment: .center),
+        GridItem(alignment: .center),
+        GridItem(alignment: .center)
+    ]
+    private let numberPad: [String] = [
+        "1", "2", "3",
+        "4", "5", "6",
+        "7", "8", "9",
+        "biometric", "0", "del"
+    ]
+    private let laContext = LAContext()
     
     let password: String? = {
-        let freshInstall = !UserDefaults.standard.bool(forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
+        let freshInstall = !UserDefaults.standard.bool(
+            forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled
+        )
         if freshInstall {
             KeychainWrapper.standard.removeAllKeys()
-            UserDefaults.standard.set(true, forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled)
+            UserDefaults.standard.set(
+                true,
+                forKey: UserDefaultsKey.AppEnvironment.alreadyInstalled
+            )
         }
         return KeychainWrapper.standard[.password]
     }()
     
-    init(initialMessage: String = "password_type".localized, dismissable: Bool = false, enableBiometric: Bool = true, authenticateOnLaunch: Bool = true, onPasswordEntered: @escaping (String) -> AfterAction) {
+    init(
+        initialMessage: String = "password_type".localized,
+        dismissable: Bool = false,
+        enableBiometric: Bool = true,
+        authenticateOnLaunch: Bool = true,
+        onPasswordEntered: @escaping (String) -> AfterAction
+    ) {
         self._message = State(initialValue: initialMessage)
         self.dismissable = dismissable
         self.biometric = enableBiometric
@@ -129,7 +148,7 @@ struct PinCodeView: View {
         .background(Colors.backgroundSecondary.color.ignoresSafeArea())
         .onAppear {
             if biometric && authenticateOnLaunch && UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
-                checkBiometric()
+                authenticateWithBiometric()
             }
         }
     }
@@ -161,8 +180,7 @@ struct PinCodeView: View {
         let icon: [LABiometryType : String] = [.faceID: "faceid", .touchID: "touchid", .opticID: "opticid"]
         
         Button {
-            checkBiometric()
-            
+            authenticateWithBiometric()
         } label: {
             Image(systemName: icon[laContext.biometryType]!)
                 .resizable()
@@ -231,26 +249,33 @@ struct PinCodeView: View {
         return string
     }
     
-    private func checkBiometric() {
+    private func authenticateWithBiometric() {
+        Task {
+            let authResult = await checkBiometric()
+            if let password, authResult {
+                await valid(password: password)
+            } else {
+                self.message = "password_biometric_fail".localized
+            }
+        }
+    }
+    
+    private func checkBiometric() async -> Bool {
         var error: NSError?
         // 생체인증 가능여부 확인
         if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "biometric_reason".localized
             // 생체인증 요청
-            laContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { authenticated, error in
-                // 생체인증 결과
-                if authenticated {
-                    // 인증 성공
-                    if let password = password {
-                        valid(password: password)
-                    }
-                    
-                } else {
-                    // 인증 실패
-                    self.message = "password_biometric_fail".localized
-                }
+            do {
+                let result = try await laContext.evaluatePolicy(
+                    .deviceOwnerAuthenticationWithBiometrics,
+                    localizedReason: "biometric_reason".localized
+                )
+                return result
+            } catch {
+                debugPrint(error)
             }
         }
+        return false
     }
 }
 
