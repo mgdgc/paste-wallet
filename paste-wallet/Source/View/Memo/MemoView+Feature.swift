@@ -13,18 +13,18 @@ import ComposableArchitecture
 
 @Reducer
 struct MemoFeature {
-    
+    @ObservableState
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
         
         var memos: [Memo] = []
         
-        @PresentationState var memoForm: MemoFormFeature.State?
-        @PresentationState var memoDetail: MemoDetailFeature.State?
+        @Presents var memoForm: MemoFormFeature.State?
+        @Presents var memoDetail: MemoDetailFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action {
         case fetchAll
         case showMemoForm
         case showMemoDetail(Memo)
@@ -33,7 +33,7 @@ struct MemoFeature {
         case memoDetail(PresentationAction<MemoDetailFeature.Action>)
     }
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .fetchAll:
@@ -48,17 +48,13 @@ struct MemoFeature {
                 state.memoDetail = .init(key: state.key, memo: memo)
                 return .none
                 
-            case let .memoForm(action):
-                return .none
-                
-            case let .memoDetail(action):
-                return .none
+            default: return .none
             }
         }
-        .ifLet(\.$memoForm, action: /Action.memoForm) {
+        .ifLet(\.$memoForm, action: \.memoForm) {
             MemoFormFeature()
         }
-        .ifLet(\.$memoDetail, action: /Action.memoDetail) {
+        .ifLet(\.$memoDetail, action: \.memoDetail) {
             MemoDetailFeature()
         }
     }
