@@ -15,14 +15,13 @@ import ComposableArchitecture
 
 @Reducer
 struct BankDetailFeature {
-    
+    @ObservableState
     struct State: Equatable {
         var modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
         let bank: Bank
         
         var locked: Bool = true
-        var dismiss: Bool = false
         var showDeleteConfirmation: Bool = false
         
         var biometricAvailable: Bool {
@@ -32,26 +31,30 @@ struct BankDetailFeature {
             UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
         }
         
-        @PresentationState var bankForm: BankFormFeature.State?
+        @Presents var bankForm: BankFormFeature.State?
     }
     
-    enum Action {
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
         case unlock
         case lock
         case setLock(Bool)
         case copy(Bool)
-        case dismiss
         case setFavorite
-        case showDeleteConfirmation(Bool)
         case showBankForm
         case delete
         case launchActivity
         case stopActivity
+        case dismiss
         
         case bankForm(PresentationAction<BankFormFeature.Action>)
     }
     
-    var body: some Reducer<State, Action> {
+    @Dependency(\.dismiss) var dismiss
+    
+    var body: some ReducerOf<Self> {
+        BindingReducer()
+        
         Reduce { state, action in
             switch action {
             case .unlock:
@@ -94,10 +97,6 @@ struct BankDetailFeature {
                 }
                 return .none
                 
-            case .dismiss:
-                state.dismiss = true
-                return .none
-                
             case .setFavorite:
                 state.bank.favorite.toggle()
                 do {
@@ -106,10 +105,6 @@ struct BankDetailFeature {
                     print(#function, "save error")
                     print(error)
                 }
-                return .none
-                
-            case let .showDeleteConfirmation(show):
-                state.showDeleteConfirmation = show
                 return .none
                 
             case .showBankForm:
@@ -142,11 +137,15 @@ struct BankDetailFeature {
                     await LiveActivityManager.shared.killBankLiveActivities()
                 }
                 
-            case let .bankForm(action):
-                return .none
+            case .dismiss:
+                return .run { _ in
+                    await dismiss()
+                }
+                
+            default: return .none
             }
         }
-        .ifLet(\.$bankForm, action: /Action.bankForm) {
+        .ifLet(\.$bankForm, action: \.bankForm) {
             BankFormFeature()
         }
     }

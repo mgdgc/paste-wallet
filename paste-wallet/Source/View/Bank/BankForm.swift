@@ -24,13 +24,13 @@ struct BankForm: View {
                     "new_bank_issuer",
                     text: $store.bankName
                 )
-                    .submitLabel(.next)
+                .submitLabel(.next)
                 
                 ColorPicker(
                     "new_bank_color",
                     selection: $store.color
                 )
-                    .submitLabel(.next)
+                .submitLabel(.next)
             }
             
             Section("new_bank_section_number") {
