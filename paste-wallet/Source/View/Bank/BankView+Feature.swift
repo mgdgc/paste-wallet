@@ -14,6 +14,7 @@ import ActivityKit
 
 @Reducer
 struct BankFeature {
+    @ObservableState
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
@@ -23,8 +24,11 @@ struct BankFeature {
         var haptic: UUID = UUID()
         var banks: [Bank] = []
         
-        @PresentationState var bankForm: BankFormFeature.State?
-        @PresentationState var bankDetail: BankDetailFeature.State?
+        @Shared(.appStorage(UserDefaultsKey.Settings.itemHaptic))
+        var useHaptic: Bool = false
+        
+        @Presents var bankForm: BankFormFeature.State?
+        @Presents var bankDetail: BankDetailFeature.State?
     }
     
     enum Action: Equatable {
@@ -59,7 +63,7 @@ struct BankFeature {
                 return .none
                 
             case .playHaptic:
-                if UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.itemHaptic) {
+                if state.useHaptic {
                     state.haptic = UUID()
                 }
                 return .none
@@ -120,10 +124,10 @@ struct BankFeature {
                 return .none
             }
         }
-        .ifLet(\.$bankForm, action: /Action.bankForm) {
+        .ifLet(\.$bankForm, action: \.bankForm) {
             BankFormFeature()
         }
-        .ifLet(\.$bankDetail, action: /Action.bankDetail) {
+        .ifLet(\.$bankDetail, action: \.bankDetail) {
             BankDetailFeature()
         }
     }
