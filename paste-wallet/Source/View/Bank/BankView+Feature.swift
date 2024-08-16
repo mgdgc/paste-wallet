@@ -31,7 +31,7 @@ struct BankFeature {
         @Presents var bankDetail: BankDetailFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action {
         case onAppear
         case fetchAll
         case playHaptic

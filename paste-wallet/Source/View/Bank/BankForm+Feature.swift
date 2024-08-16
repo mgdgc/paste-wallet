@@ -12,7 +12,7 @@ import ComposableArchitecture
 
 @Reducer
 struct BankFormFeature {
-    
+    @ObservableState
     struct State: Equatable {
         var modelContext: ModelContext
         let key: String
@@ -42,61 +42,58 @@ struct BankFormFeature {
         }
     }
     
-    enum Action: Equatable {
-        case setBankName(String)
-        case setName(String)
-        case setColor(Color)
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
         case setAccountNumber(String)
-        case setMemo(String)
         case save
         case saveContext
+        case dismiss
     }
     
-    func reduce(into state: inout State, action: Action) -> Effect<Action> {
-        switch action {
-        case let .setBankName(name):
-            state.bankName = name
-            return .none
-            
-        case let .setName(name):
-            state.name = name
-            return .none
-            
-        case let .setColor(color):
-            state.color = color
-            return .none
-            
-        case let .setAccountNumber(number):
-            state.accountNumber = number
-            return .none
-            
-        case let .setMemo(memo):
-            state.memo = memo
-            return .none
-            
-        case .save:
-            if state.bank != nil {
-                state.bank?.bank = state.bankName
-                state.bank?.name = state.name
-                state.bank?.number = Bank.encryptNumber(state.key, state.accountNumber)
-                state.bank?.color = state.color.hex
-                state.bank?.memo = state.memo
+    @Dependency(\.dismiss) var dismiss
+    
+    var body: some ReducerOf<Self> {
+        BindingReducer()
+        
+        Reduce { state, action in
+            switch action {
+            case .setAccountNumber(let value):
+                var value = value
+                value.removeAll(where: { !$0.isNumber && $0 != "-" })
+                state.accountNumber = value
+                return .none
                 
-            } else {
-                let bank = Bank(name: state.name, bank: state.bankName, color: state.color.hex, number: Bank.encryptNumber(state.key, state.accountNumber), memo: state.memo)
-                state.modelContext.insert(bank)
+            case .save:
+                if state.bank != nil {
+                    state.bank?.bank = state.bankName
+                    state.bank?.name = state.name
+                    state.bank?.number = Bank.encryptNumber(state.key, state.accountNumber)
+                    state.bank?.color = state.color.hex
+                    state.bank?.memo = state.memo
+                    
+                } else {
+                    let bank = Bank(name: state.name, bank: state.bankName, color: state.color.hex, number: Bank.encryptNumber(state.key, state.accountNumber), memo: state.memo)
+                    state.modelContext.insert(bank)
+                }
+                return .send(.saveContext)
+                
+            case .saveContext:
+                do {
+                    try state.modelContext.save()
+                } catch {
+                    print(#function, "save error")
+                    print(error)
+                }
+                return .send(.dismiss)
+                
+            case .dismiss:
+                return .run { _ in
+                    await dismiss()
+                }
+                
+            default: return .none
             }
-            return .send(.saveContext)
-            
-        case .saveContext:
-            do {
-                try state.modelContext.save()
-            } catch {
-                print(#function, "save error")
-                print(error)
-            }
-            return .none
+        
         }
     }
-    
 }

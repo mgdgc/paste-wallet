@@ -35,7 +35,7 @@ struct BankDetailFeature {
         @PresentationState var bankForm: BankFormFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action {
         case unlock
         case lock
         case setLock(Bool)

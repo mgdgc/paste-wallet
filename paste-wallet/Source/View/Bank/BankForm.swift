@@ -9,67 +9,61 @@ import SwiftUI
 import ComposableArchitecture
 
 struct BankForm: View {
-    let store: StoreOf<BankFormFeature>
-    
-    @Environment(\.dismiss) var dismiss
+    @Bindable var store: StoreOf<BankFormFeature>
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            Form {
-                Section("new_bank_section_information") {
-                    TextField("new_bank_name", text: viewStore.binding(get: \.name, send: BankFormFeature.Action.setName))
-                        .submitLabel(.next)
-                    
-                    TextField("new_bank_issuer", text: viewStore.binding(get: \.bankName, send: BankFormFeature.Action.setBankName))
-                        .submitLabel(.next)
-                    
-                    ColorPicker("new_bank_color", selection: viewStore.binding(get: \.color, send: BankFormFeature.Action.setColor))
-                        .submitLabel(.next)
-                }
+        Form {
+            Section("new_bank_section_information") {
+                TextField(
+                    "new_bank_name",
+                    text: $store.name
+                )
+                .submitLabel(.next)
                 
-                Section("new_bank_section_number") {
-                    TextField("new_bank_number", text: viewStore.binding(get: \.accountNumber, send: { value in
-                        var value = value
-                        value.removeAll(where: { !$0.isNumber && $0 != "-" })
-                        return .setAccountNumber(value)
-                    }))
-                    .keyboardType(.numbersAndPunctuation)
-                    .submitLabel(.done)
-                }
+                TextField(
+                    "new_bank_issuer",
+                    text: $store.bankName
+                )
+                    .submitLabel(.next)
                 
-                Section("new_bank_section_memo") {
-                    TextEditor(text: viewStore.binding(get: \.memo, send: BankFormFeature.Action.setMemo))
-                        .frame(minHeight: 100)
-                }
+                ColorPicker(
+                    "new_bank_color",
+                    selection: $store.color
+                )
+                    .submitLabel(.next)
             }
-            .navigationTitle(viewStore.bank == nil ? "new_bank" : "bank_edit")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("save") {
-                        viewStore.send(.save)
-                        dismiss()
-                    }
-                    .disabled(viewStore.confirmButtonDisabled)
-                    .opacity(viewStore.confirmButtonDisabled ? 0.7 : 1)
+            
+            Section("new_bank_section_number") {
+                TextField(
+                    "new_bank_number",
+                    text: $store.accountNumber.sending(\.setAccountNumber)
+                )
+                .keyboardType(.numbersAndPunctuation)
+                .submitLabel(.done)
+            }
+            
+            Section("new_bank_section_memo") {
+                TextEditor(text: $store.memo)
+                    .frame(minHeight: 100)
+            }
+        }
+        .navigationTitle(store.bank == nil ? "new_bank" : "bank_edit")
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("save") {
+                    store.send(.save)
                 }
-                
-                if viewStore.bank == nil {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("cancel") {
-                            dismiss()
-                        }
+                .disabled(store.confirmButtonDisabled)
+                .opacity(store.confirmButtonDisabled ? 0.7 : 1)
+            }
+            
+            if store.bank == nil {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("cancel") {
+                        store.send(.dismiss)
                     }
                 }
             }
         }
-    }
-}
-
-#Preview {
-    
-    return NavigationStack {
-        BankForm(store: Store(initialState: BankFormFeature.State(key: "000000"), reducer: {
-            BankFormFeature()
-        }))
     }
 }
