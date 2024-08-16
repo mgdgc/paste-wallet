@@ -180,7 +180,7 @@ extension Card {
 }
 
 extension Card {
-    enum Brand: String, Equatable, Codable, Hashable {
+    enum Brand: String, Equatable, Codable, Hashable, CaseIterable {
         case visa
         case master
         case amex
