@@ -15,7 +15,7 @@ import CloudKit
 
 @Reducer
 struct SettingsFeature {
-    
+    @ObservableState
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
@@ -55,10 +55,12 @@ struct SettingsFeature {
             return false
         }
         
-        @PresentationState var passwordReset: PasswordResetFeature.State?
+        @Presents var passwordReset: PasswordResetFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        
         // ICloud
         case checkICloud
         case setICloudStatus(Bool)
@@ -87,6 +89,8 @@ struct SettingsFeature {
     }
     
     var body: some Reducer<State, Action> {
+        BindingReducer()
+        
         Reduce { state, action in
             switch action {
             case .checkICloud:
@@ -160,7 +164,7 @@ struct SettingsFeature {
                 return .none
             }
         }
-        .ifLet(\.$passwordReset, action: /Action.passwordReset) {
+        .ifLet(\.$passwordReset, action: \                              .passwordReset) {
             PasswordResetFeature()
         }
     }
