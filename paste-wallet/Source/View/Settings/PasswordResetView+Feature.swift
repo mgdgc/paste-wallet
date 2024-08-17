@@ -13,7 +13,7 @@ import SwiftKeychainWrapper
 
 @Reducer
 struct PasswordResetFeature {
-    
+    @ObservableState
     struct State: Equatable {
         let modelContext = PasteWalletApp.sharedModelContext
         let key: String
@@ -21,13 +21,17 @@ struct PasswordResetFeature {
         var newPasscode: String = ""
         var newPasscodeCheck: String = ""
         var passcodeValid: Bool {
-            (newPasscode.count == 6 && newPasscodeCheck.count == 6) && (newPasscode == newPasscodeCheck) && (newPasscode.allSatisfy({ $0.isNumber }))
+            (newPasscode.count == 6 &&
+             newPasscodeCheck.count == 6) &&
+            (newPasscode == newPasscodeCheck) &&
+            (newPasscode.allSatisfy({ $0.isNumber }))
         }
         var passwordChangedSuccessfully: Bool = false
         var showPasscodeChangeResult: Bool = false
     }
     
-    enum Action: Equatable {
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
         // Passcode
         case setNewPasscode(String)
         case setNewPasscodeCheck(String)
@@ -71,6 +75,8 @@ struct PasswordResetFeature {
                 exit(0)
             }
             return .none
+            
+        default: return .none
         }
     }
 }
