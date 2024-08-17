@@ -8,78 +8,87 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct MemoFormField: Equatable {
+struct MemoFormField: Equatable, Hashable {
     var fieldName: String = ""
     var value: String = ""
 }
 
 struct MemoForm: View {
-    let store: StoreOf<MemoFormFeature>
-    
-    @Environment(\.dismiss) var dismiss
+    @Bindable var store: StoreOf<MemoFormFeature>
     
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            Form {
-                Section("new_memo_section_information") {
-                    TextField("new_memo_title", text: viewStore.binding(get: \.title, send: MemoFormFeature.Action.setTitle))
-                    TextField("new_memo_desc", text: viewStore.binding(get: \.desc, send: MemoFormFeature.Action.setDesc))
-                }
-                
-                ForEach(viewStore.fields.indices, id: \.self) { i in
-                    Section(String("\("new_memo_section_fields".localized) \(i + 1)")) {
-                        HStack(spacing: 16) {
-                            VStack {
-                                TextField("new_memo_fieldname", text: viewStore.binding(get: { $0.fields[i].fieldName }, send: { .setField(i, \.fieldName, $0) }))
-                                Divider()
-                                TextField("new_memo_value", text: viewStore.binding(get: { $0.fields[i].value }, send: { .setField(i, \.value, $0) }))
-                            }
+        Form {
+            Section("new_memo_section_information") {
+                TextField(
+                    "new_memo_title",
+                    text: $store.title
+                )
+                TextField(
+                    "new_memo_desc",
+                    text: $store.desc
+                )
+            }
+            
+            ForEach(store.fields.indices, id: \.self) { i in
+                Section(
+                    String("\("new_memo_section_fields".localized) \(i + 1)")
+                ) {
+                    HStack(spacing: 16) {
+                        VStack {
+                            TextField(
+                                "new_memo_fieldname",
+                                text: Binding(
+                                    get: { store.fields[safe: i]?.fieldName ?? "" },
+                                    set: { store.send(.setMemoFieldTitle(i, $0)) }
+                                )
+                            )
                             
-                            Button(role: .destructive) {
-                                viewStore.send(.deleteField(i))
-                            } label: {
-                                Label("delete", systemImage: "minus.circle.fill")
-                                    .labelStyle(IconOnlyLabelStyle())
-                            }
+                            Divider()
+                            
+                            TextField(
+                                "new_memo_value",
+                                text: Binding(
+                                    get: { store.fields[safe: i]?.value ?? "" },
+                                    set: { store.send(.setMemoFieldValue(i, $0)) }
+                                )
+                            )
                         }
-                    }
-                }
-                
-                Section {
-                    Button("add", systemImage: "plus.circle") {
-                        viewStore.send(.addField)
+                        
+                        Button(role: .destructive) {
+                            store.send(.deleteField(i))
+                        } label: {
+                            Label("delete", systemImage: "minus.circle.fill")
+                                .labelStyle(.iconOnly)
+                        }
                     }
                 }
             }
-            .navigationTitle(viewStore.memo == nil ? "memo_form" : "memo_edit")
-            .toolbar {
-                if viewStore.memo == nil {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("cancel") {
-                            dismiss()
-                        }
+            
+            Section {
+                Button("add", systemImage: "plus.circle") {
+                    store.send(.addField)
+                }
+            }
+        }
+        .navigationTitle(store.memo == nil ? "memo_form" : "memo_edit")
+        .toolbar {
+            if store.memo == nil {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("cancel") {
+                        store.send(.dismiss)
                     }
                 }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("save") {
-                        viewStore.send(.save)
-                        dismiss()
-                    }
-                    .disabled(viewStore.confirmButtonDisabled)
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
+                Button("save") {
+                    store.send(.save)
                 }
+                .disabled(!store.confirmButtonEnabled)
             }
         }
         .background {
             Colors.backgroundSecondary.color.ignoresSafeArea()
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        MemoForm(store: Store(initialState: MemoFormFeature.State(key: "000000"), reducer: {
-            MemoFormFeature()
-        }))
     }
 }

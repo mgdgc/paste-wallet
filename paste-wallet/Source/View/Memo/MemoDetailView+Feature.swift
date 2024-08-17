@@ -33,7 +33,7 @@ struct MemoDetailFeature {
         @PresentationState var memoForm: MemoFormFeature.State?
     }
     
-    enum Action: Equatable {
+    enum Action {
         case unlock
         case lock
         case setLock(Bool)

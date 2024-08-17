@@ -48,6 +48,9 @@ struct MemoFeature {
                 state.memoDetail = .init(key: state.key, memo: memo)
                 return .none
                 
+            case .memoForm(.dismiss):
+                return .send(.fetchAll)
+                
             default: return .none
             }
         }

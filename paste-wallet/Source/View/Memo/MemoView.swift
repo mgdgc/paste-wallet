@@ -94,9 +94,6 @@ struct MemoView: View {
                 MemoForm(store: store)
             }
             .interactiveDismissDisabled()
-            .onDisappear {
-                self.store.send(.fetchAll)
-            }
         }
     }
     
