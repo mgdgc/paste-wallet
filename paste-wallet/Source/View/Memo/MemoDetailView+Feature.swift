@@ -14,7 +14,7 @@ import ComposableArchitecture
 
 @Reducer
 struct MemoDetailFeature {
-    
+    @ObservableState
     struct State: Equatable {
         var modelContext = PasteWalletApp.sharedModelContext
         let key: String
@@ -23,17 +23,20 @@ struct MemoDetailFeature {
         var locked: Bool = true
         var showDeleteConfirmation: Bool = false
         
+        @Shared(.appStorage(UserDefaultsKey.Settings.useBiometric))
+        var biometricEnabled: Bool = true
         var biometricAvailable: Bool {
             let laContext = LAContext()
-            var error: NSError?
-            return laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) &&
-            UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
+            return laContext.canEvaluatePolicy(
+                .deviceOwnerAuthenticationWithBiometrics,
+                error: nil) && biometricEnabled
         }
         
-        @PresentationState var memoForm: MemoFormFeature.State?
+        @Presents var memoForm: MemoFormFeature.State?
     }
     
-    enum Action {
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
         case unlock
         case lock
         case setLock(Bool)
@@ -46,18 +49,22 @@ struct MemoDetailFeature {
     }
     
     var body: some Reducer<State, Action> {
+        BindingReducer()
+        
         Reduce { state, action in
             switch action {
             case .unlock:
-                return .run { send in
+                return .run { [
+                    biometricAvailable = state.biometricAvailable
+                ] send in
                     let laContext = LAContext()
-                    var error: NSError?
-                    if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) &&
-                        UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric) {
-                        let reason = "biometric_reason".localized
+                    if biometricAvailable {
                         var result: Bool = false
                         do {
-                            result = try await laContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason)
+                            result = try await laContext.evaluatePolicy(
+                                .deviceOwnerAuthenticationWithBiometrics,
+                                localizedReason: "biometric_reason".localized
+                            )
                         } catch {
                             print(#function, error)
                         }
@@ -94,11 +101,10 @@ struct MemoDetailFeature {
                 }
                 return .none
                 
-            case let .memoForm(action):
-                return .none
+            default: return .none
             }
         }
-        .ifLet(\.$memoForm, action: /Action.memoForm) {
+        .ifLet(\.$memoForm, action: \.memoForm) {
             MemoFormFeature()
         }
     }
