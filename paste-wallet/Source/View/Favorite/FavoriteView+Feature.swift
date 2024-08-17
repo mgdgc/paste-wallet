@@ -14,6 +14,7 @@ import ComposableArchitecture
 
 @Reducer
 struct FavoriteFeature {
+    @ObservableState
     struct State: Equatable {
         let modelContext: ModelContext = PasteWalletApp.sharedModelContext
         let key: String
@@ -23,8 +24,11 @@ struct FavoriteFeature {
         var banks: [Bank] = []
         var haptic: UUID = UUID()
         
-        @PresentationState var cardDetail: CardDetailFeature.State?
-        @PresentationState var bankDetail: BankDetailFeature.State?
+        @Shared(.appStorage(UserDefaultsKey.Settings.itemHaptic))
+        var useItemHapic: Bool = false
+        
+        @Presents var cardDetail: CardDetailFeature.State?
+        @Presents var bankDetail: BankDetailFeature.State?
     }
     
     enum Action {
@@ -56,7 +60,7 @@ struct FavoriteFeature {
                 return .none
                 
             case .playHaptic:
-                if UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.itemHaptic) {
+                if state.useItemHapic {
                     state.haptic = UUID()
                 }
                 return .none
@@ -67,7 +71,10 @@ struct FavoriteFeature {
                 
             case let .copyCard(card, separator):
                 let number = card.getWrappedNumber(state.key, separator)
-                UIPasteboard.general.setValue(number, forPasteboardType: UTType.plainText.identifier)
+                UIPasteboard.general.setValue(
+                    number,
+                    forPasteboardType: UTType.plainText.identifier
+                )
                 return .none
                 
             case let .copyBank(bank, numbersOnly):
@@ -78,9 +85,15 @@ struct FavoriteFeature {
                             copyText.append(c)
                         }
                     }
-                    UIPasteboard.general.setValue(copyText, forPasteboardType: UTType.plainText.identifier)
+                    UIPasteboard.general.setValue(
+                        copyText,
+                        forPasteboardType: UTType.plainText.identifier
+                    )
                 } else {
-                    UIPasteboard.general.setValue(bank.decryptNumber(state.key), forPasteboardType: UTType.plainText.identifier)
+                    UIPasteboard.general.setValue(
+                        bank.decryptNumber(state.key),
+                        forPasteboardType: UTType.plainText.identifier
+                    )
                 }
                 return .none
                 
@@ -110,17 +123,19 @@ struct FavoriteFeature {
                     }
                 }
                 
-            case let .cardDetail(action):
-                return .none
+            case .cardDetail(.dismiss):
+                return .send(.fetchCard)
                 
-            case let .bankDetail(action):
-                return .none
+            case .bankDetail(.dismiss):
+                return .send(.fetchBank)
+                
+            default: return .none
             }
         }
-        .ifLet(\.$cardDetail, action: /Action.cardDetail) {
+        .ifLet(\.$cardDetail, action: \.cardDetail) {
             CardDetailFeature()
         }
-        .ifLet(\.$bankDetail, action: /Action.bankDetail) {
+        .ifLet(\.$bankDetail, action: \.bankDetail) {
             BankDetailFeature()
         }
     }
