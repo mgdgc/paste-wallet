@@ -101,8 +101,8 @@ struct WalletFeature {
                 state.selectedTab = tab
                 return .none
                 
-            case .settings(.passwordChanged):
-                return .none
+//            case .settings(.passwordChanged):
+//                return .none
                 
             default:
                 return .none

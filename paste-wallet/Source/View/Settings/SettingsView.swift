@@ -30,13 +30,21 @@ struct SettingsView: View {
         .background(
             Colors.backgroundSecondary.color.ignoresSafeArea()
         )
-        .navigationDestination(
-            item: $store.scope(
-                state: \.passwordReset,
-                action: \.passwordReset
+//        .navigationDestination(
+//            item: $store.scope(
+//                state: \.passwordReset,
+//                action: \.passwordReset
+//            )
+//        ) { store in
+//            PasswordResetView(store: store)
+//        }
+        .sheet(
+            item: $store .scope(
+                state: \.passcodeChange,
+                action: \.passcodeChange
             )
         ) { store in
-            PasswordResetView(store: store)
+            PasscodeChangeView(store: store)
         }
     }
     
@@ -74,7 +82,10 @@ struct SettingsView: View {
         Section {
             Picker(
                 "settings_app_first_tab",
-                selection: $store.firstTab
+                selection: Binding(
+                    get: { store.firstTab },
+                    set: { store.send(.setFirstTab($0)) }
+                )
             ) {
                 ForEach(
                     [WalletView.Tab.favorite, .card, .bank, .memo],

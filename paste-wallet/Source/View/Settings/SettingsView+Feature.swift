@@ -27,19 +27,26 @@ struct SettingsFeature {
         var iCloudAvailable: Bool = false
         
         // App
-        var firstTab: WalletView.Tab = .init(rawValue: UserDefaults.standard.string(forKey: UserDefaultsKey.Settings.firstTab) ?? "favorite") ?? .favorite
+        var firstTab: WalletView.Tab = .init(
+            rawValue: UserDefaults.standard.string(
+                forKey: UserDefaultsKey.Settings.firstTab
+            ) ?? "favorite") ?? .favorite
         
         // Interaction
-        var tabHaptic: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.tabHaptic)
-        var itemHaptic: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.itemHaptic)
+        @Shared(.appStorage(UserDefaultsKey.Settings.tabHaptic))
+        var tabHaptic: Bool = false
+        @Shared(.appStorage(UserDefaultsKey.Settings.itemHaptic))
+        var itemHaptic: Bool = false
         
         // Activity
-        var useLiveActivity: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useLiveActivity)
+        @Shared(.appStorage(UserDefaultsKey.Settings.useLiveActivity))
+        var useLiveActivity: Bool = true
         var cardSealing: [LiveActivityManager.CardSealing] = LiveActivityManager.shared.cardSealing
         var bankSealing: Int = LiveActivityManager.shared.bankSealing
         
         // Privacy
-        var useBiometric: Bool = UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useBiometric)
+        @Shared(.appStorage(UserDefaultsKey.Settings.useBiometric))
+        var useBiometric: Bool = true
         
         // App Info
         var appVersion: String = "1.0.0"
@@ -47,15 +54,20 @@ struct SettingsFeature {
         
         var canEvaluate: Bool {
             var error: NSError?
-            if laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-                if error == nil {
+            if laContext.canEvaluatePolicy(
+                .deviceOwnerAuthenticationWithBiometrics,
+                error: &error
+            ) {
+                if let error {
+                    debugPrint(error)
+                } else {
                     return true
                 }
             }
             return false
         }
         
-        @Presents var passwordReset: PasswordResetFeature.State?
+        @Presents var passcodeChange: PasscodeChangeFeature.State?
     }
     
     enum Action: BindableAction {
@@ -68,27 +80,21 @@ struct SettingsFeature {
         // App
         case setFirstTab(WalletView.Tab)
         
-        // Interaction
-        case setTabHaptic(Bool)
-        case setItemHaptic(Bool)
-        
         // Activity
-        case setUseLiveActivity(Bool)
         case setCardSealing([LiveActivityManager.CardSealing])
         case setBankSealing(Int)
         
         // Privacy
         case showPasscodeChangeView
-        case setBiometric(Bool)
-        case passwordChanged
         
         // App Info
         case fetchAppVersion
         
-        case passwordReset(PresentationAction<PasswordResetFeature.Action>)
+        // Change Passcode
+        case passcodeChange(PresentationAction<PasscodeChangeFeature.Action>)
     }
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         BindingReducer()
         
         Reduce { state, action in
@@ -113,21 +119,6 @@ struct SettingsFeature {
                 UserDefaults.standard.set(tab.rawValue, forKey: UserDefaultsKey.Settings.firstTab)
                 return .none
                 
-            case let .setTabHaptic(haptic):
-                state.tabHaptic = haptic
-                UserDefaults.standard.set(haptic, forKey: UserDefaultsKey.Settings.tabHaptic)
-                return .none
-                
-            case let .setItemHaptic(haptic):
-                state.itemHaptic = haptic
-                UserDefaults.standard.set(haptic, forKey: UserDefaultsKey.Settings.itemHaptic)
-                return .none
-                
-            case let .setUseLiveActivity(use):
-                state.useLiveActivity = use
-                UserDefaults.standard.set(use, forKey: UserDefaultsKey.Settings.useLiveActivity)
-                return .none
-                
             case let .setCardSealing(sealing):
                 state.cardSealing = sealing
                 UserDefaults.standard.set(sealing.map { $0.rawValue }, forKey: UserDefaultsKey.Settings.cardSealProperties)
@@ -139,12 +130,7 @@ struct SettingsFeature {
                 return .none
                 
             case .showPasscodeChangeView:
-                state.passwordReset = .init(key: state.key)
-                return .none
-                
-            case let .setBiometric(use):
-                state.useBiometric = use
-                UserDefaults.standard.set(use, forKey: UserDefaultsKey.Settings.useBiometric)
+                state.passcodeChange = .init(key: state.key)
                 return .none
                 
             case .fetchAppVersion:
@@ -154,18 +140,12 @@ struct SettingsFeature {
                 }
                 return .none
                 
-            case .passwordReset(.presented(.passwordChanged(let success))):
-                return success ? .send(.passwordChanged) : .none
-                
-            case .passwordChanged:
-                return .none
-                
             default:
                 return .none
             }
         }
-        .ifLet(\.$passwordReset, action: \                              .passwordReset) {
-            PasswordResetFeature()
+        .ifLet(\.$passcodeChange, action: \.passcodeChange) {
+            PasscodeChangeFeature()
         }
     }
 }

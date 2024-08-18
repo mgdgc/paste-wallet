@@ -37,7 +37,7 @@ struct AppFeature {
             switch action {
             case let .setKey(key):
                 state.key = key
-                return .none
+                return .send(.initView)
                 
             case let .splashFinished(finished):
                 state.splashFinished = finished

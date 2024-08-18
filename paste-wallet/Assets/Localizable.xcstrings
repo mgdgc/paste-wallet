@@ -1779,6 +1779,40 @@
         }
       }
     },
+    "passcode_change_result_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please re-authenticate the passcode to secure data."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터 보호를 위해 다시 인증해주세요."
+          }
+        }
+      }
+    },
+    "passcode_change_result_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passcode Changed"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비밀번호 변경됨"
+          }
+        }
+      }
+    },
     "password_biometric_fail" : {
       "extractionState" : "manual",
       "localizations" : {

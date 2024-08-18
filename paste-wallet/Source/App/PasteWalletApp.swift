@@ -76,7 +76,6 @@ struct PasteWalletApp: App {
         AppFeature()
     }
     
-    @State private var key: String? = nil
     @State private var splashFinished: Bool = false
     
     var body: some Scene {
