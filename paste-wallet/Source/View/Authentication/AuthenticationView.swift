@@ -19,7 +19,7 @@ struct AuthenticationView: View {
                 if ICloudHelper.shared.getICloudKey(predictKey: localKey) == localKey {
                     // 비밀번호 확인 모드
                     PasscodeView(
-                        initialMessage: "password_type".localized,
+                        initialMessage: String(localized: "password_type"),
                         dismissable: false,
                         enableBiometric: true,
                         authenticateOnLaunch: true
@@ -28,13 +28,13 @@ struct AuthenticationView: View {
                             store.send(.setKey(localKey))
                             return .dismiss
                         } else {
-                            return .retype("password_wrong".localized)
+                            return .retype(String(localized: "password_wrong"))
                         }
                     }
                 } else {
                     // 다른 기기에서 비밀번호 변경함
                     PasscodeView(
-                        initialMessage: "password_icloud_wrong".localized,
+                        initialMessage: String(localized: "password_icloud_wrong"),
                         dismissable: false,
                         enableBiometric: false,
                         authenticateOnLaunch: false
@@ -44,7 +44,7 @@ struct AuthenticationView: View {
                             store.send(.setKey(typed))
                             return .dismiss
                         } else {
-                            return .retype("password_wrong".localized)
+                            return .retype(String(localized: "password_wrong"))
                         }
                     }
                 }
@@ -54,7 +54,7 @@ struct AuthenticationView: View {
             if ICloudHelper.shared.iCloudKeyExist {
                 // 다른 기기에서 사용중일 때
                 PasscodeView(
-                    initialMessage: "password_icloud".localized,
+                    initialMessage: String(localized: "password_icloud"),
                     dismissable: false,
                     enableBiometric: false,
                     authenticateOnLaunch: false
@@ -64,14 +64,14 @@ struct AuthenticationView: View {
                         store.send(.setKey(typed))
                         return .dismiss
                     } else {
-                        return .retype("password_wrong".localized)
+                        return .retype(String(localized: "password_wrong"))
                     }
                 }
                 
             } else {
                 // 비밀번호 설정 모드
                 PasscodeView(
-                    initialMessage: "password_init".localized,
+                    initialMessage: String(localized: "password_init"),
                     dismissable: false,
                     enableBiometric: false,
                     authenticateOnLaunch: false
@@ -84,12 +84,12 @@ struct AuthenticationView: View {
                             return .dismiss
                         } else {
                             store.send(.setKey(nil))
-                            return .retype("password_check_fail".localized)
+                            return .retype(String(localized: "password_check_fail"))
                         }
                         
                     } else {
                         store.send(.setKey(typed))
-                        return .retype("password_check".localized)
+                        return .retype(String(localized: "password_check"))
                     }
                 }
             }

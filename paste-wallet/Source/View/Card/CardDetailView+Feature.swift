@@ -139,7 +139,10 @@ struct CardDetailFeature {
                     month: state.card.month,
                     cvc: state.card.getWrappedCVC(state.key))
                 
-                LiveActivityManager.shared.startCardLiveActivity(state: contentState, cardId: state.card.id)
+                LiveActivityManager.shared.startCardLiveActivity(
+                    state: contentState,
+                    cardId: state.card.id
+                )
                 
                 return .none
                 

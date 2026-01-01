@@ -44,8 +44,9 @@ class LiveActivityManager {
         // Initialize `authorized` which indicates whether the user has allowed live activity or not
         authorized = authorizationInfo.areActivitiesEnabled
         
-        task = Task {
+        task = Task { [weak self] in
             // Keep tracking authorization status
+            guard let self else { return }
             for await activityElement in authorizationInfo.activityEnablementUpdates {
                 authorized = activityElement
             }
@@ -61,11 +62,15 @@ class LiveActivityManager {
     }
     
     var useLiveActivity: Bool {
-        UserDefaults.standard.bool(forKey: UserDefaultsKey.Settings.useLiveActivity)
+        UserDefaults.standard.bool(
+            forKey: UserDefaultsKey.Settings.useLiveActivity
+        )
     }
     
     var cardSealing: [CardSealing] {
-        guard let cardSealing: [String] = UserDefaults.standard.array(forKey: UserDefaultsKey.Settings.cardSealProperties) as? [String] else {
+        guard let cardSealing: [String] = UserDefaults.standard.array(
+            forKey: UserDefaultsKey.Settings.cardSealProperties
+        ) as? [String] else {
             return []
         }
         var properties: [CardSealing] = []
@@ -78,22 +83,39 @@ class LiveActivityManager {
     }
     
     var bankSealing: Int {
-        UserDefaults.standard.integer(forKey: UserDefaultsKey.Settings.bankSealCount)
+        UserDefaults.standard.integer(
+            forKey: UserDefaultsKey.Settings.bankSealCount
+        )
     }
     
     @discardableResult
-    func startCardLiveActivity(state: CardWidgetAttributes.ContentState, cardId: UUID) -> Activity<CardWidgetAttributes>? {
+    func startCardLiveActivity(
+        state: CardWidgetAttributes.ContentState,
+        cardId: UUID
+    ) -> Activity<CardWidgetAttributes>? {
         // Check whether the user has authorized live activity or not
         guard authorized, useLiveActivity else {
             return nil
         }
         
-        guard let terminationDate = startLiveActivityKillBackgroundTask(bgTaskName: .cardKill) else {
+        guard let terminationDate = startLiveActivityKillBackgroundTask(
+            bgTaskName: .cardKill
+        ) else {
             return nil
         }
         
-        let attribute = CardWidgetAttributes(id: cardId, createdAt: Date(), terminateAt: terminationDate, sealing: cardSealing)
-        let content = ActivityContent(state: state, staleDate: .now.advanced(by: liveActivityExpiration))
+        let attribute = CardWidgetAttributes(
+            id: cardId,
+            createdAt: Date(),
+            terminateAt: terminationDate,
+            sealing: cardSealing
+        )
+        let content = ActivityContent(
+            state: state,
+            staleDate: .now.advanced(
+                by: liveActivityExpiration
+            )
+        )
         
         do {
             // Start Activity
@@ -110,18 +132,33 @@ class LiveActivityManager {
     }
     
     @discardableResult
-    func startBankLiveActivity(state: BankWidgetAttributes.ContentState, bankId: UUID) -> Activity<BankWidgetAttributes>? {
+    func startBankLiveActivity(
+        state: BankWidgetAttributes.ContentState,
+        bankId: UUID
+    ) -> Activity<BankWidgetAttributes>? {
         // Check whether the user has authorized live activity or not
         guard authorized, useLiveActivity else {
             return nil
         }
         
-        guard let terminationDate = startLiveActivityKillBackgroundTask(bgTaskName: .bankKill) else {
+        guard let terminationDate = startLiveActivityKillBackgroundTask(
+            bgTaskName: .bankKill
+        ) else {
             return nil
         }
         
-        let attribute = BankWidgetAttributes(id: bankId, createdAt: Date(), terminateAt: terminationDate, sealing: bankSealing)
-        let content = ActivityContent(state: state, staleDate: .now.advanced(by: liveActivityExpiration))
+        let attribute = BankWidgetAttributes(
+            id: bankId,
+            createdAt: Date(),
+            terminateAt: terminationDate,
+            sealing: bankSealing
+        )
+        let content = ActivityContent(
+            state: state,
+            staleDate: .now.advanced(
+                by: liveActivityExpiration
+            )
+        )
         
         do {
             // Start Activity
@@ -137,7 +174,9 @@ class LiveActivityManager {
         }
     }
     
-    func startLiveActivityKillBackgroundTask(bgTaskName: BGTaskName) -> Date? {
+    func startLiveActivityKillBackgroundTask(
+        bgTaskName: BGTaskName
+    ) -> Date? {
         let request = BGAppRefreshTaskRequest(identifier: bgTaskName.identifier)
         let terminationDate = Date(timeIntervalSinceNow: liveActivityExpiration)
         request.earliestBeginDate = terminationDate

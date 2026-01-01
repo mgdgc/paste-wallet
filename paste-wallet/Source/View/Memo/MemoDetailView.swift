@@ -81,6 +81,9 @@ struct MemoDetailView: View {
                 store.send(.unlock)
             }
         }
+        .onDisappear {
+            store.send(.setLock(true))
+        }
         .navigationTitle(store.memo.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
