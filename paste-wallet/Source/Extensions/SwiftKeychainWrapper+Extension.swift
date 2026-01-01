@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftKeychainWrapper
+@preconcurrency import SwiftKeychainWrapper
 
 extension KeychainWrapper.Key {
     static let password: KeychainWrapper.Key = "password"

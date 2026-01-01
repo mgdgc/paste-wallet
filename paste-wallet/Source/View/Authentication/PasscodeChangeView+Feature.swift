@@ -12,82 +12,86 @@ import SwiftData
 
 @Reducer
 struct PasscodeChangeFeature {
-    @ObservableState
-    struct State: Equatable {
-        var modelContext: ModelContext = PasteWalletApp.sharedModelContext
-        var key: String
-        var newPasscode: String?
+  @ObservableState
+  struct State: Equatable {
+    var key: String
+    var newPasscode: String?
+    
+    @Presents var alert: AlertState<Action.Alert>?
+  }
+  
+  enum Action {
+    case setNewPasscode(String?)
+    case changePasscode(String)
+    case showResultAlert
+    case alert(PresentationAction<Alert>)
+    
+    enum Alert: Equatable {
+      case passwordChanged
+    }
+  }
+  
+  @Dependency(\.dismiss) var dismiss
+  @Dependency(\.persistence) var persistence: PersistenceClient
+  
+  var body: some ReducerOf<Self> {
+    Reduce { state, action in
+      switch action {
+      case .setNewPasscode(let passcode):
+        state.newPasscode = passcode
+        return .none
         
-        @Presents var alert: AlertState<Action.Alert>?
-    }
-    
-    enum Action {
-        case setNewPasscode(String?)
-        case changePasscode(String)
-        case showResultAlert
-        case alert(PresentationAction<Alert>)
+      case .changePasscode(let passcode):
+        let key = state.key
+        return .run { send in
+          guard let context = try? await persistence.context() else { return }
+          Card.changePasscode(
+            modelContext: context,
+            oldKey: key,
+            newKey: passcode
+          )
+          Bank.changePasscode(
+            modelContext: context,
+            oldKey: key,
+            newKey: passcode
+          )
+          Memo.changePasscode(
+            modelContext: context,
+            oldKey: key,
+            newKey: passcode
+          )
+          KeychainWrapper.standard[.password] = passcode
+          await ICloudHelper.shared.setICloudKey(passcode)
+          await send(.showResultAlert)
+        }
         
-        enum Alert: Equatable {
-            case passwordChanged
+      case .showResultAlert:
+        state.alert = .init(
+          title: {
+            TextState("passcode_change_result_title")
+          },
+          actions: {
+            ButtonState(
+              role: .none,
+              action: .send(.passwordChanged),
+              label: { TextState("confirm") }
+            )
+          },
+          message: {
+            TextState("passcode_change_result_message")
+          }
+        )
+        return .none
+        
+      case .alert(.presented(.passwordChanged)):
+        return .run { _ in
+          await PasteWalletApp.appStore.send(.setKey(nil))
+          await dismiss()
         }
+        
+      default: return .none
+      }
     }
-    
-    @Dependency(\.dismiss) var dismiss
-    
-    var body: some ReducerOf<Self> {
-        Reduce { state, action in
-            switch action {
-            case .setNewPasscode(let passcode):
-                state.newPasscode = passcode
-                return .none
-                
-            case .changePasscode(let passcode):
-                Card.changePasscode(
-                    modelContext: state.modelContext,
-                    oldKey: state.key,
-                    newKey: passcode
-                )
-                Bank.changePasscode(
-                    modelContext: state.modelContext,
-                    oldKey: state.key,
-                    newKey: passcode
-                )
-                Memo.changePasscode(
-                    modelContext: state.modelContext,
-                    oldKey: state.key,
-                    newKey: passcode
-                )
-                KeychainWrapper.standard[.password] = passcode
-                ICloudHelper.shared.setICloudKey(passcode)
-                return .send(.showResultAlert)
-                
-            case .showResultAlert:
-                state.alert = .init(
-                    title: {
-                        TextState("passcode_change_result_title")
-                    },
-                    actions: {
-                        ButtonState(
-                            role: .none,
-                            action: .send(.passwordChanged),
-                            label: { TextState("confirm") }
-                        )
-                    },
-                    message: {
-                        TextState("passcode_change_result_message")
-                    }
-                )
-                return .none
-                
-            case .alert(.presented(.passwordChanged)):
-                PasteWalletApp.appStore.send(.setKey(nil))
-                return .run { _ in
-                    await dismiss()
-                }
-                
-            default: return .none
-            }
-        }
-        .ifLet(\.$alert, action: \.alert)
-    }
+    .ifLet(\.$alert, action: \.alert)
+  }
 }

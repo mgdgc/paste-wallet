@@ -9,6 +9,7 @@ import Foundation
 import ActivityKit
 import BackgroundTasks
 
+@MainActor
 class LiveActivityManager {
     enum BGTaskName: String {
         case cardKill = "com.mgchoi.paste-wallet.cardKill"
