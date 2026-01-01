@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Bank: Identifiable {
+final class Bank: Identifiable, @unchecked Sendable {
     var id: UUID = UUID()
     var name: String = ""
     var bank: String = ""

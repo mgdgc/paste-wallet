@@ -15,7 +15,7 @@ struct PasscodeChangeView: View {
     
     var body: some View {
         PasscodeView(
-            initialMessage: "password_init".localized,
+            initialMessage: String(localized: "password_init"),
             dismissable: true,
             enableBiometric: false,
             authenticateOnLaunch: false) { typed in
@@ -25,11 +25,11 @@ struct PasscodeChangeView: View {
                         return .none
                     } else {
                         store.send(.setNewPasscode(nil))
-                        return .retype("password_check_fail".localized)
+                        return .retype(String(localized: "password_check_fail"))
                     }
                 } else {
                     store.send(.setNewPasscode(typed))
-                    return .retype("password_check".localized)
+                    return .retype(String(localized: "password_check"))
                 }
             }
             .alert($store.scope(state: \.alert, action: \.alert))

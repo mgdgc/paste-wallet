@@ -97,6 +97,9 @@ struct BankDetailView: View {
                 store.send(.unlock)
             }
         }
+        .onDisappear {
+            store.send(.setLock(true))
+        }
         .onChange(of: scenePhase) { oldValue, newValue in
             if oldValue == .background && newValue == .inactive {
                 store.send(.lock)

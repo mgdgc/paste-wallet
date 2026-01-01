@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Memo: Identifiable {
+final class Memo: Identifiable, @unchecked Sendable {
     var id: UUID = UUID()
     var title: String = ""
     var desc: String = ""

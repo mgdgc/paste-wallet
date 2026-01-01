@@ -9,31 +9,6 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 
-fileprivate struct CardDetailSection<Content>: View where Content: View {
-    var sectionTitle: LocalizedStringKey? = nil
-    @ViewBuilder var content: () -> Content
-    
-    var body: some View {
-        VStack {
-            if let sectionTitle = sectionTitle {
-                HStack {
-                    Text(sectionTitle)
-                        .padding(.top, 8)
-                        .padding(.horizontal, 4)
-                    Spacer()
-                }
-            }
-            VStack {
-                content()
-            }
-            .background {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Colors.backgroundPrimary.color)
-            }
-        }
-    }
-}
-
 struct CardDetailView: View {
     @Bindable var store: StoreOf<CardDetailFeature>
     
@@ -124,6 +99,9 @@ struct CardDetailView: View {
             if store.biometricAvailable {
                 store.send(.authenticate)
             }
+        }
+        .onDisappear {
+            store.send(.setCardInfoLock(true))
         }
         .onChange(of: scenePhase) { oldValue, newValue in
             if oldValue == .background && newValue == .inactive {
