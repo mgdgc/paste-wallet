@@ -1273,7 +1273,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-navigation";
 			requirement = {
 				kind = exactVersion;
-				version = 2.5.1;
+				version = 2.6.0;
 			};
 		};
 		79E571752AADA62500C98B2B /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
@@ -1297,7 +1297,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
 			requirement = {
 				kind = exactVersion;
-				version = 1.22.3;
+				version = 1.23.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
